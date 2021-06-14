@@ -1,0 +1,29 @@
+<a *ngIf="!this.link"
+   class="uuidtag badge {{border_style}}"
+   style="background-color: #{{id.color}} !important; color: #{{id.textcolor}} !important;">
+  {{id.readable}} 
+  <i *ngIf="level > Level.Normal"
+     class="fa {{level_icon}}"
+     ></i>
+  <i *ngIf="level === Level.Normal && verified"
+     class="fa {{verified_icon}}"></i>
+</a>
+
+<a *ngIf="this.link"
+   class="uuidtag badge {{border_style}}"
+   style="background-color: #{{id.color}} !important; color: #{{id.textcolor}} !important;"
+   routerLink="{{this.router_link}}">
+  {{id.readable}}
+  <i *ngIf="level > Level.Normal"
+     class="fa {{level_icon}}"
+     ></i>
+  <i *ngIf="level === Level.Normal && verified"
+     class="fa {{verified_icon}}"></i>
+</a>
+
+<button *ngIf="this.show_copy"
+        ngxClipboard
+        [cbContent]="this.copy_url"
+        class="iconbtn">
+  <i class="fa fa-clipboard" title="copy"></i>
+</button>

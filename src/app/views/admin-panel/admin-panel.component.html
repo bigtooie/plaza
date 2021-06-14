@@ -1,0 +1,16 @@
+<ul ngbNav #nav="ngbNav" [(activeId)]="active_tab" class="nav-tabs">
+  <li [ngbNavItem]="1">
+    <a ngbNavLink>Global Settings</a>
+    <ng-template ngbNavContent>
+      <app-admin-settings></app-admin-settings>
+    </ng-template>
+  </li>
+  <li [ngbNavItem]="2">
+    <a ngbNavLink>Advanced Account Creator</a>
+    <ng-template ngbNavContent>
+      <app-advanced-account-creator></app-advanced-account-creator>
+    </ng-template>
+  </li>
+</ul>
+
+<div [ngbNavOutlet]="nav" class="p-2 pt-3 bg-white"></div>

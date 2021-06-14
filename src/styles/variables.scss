@@ -1,0 +1,10 @@
+
+@use "sass:color";
+
+$bg-col: #CEE;
+$container-col: rgba(255,255,255,0.8);
+$nav-col: #F5FFFF;
+
+$font-col: rgb(0, 64, 64);
+$font-col-inactive: color.scale($font-col, $alpha: -60%);
+$font-col-active: rgb(0, 160, 160);

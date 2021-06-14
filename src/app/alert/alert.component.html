@@ -1,0 +1,28 @@
+<ng-template #alertdialog let-modal>
+  <div class="modal-header">
+    <h4 *ngIf="title.length > 0"
+        class="modal-title"
+        id="modal-basic-title">{{title}}</h4>
+    <button *ngIf="show_dismiss"
+            type="button"
+            class="close"
+            aria-label="Close"
+            (click)="modal.dismiss('x')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div *ngIf="message.length > 0"
+       class="modal-body">
+    <p>{{message}}</p>
+  </div>
+  <div *ngIf="show_ok"
+       class="modal-footer">
+    <button *ngIf="show_ok"
+            type="button"
+            class="btn btn-primary"
+            ngbAutofocus
+            (click)="modal.close('ok')">
+      ok
+    </button>
+  </div>
+</ng-template>

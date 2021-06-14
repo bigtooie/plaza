@@ -1,0 +1,12 @@
+<div *ngIf="this.status == SessionStatus.Open"
+     class="badge bg-success text-light">
+  Open
+</div>
+<div *ngIf="this.status == SessionStatus.Full"
+     class="badge bg-warning text-dark">
+  Full
+</div>
+<div *ngIf="this.status == SessionStatus.Closed"
+     class="badge bg-danger text-light">
+  Closed
+</div>

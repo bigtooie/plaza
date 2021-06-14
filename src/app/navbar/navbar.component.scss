@@ -1,0 +1,29 @@
+
+@import "../../styles/variables.scss";
+
+.navbar
+{
+    background: $container-col;
+}
+
+.hostbtn
+{
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-top: 0.25rem; // ????
+    margin-right: 1rem;
+}
+
+.nav-link
+{
+    border-radius: 0.2em;
+    margin-left: 0.3em;
+    margin-right: 0.3em;
+    color: $font-col !important;
+}
+
+.nav-link.active
+{
+    color: $font-col-active !important;
+    background-color: white;
+}

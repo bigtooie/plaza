@@ -1,0 +1,183 @@
+<form [formGroup]="register_form"
+      (ngSubmit)="submit_register()">
+  <div class="mb-3">
+    <label class="form-label">
+      username
+      <i *ngIf="register_form.pending"
+         class="ml-1 spinner-border spinner-border-sm"
+         role="status"></i>
+    </label>
+    <button type="button"
+            tabindex="-1"
+            class="btn helpbutton"
+            placement="bottom"
+            triggers="focus"
+            title="name used to log in to this site, not player name."
+            popoverTitle="username"
+            ngbPopover="name used to log in to this site, not player name.">
+      <i class="fa fa-question-circle text-primary"></i>
+    </button>
+    <input type="text"
+           placeholder="(not player name)"
+           class="form-control {{this.register_username_invalid ? 'is-invalid' : ''}}"
+           required
+           formControlName="username">
+    <ng-template [ngIf]="register_username_invalid">
+      <div *ngIf="register_username.errors.required"
+           class="text-danger">
+        username required
+      </div>
+      <div *ngIf="register_username.errors.maxlength"
+           class="text-danger">
+        max username length is {{MAX_USERNAME_LENGTH}}
+      </div>
+      <div *ngIf="register_username.errors.pattern"
+           class="text-danger">
+        username contains illegal characters
+      </div>
+      <div *ngIf="register_username.errors.name_taken"
+           class="text-danger">
+        username already taken
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">player name</label>
+    <button type="button"
+            tabindex="-1"
+            class="btn helpbutton"
+            placement="bottom"
+            triggers="focus"
+            title="name of the character, not visible to other people by default"
+            popoverTitle="player name"
+            ngbPopover="name of the character, not visible to other people by default">
+      <i class="fa fa-question-circle text-primary"></i>
+    </button>
+    <input type="text"
+           class="form-control {{this.register_playername_invalid ? 'is-invalid' : ''}}"
+           required
+           formControlName="playername">
+    <ng-template [ngIf]="register_playername_invalid">
+      <div *ngIf="register_playername.errors.required"
+           class="text-danger">
+        player name required
+      </div>
+      <div *ngIf="register_playername.errors.maxlength"
+           class="text-danger">
+        max playername length is {{MAX_PLAYERNAME_LENGTH}}
+      </div>
+      <div *ngIf="register_playername.errors.pattern"
+           class="text-danger">
+        playername contains illegal characters
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">island name</label>
+    <button type="button"
+            tabindex="-1"
+            class="btn helpbutton"
+            placement="bottom"
+            triggers="focus"
+            title="name of the island, not visible to other people by default"
+            popoverTitle="island name"
+            ngbPopover="name of the island, not visible to other people by default">
+      <i class="fa fa-question-circle text-primary"></i>
+    </button>
+    <input type="text"
+           class="form-control {{this.register_islandname_invalid ? 'is-invalid' : ''}}"
+           required
+           formControlName="islandname">
+    <ng-template [ngIf]="register_islandname_invalid">
+      <div *ngIf="register_islandname.errors.required"
+           class="text-danger">
+        island name required
+      </div>
+      <div *ngIf="register_islandname.errors.maxlength"
+           class="text-danger">
+        max islandname length is {{MAX_ISLANDNAME_LENGTH}}
+      </div>
+      <div *ngIf="register_islandname.errors.pattern"
+           class="text-danger">
+        islandname contains illegal characters
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">password</label>
+    <button type="button"
+            tabindex="-1"
+            class="btn helpbutton"
+            placement="bottom"
+            triggers="focus"
+            title="password used to log into this site"
+            popoverTitle="password"
+            ngbPopover="password used to log into this site">
+      <i class="fa fa-question-circle text-primary"></i>
+    </button>
+    <input type="password"
+           class="form-control {{this.register_password_invalid ? 'is-invalid' : ''}}"
+           required
+           formControlName="password">
+    <ng-template [ngIf]="register_password_invalid">
+      <div *ngIf="register_password.errors.required"
+           class="text-danger">
+        password required
+      </div>
+      <div *ngIf="register_password.errors.maxlength"
+           class="text-danger">
+        max password length is {{MAX_PASSWORD_LENGTH}}
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">
+      ID prefix. With current prefix, ID could look like
+      <app-uuidtag [id]="this.exampleID" [link]="false"></app-uuidtag>
+    </label>
+    <button type="button"
+            tabindex="-1"
+            class="btn helpbutton"
+            placement="bottom"
+            triggers="focus"
+            title="desired ID prefix. leave empty for random ID"
+            popoverTitle="ID prefix"
+            ngbPopover="desired ID prefix. leave empty for random ID">
+      <i class="fa fa-question-circle text-primary"></i>
+    </button>
+    <input type="text"
+           class="form-control {{this.register_id_prefix_invalid ? 'is-invalid' : ''}}"
+           required
+           (change)="renew_exampleID()"
+           formControlName="id_prefix">
+    <ng-template [ngIf]="register_id_prefix_invalid">
+      <div *ngIf="register_id_prefix.errors.pattern"
+           class="text-danger">
+        ID prefix can only contain numbers and letters
+      </div>
+    </ng-template>
+  </div>
+  <div class="form-group">
+    <label for="levelSelect">
+      Level
+    </label>
+    <select formControlName="level"
+            class="form-control"
+            id="levelSelect">
+      <option *ngFor="let val of LevelValues"
+              [ngValue]="val">
+        {{LevelNames[val]}}
+      </option>
+    </select>
+  </div>
+
+  <button type="submit"
+          class="btn btn-success w-100"
+          [disabled]="this.pending || !this.register_form.valid || this.register_form.pending">
+    register
+  </button>
+</form>

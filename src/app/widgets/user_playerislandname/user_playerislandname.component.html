@@ -1,0 +1,19 @@
+<span *ngIf="user.playername.length > 0"
+      class="{{user.settings.playername_hidden ? 'font-italic' : ''}}">
+  {{user.playername}}
+</span>
+<span *ngIf="user.playername === ''"
+      class="text-muted">
+  &lt;hidden&gt;
+</span>
+
+from
+
+<span *ngIf="user.islandname.length > 0"
+      class="{{user.settings.islandname_hidden ? 'font-italic' : ''}}">
+  {{user.islandname}}
+</span>
+<span *ngIf="user.islandname === ''"
+      class="text-muted">
+  &lt;hidden&gt;
+</span>

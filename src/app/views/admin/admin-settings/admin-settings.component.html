@@ -1,0 +1,86 @@
+<div *ngFor="let setting of all_settings"
+     class="mb-4 rounded p-2 bg-light">
+  <ng-container *ngFor="let setting_form of [get_form(setting.key)]">
+    <label class="form-label">
+      {{setting.name}}
+      <br/>
+      <small>
+        {{setting.description}}
+      </small>
+    </label>
+    
+    <input *ngIf="isStringSetting(setting)"
+           type="text"
+           placeholder=""
+           class="form-control {{form_control_invalid(setting_form) ? 'is-invalid' : ''}}"
+           maxLength="{{setting.max_length}}"
+           [disabled]="pending"
+           [formControl]="setting_form">
+
+    <input *ngIf="isNumberSetting(setting)"
+           type="number"
+           placeholder=""
+           min="{{setting.min}}"
+           max="{{setting.max}}"
+           class="form-control {{form_control_invalid(setting_form) ? 'is-invalid' : ''}}"
+           [disabled]="pending"
+           [formControl]="setting_form">
+
+    <input *ngIf="isBoolSetting(setting)"
+           type="checkbox"
+           class="form-control"
+           [disabled]="pending"
+           [formControl]="setting_form">
+
+    <ng-template [ngIf]="form_control_invalid(setting_form)">
+      <div *ngIf="setting_form.errors.required"
+           class="text-danger">
+        {{setting.name}} is required
+      </div>
+      <div *ngIf="setting_form.errors.minlength"
+           class="text-danger">
+        min {{setting.name}} length is {{setting.min_length}}
+      </div>
+      <div *ngIf="setting_form.errors.maxlength"
+           class="text-danger">
+        max {{setting.name}} length is {{setting.max_length}}
+      </div>
+      <div *ngIf="setting_form.errors.pattern"
+           class="text-danger">
+        {{setting.name}} does not conform to pattern /{{setting.pattern}}/ 
+      </div>
+      <div *ngIf="setting_form.errors.min"
+           class="text-danger">
+        min {{setting.name}} value is {{setting.min}}
+      </div>
+      <div *ngIf="setting_form.errors.max"
+           class="text-danger">
+        max {{setting.name}} value is {{setting.max}}
+      </div>
+    </ng-template>
+
+    <button (click)="apply_setting(setting)"
+            [disabled]="pending || form_control_invalid(setting_form)"
+            type="button"
+            class="btn btn-success btn-sm mt-2"
+            >
+      apply
+    </button>
+
+    <button (click)="load_setting(setting)"
+            [disabled]="pending || form_control_invalid(setting_form)"
+            type="button"
+            class="btn btn-primary btn-sm ml-2 mt-2"
+            >
+      reload
+    </button>
+
+    <button (click)="reset_setting(setting)"
+            [disabled]="pending || form_control_invalid(setting_form)"
+            type="button"
+            class="btn btn-danger btn-sm ml-2 mt-2"
+            >
+      reset to default
+    </button>
+  </ng-container>
+</div>

@@ -1,0 +1,387 @@
+<ng-template [ngIf]="!pending && user !== undefined">
+  <!-- heading -->
+  <div class="text-center">
+    <h3>
+      <span *ngIf="user.playername.length > 0">
+        {{user.playername}}
+      </span>
+
+      <span *ngIf="user.playername.length <= 0"
+            class="text-muted">
+        &lt;hidden&gt;
+      </span>
+
+      <button *ngIf="can_edit_player_islandname_visibility"
+              alt="show / hide player name"
+              class="visibilitybtn visibility-{{user.settings.playername_hidden ? 'hidden' : 'shown'}}"
+              ngbTooltip="toggle player name visibility. when hidden, the name displays as '{{abbreviate_name(user.playername)}}'."
+              (click)="toggle_playername_visible()"
+           >
+        <i *ngIf="user.settings.playername_hidden"
+           class="fa fa-eye-slash" title="show player name"></i>
+        <i *ngIf="!user.settings.playername_hidden"
+           class="fa fa-eye" title="hide player name"></i>
+      </button>
+
+      <button *ngIf="can_edit_player_islandname"
+              (click)="show_edit_playername_dialog()"
+              [disabled]="edit_pending"
+              class="iconbtn">
+        <i class="fa fa-pencil"></i>
+      </button>
+    </h3>
+    <h4>
+      <app-uuidtag [id]="user.id"
+                   [level]="user.settings.level"
+                   [verified]="user.verification_post.length > 0"
+                   [link]="false"
+                   [show_copy]="true"></app-uuidtag>
+      <br/>
+      <app-userbuttons [user]="user"></app-userbuttons>
+    </h4>
+  </div>
+  <hr/>
+
+  <!-- properties -->
+  <div *ngIf="user.settings.banned" class="alert alert-danger" role="alert">
+    This user is banned.
+  </div>
+
+  <ng-template [ngIf]="user_session !== undefined">
+    <div class="row">
+      <div class="col col-md-6 coltitle">
+        Currently Hosting
+      </div>
+      <div class="col col-md-auto">
+        <app-uuidtag [id]="user_session.id" [verified]="user_session.settings.verified_only"
+           ></app-uuidtag>
+        <app-sessionstatus [status]="user_session.settings.status"></app-sessionstatus>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="user.settings.level >= Level.Verifier || can_edit_level">
+    <div class="row">
+      <div class="col col-md-6 coltitle">
+        Role
+      </div>
+      <div class="col col-md-auto">
+        {{LevelNames[user.settings.level]}}
+
+      <button *ngIf="can_edit_level"
+              (click)="show_edit_level_dialog()"
+              [disabled]="edit_pending"
+              class="iconbtn">
+        <i class="fa fa-pencil"></i>
+      </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="user.verification_post.length > 0 || can_edit_verification_post">
+    <div class="row">
+      <div class="col col-md-6 coltitle">
+        Verification
+      </div>
+      <div class="col col-md-auto">
+        <span *ngIf="user.verification_post.length > 1">
+          <a href="{{verification_url}}">view <i class="fa fa-external-link"></i></a>
+          (verified by <app-uuidtag *ngIf="user.verifier !== undefined" [id]="user.verifier"></app-uuidtag>)
+        </span>
+        <span *ngIf="user.verification_post === '0'">
+          verified by <app-uuidtag *ngIf="user.verifier !== undefined" [id]="user.verifier"></app-uuidtag> (dude trust me)
+        </span>
+
+      <button *ngIf="can_edit_verification_post"
+              (click)="show_edit_verification_post_dialog()"
+              [disabled]="edit_pending"
+              class="iconbtn">
+        <i class="fa fa-pencil"></i>
+      </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="user.username.length > 0">
+    <div class="row">
+      <div class="col col-md-6 coltitle">
+        Username
+      </div>
+      <div class="col col-md-auto">
+        {{user.username}}
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="user.islandname.length > 0">
+    <div class="row">
+      <div class="col col-md-6 coltitle">
+        Island
+      </div>
+      <div class="col col-md-auto">
+        {{user.islandname}}
+        <button *ngIf="can_edit_player_islandname_visibility"
+                alt="show / hide island name"
+                class="visibilitybtn visibility-{{user.settings.islandname_hidden ? 'hidden' : 'shown'}}"
+                ngbTooltip="toggle island name visibility. when hidden, the name displays as '{{abbreviate_name(user.islandname)}}'."
+                (click)="toggle_islandname_visible()"
+             >
+          <i *ngIf="user.settings.islandname_hidden"
+             class="fa fa-eye-slash" title="show island name"></i>
+          <i *ngIf="!user.settings.islandname_hidden"
+             class="fa fa-eye" title="hide island name"></i>
+        </button>
+
+        <button *ngIf="can_edit_player_islandname"
+                (click)="show_edit_islandname_dialog()"
+                [disabled]="edit_pending"
+                class="iconbtn">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="user.registered.getTime() > 0">
+    <div class="row">
+      <div class="col col-md-6 coltitle">
+        Registered on
+      </div>
+      <div class="col col-md-auto">
+        {{user!.registered.toDateString()}}
+      </div>
+    </div>
+  </ng-template>
+
+  <button *ngIf="can_reset_password"
+          (click)="show_reset_password_dialog()"
+          [disabled]="edit_pending"
+          class="btn btn-outline-danger">
+    reset password
+  </button>
+
+  <!-- stars / blocks are accessible via playerlist -->
+</ng-template>
+
+<div *ngIf="!pending && user === undefined"
+     class="alert alert-danger"
+     role="alert">
+  This user does not exist.
+</div>
+
+<div *ngIf="pending"
+     class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">loading...</span>
+  </div>
+</div>
+
+<!--playername dialog-->
+<ng-template #editPlayernameDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Playername of {{user.playername}} from {{user.islandname}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="new-playername">New Playername</label>
+      <input [formControl]="playername"
+             [disabled]="edit_pending"
+             type="text"
+             class="form-control {{playername_invalid ? 'is-invalid' : ''}}"
+             id="new-playername">
+        <ng-template [ngIf]="playername_invalid">
+          <div *ngIf="playername.errors.maxlength"
+               class="text-danger">
+            max playername length is {{MAX_PLAYERNAME_LENGTH}}
+          </div>
+          <div *ngIf="playername.errors.pattern"
+               class="text-danger">
+            playername contains illegal characters
+          </div>
+        </ng-template>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-danger"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      cancel
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            (click)="submit_edit_playername()"
+            [disabled]="pending || edit_pending || playername_invalid">
+      submit
+    </button>
+  </div>
+</ng-template>
+
+<!--islandname dialog-->
+<ng-template #editIslandnameDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Island of {{user.playername}} from {{user.islandname}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="new-islandname">New Island Name</label>
+      <input [formControl]="islandname"
+             [disabled]="edit_pending"
+             type="text"
+             class="form-control {{islandname_invalid ? 'is-invalid' : ''}}"
+             id="new-islandname">
+        <ng-template [ngIf]="islandname_invalid">
+          <div *ngIf="islandname.errors.maxlength"
+               class="text-danger">
+            max islandname length is {{MAX_ISLANDNAME_LENGTH}}
+          </div>
+          <div *ngIf="islandname.errors.pattern"
+               class="text-danger">
+            islandname contains illegal characters
+          </div>
+        </ng-template>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-danger"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      cancel
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            (click)="submit_edit_islandname()"
+            [disabled]="pending || edit_pending || islandname_invalid">
+      submit
+    </button>
+  </div>
+</ng-template>
+
+<!--verification_post dialog-->
+<ng-template #editVerificationPostDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Verification of {{user.playername}} from {{user.islandname}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="new-verification_post">New Verification
+        <div>
+          <small>
+            Just use the post number of the proof, or 0 if you personally verified the player.
+          </small>
+        </div>
+      </label>
+      <input [formControl]="verification_post"
+             [disabled]="edit_pending"
+             type="text"
+             class="form-control {{verification_post_invalid ? 'is-invalid' : ''}}"
+             id="new-verification_post">
+        <ng-template [ngIf]="verification_post_invalid">
+          <div *ngIf="verification_post.errors.maxlength"
+               class="text-danger">
+            max verification_post length is {{MAX_VERIFICATION_POST_LENGTH}}
+          </div>
+          <div *ngIf="verification_post.errors.pattern"
+               class="text-danger">
+            verification_post contains illegal characters
+          </div>
+        </ng-template>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-danger"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      cancel
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            (click)="submit_edit_verification_post()"
+            [disabled]="pending || edit_pending || verification_post_invalid">
+      submit
+    </button>
+  </div>
+</ng-template>
+
+<!--level dialog-->
+<ng-template #editLevelDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Role of {{user.playername}} from {{user.islandname}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="new-level">New Role</label>
+      <select [formControl]="level"
+              class="form-control"
+              id="new-level">
+        <ng-template ngFor let-val [ngForOf]="LevelValues">
+          <option *ngIf="val < userService.user.settings.level"
+                  [ngValue]="val">
+            {{LevelNames[val]}}
+          </option>
+        </ng-template>
+      </select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-danger"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      cancel
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            (click)="submit_edit_level()"
+            [disabled]="pending || edit_pending">
+      submit
+    </button>
+  </div>
+</ng-template>
+
+<!--password dialog-->
+<ng-template #resetPasswordDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Reset Password</h4>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="userService.user.settings.level < Level.Admin"
+         class="form-group">
+      <label for="current-password">Current password</label>
+      <input [formControl]="current_password"
+             [disabled]="this.edit_pending"
+             type="password"
+             class="form-control"
+             id="current-password">
+    </div>
+    <div class="form-group">
+      <label for="new-password">New password</label>
+      <input [formControl]="new_password"
+             [disabled]="this.edit_pending"
+             type="password"
+             class="form-control"
+             id="new-password">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-danger"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      cancel
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            (click)="reset_password()"
+            [disabled]="pending || edit_pending">
+      submit
+    </button>
+  </div>
+</ng-template>

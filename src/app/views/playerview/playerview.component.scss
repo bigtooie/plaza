@@ -1,0 +1,30 @@
+@import "../../../styles/variables.scss";
+
+$shown-btn-col: $font-col-active;
+$hidden-btn-col: $font-col-inactive;
+
+.coltitle
+{
+    font-weight: bold;
+    text-align: right;
+}
+
+.visibilitybtn
+{
+    text-decoration: none;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    padding: none;
+}
+
+.visibilitybtn:active, .visibility-shown
+{
+    color: $shown-btn-col;
+}
+
+.visibility-hidden
+{
+    color: $hidden-btn-col;
+}

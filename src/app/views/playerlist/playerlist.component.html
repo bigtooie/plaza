@@ -1,0 +1,159 @@
+<h3>Players</h3>
+<hr/>
+
+<form [formGroup]="search_form" (ngSubmit)="search_submit()">
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <select formControlName="search_text_category"
+              class="search-category custom-select">
+        <option *ngFor="let val of GetUsersSearchTextCategoryValues"
+                [ngValue]="val">
+          {{val}}
+        </option>
+      </select>
+    </div>
+    <input type="text"
+           placeholder="enter search text here..."
+           class="form-control"
+           formControlName="search_text">
+    <div class="input-group-append">
+      <button class="btn btn-outline-primary"
+              type="submit"
+              [disabled]="this.pending">
+        search
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="btn-group-toggle">
+        <label class="btn-outline-secondary btn-sm" ngbButtonLabel>
+          <input type="checkbox" formControlName="reversed" ngbButton> {{reversed ? 'descending' : 'ascending'}}
+        </label>
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary ml-3"
+                data-toggle="button"
+                aria-pressed="false"
+                (click)="collapse.toggle()"
+                [attr.aria-expanded]="!filters_collapsed">
+          toggle filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-3"
+       #collapse="ngbCollapse"
+       [(ngbCollapse)]="filters_collapsed">
+
+    <div class="row">
+      <div class="col-sm mr-sm-5">
+        <div class="row form-group">
+          <label class="form-select-label flex-sm-column col-form-label mr-sm-3 pt-sm-1">
+            <i class="fa fa-star"></i>
+          </label>
+          <select formControlName="starred_filter"
+                  class="custom-select custom-select-sm col-sm">
+            <option *ngFor="let val of SearchFilterValues"
+                    [ngValue]="val">
+              {{val}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-sm">
+        <div class="row form-group">
+          <label class="form-select-label flex-sm-column col-form-label mr-sm-3 pt-sm-1">
+            <i class="fa fa-ban"></i>
+          </label>
+          <select formControlName="blocked_filter"
+                  class="custom-select custom-select-sm col-sm">
+            <option *ngFor="let val of SearchFilterValues"
+                    [ngValue]="val">
+              {{val}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<hr/>
+
+<div *ngIf="!pending && current_view.length <= 0"
+     class="alert alert-info" role="alert">
+  Nothing found.
+</div>
+
+<ul *ngIf="!pending && current_view.length > 0"
+    class="list-group">
+  <li *ngFor="let uv of this.current_view"
+      class="list-group-item">
+    <app-uuidtag [id]="uv.id" [level]="uv.settings.level" [verified]="uv.verification_post.length > 0"></app-uuidtag>
+    <app-user-playerislandname [user]="uv"></app-user-playerislandname>
+    <app-userbuttons [user]="uv"></app-userbuttons>
+  </li>
+
+  <!-- placeholders -->
+  <ng-template [ngIf]="current_view.length < EntriesPerPage">
+    <li *ngFor="let _i of range(current_view.length, EntriesPerPage - 1)"
+        class="list-group-item">
+      <span class="badge badge-light w-25 mr-2">&nbsp;</span>
+      <span class="badge badge-light w-25 mr-2">&nbsp;</span>
+    </li>
+  </ng-template>
+</ul>
+
+<!-- loading placeholders -->
+<ul *ngIf="pending"
+    class="list-group">
+  <li *ngFor="let _i of range(1, EntriesPerPage)"
+      class="list-group-item">
+    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+      <span class="sr-only visually-hidden">Loading...</span>
+    </div>
+  </li>
+</ul>
+
+<ul *ngIf="visible_pages.length > 0"
+    class="pagination mt-3 justify-content-center">
+  <li class="page-item {{page <= 0 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn mr-2"
+            aria-label="First page"
+            (click)="goto_page(0)">
+      <span aria-hidden="true">&laquo;</span>
+    </button>
+  </li>
+  <li class="page-item {{page <= 0 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn mr-3"
+            aria-label="Previous page"
+            (click)="prev_page()">
+      <span aria-hidden="true">&lsaquo;</span>
+    </button>
+  </li>
+  <li *ngFor="let i of visible_pages"
+      class="page-item flex-sm-grow-0 {{i === page ? 'active' : ''}} {{pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn"
+            [disabled]="i === page"
+            (click)="goto_page(i)">
+      {{i+1}}
+    </button>
+  </li>
+  <li class="page-item {{page >= pages-1 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn ml-3"
+            aria-label="Next page"
+            (click)="next_page()">
+      <span aria-hidden="true">&rsaquo;</span>
+    </button>
+  </li>
+  <li class="page-item {{page >= pages-1 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn ml-2"
+            aria-label="Last page"
+            (click)="goto_page(this.pages-1)">
+      <span aria-hidden="true">&raquo;</span>
+    </button>
+  </li>
+</ul>

@@ -1,0 +1,32 @@
+
+@import "../../../styles/variables.scss";
+
+$star-col: $font-col-active;
+$block-col: #dc3545;
+
+.controlbuttons
+{
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.starbtn, .blockbtn
+{
+    text-decoration: none;
+    color: $font-col-inactive;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    padding: none;
+}
+
+.starbtn:hover, .starbtn:active, .star-active
+{
+    color: $star-col;
+}
+
+.blockbtn:hover, .blockbtn:active, .block-active
+{
+    color: $block-col;
+}

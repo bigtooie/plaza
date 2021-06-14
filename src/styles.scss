@@ -1,0 +1,67 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use "sass:color";
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./styles/variables.scss";
+@import "./styles/fonts.scss";
+
+body
+{
+    color: $font-col;
+    background-color: $bg-col;
+    font-family: "Comic Relief";
+}
+
+.pagination-btn
+{
+    border-radius: 50% !important;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+}
+
+.search-category
+{
+    border-top-left-radius: 0.25rem !important;
+    border-bottom-left-radius: 0.25rem !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.text-monospace
+{
+    font-family: Iosevka;
+}
+
+.iconbtn
+{
+    background-color: rgba(0, 0, 0, 0);
+    padding: 0;
+    margin-left: 0.5rem;
+    border: none;
+    color: color.scale($font-col, $alpha: -60%);
+}
+
+.iconbtn:hover, .iconbtn:active
+{
+    color: $font-col;
+}
+
+// dialog
+.dialog .modal-dialog .modal-content
+{
+}
+
+.dialog-info .modal-dialog .modal-content
+{
+    @extend .alert-info;
+}
+
+.dialog-warning .modal-dialog .modal-content
+{
+    @extend .alert-warning;
+}
+
+.dialog-error .modal-dialog .modal-content
+{
+    @extend .alert-danger;
+}

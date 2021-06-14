@@ -1,0 +1,15 @@
+
+@import "../../../styles/variables.scss";
+
+.splitborder
+{
+    border-right: 0.15em solid $font-col;
+}
+
+.helpbutton
+{
+    background-color: rgba(0,0,0,0) !important;
+    border: none !important;
+    padding: 0.2em !important;
+    margin-left: 1em;
+}

@@ -1,0 +1,27 @@
+<span *ngIf="user !== undefined
+          && userService.logged_in
+          && userService.user.id.value !== user.id.value"
+      class="controlbuttons">
+
+  <button alt="star this player"
+          ngbTooltip="star this player"
+          class="starbtn {{user.settings.starred ? 'star-active' : ''}}"
+          (click)="onStarClick()">
+    <i class="fa fa-star{{user.settings.starred ? '' : '-o'}}"></i>
+  </button>
+
+  <button alt="block this player"
+          ngbTooltip="block this player"
+          class="blockbtn {{user.settings.blocked ? 'block-active' : ''}}"
+          (click)="onBlockClick()">
+    <i class="fa fa-ban"></i>
+  </button>
+
+  <button *ngIf="can_ban"
+          alt="ban this player"
+          ngbTooltip="ban this player"
+          class="blockbtn {{user.settings.banned ? 'block-active' : ''}}"
+          (click)="onBanClick()">
+    <i class="fa fa-gavel"></i>
+  </button>
+</span>

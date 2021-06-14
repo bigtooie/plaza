@@ -1,0 +1,218 @@
+<div class="container">
+  <h4 class="text-center">Host new Session</h4>
+
+  <form [formGroup]="new_session_form"
+        (ngSubmit)="submit_new_session()">
+
+    <div class="mb-3">
+      <label class="form-label">
+        dodo code™
+        <i *ngIf="new_session_form.pending"
+           class="ml-1 spinner-border spinner-border-sm"
+           role="status"></i>
+      </label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="the dodo code™ of the session, can be changed later"
+              popoverTitle="session title"
+              ngbPopover="the dodo code™ of the session, can be changed later">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+      <input id="dodo"
+             type="text"
+             maxlength="5"
+             class="form-control {{dodo_invalid ? 'is-invalid' : ''}}"
+             placeholder=""
+             required
+             formControlName="dodo"
+             >
+      <ng-template [ngIf]="dodo_invalid">
+        <div *ngIf="dodo_form.errors.required"
+             class="text-danger">
+          dodo is required bro
+        </div>
+        <div *ngIf="dodo_form.errors.pattern"
+             class="text-danger">
+          dodo is invalid, check carefully bro
+        </div>
+        <div *ngIf="dodo_form.errors.in_use"
+             class="text-danger">
+          dodo is already being used by an active session
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- title -->
+    <div class="mb-3">
+      <label class="form-label">title</label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="title of the session, like a succinct reason for opening or whatever, can be changed later"
+              popoverTitle="session title"
+              ngbPopover="title of the session, like a succinct reason for opening or whatever, can be changed later">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+      <input id="title"
+             type="text"
+             maxlength="{{MAX_TITLE_LENGTH}}"
+             class="form-control {{title_invalid ? 'is-invalid' : ''}}"
+             placeholder=""
+             formControlName="title"
+             >
+      <ng-template [ngIf]="title_invalid">
+        <div *ngIf="title_form.errors.maxlength"
+             class="text-danger">
+          max title length is {{MAX_TITLE_LENGTH}}
+        </div>
+        <div *ngIf="title_form.errors.pattern"
+             class="text-danger">
+          title contains illegal characters
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- description -->
+    <div class="mb-3">
+      <label class="form-label">description</label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="description of the session, optional, can be changed later"
+              popoverTitle="session description"
+              ngbPopover="description of the session, optional, can be changed later">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+      <textarea id="description"
+             type="text"
+             maxlength="{{MAX_DESCRIPTION_LENGTH}}"
+             class="form-control {{description_invalid ? 'is-invalid' : ''}}"
+             placeholder=""
+             formControlName="description"
+             >
+      </textarea>
+      <ng-template [ngIf]="description_invalid">
+        <div *ngIf="description_form.errors.maxlength"
+             class="text-danger">
+          max description length is {{MAX_DESCRIPTION_LENGTH}}
+        </div>
+        <div *ngIf="description_form.errors.pattern"
+             class="text-danger">
+          description contains illegal characters
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- turnips -->
+    <div class="mb-3">
+      <label class="form-label">turnip prices</label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="nips, optional, can be changed later"
+              popoverTitle="turnip prices"
+              ngbPopover="nips, optional, can be changed later">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+      <input id="turnips"
+             type="number"
+             min="{{MIN_TURNIPS}}"
+             max="{{MAX_TURNIPS}}"
+             class="form-control {{turnips_invalid ? 'is-invalid' : ''}}"
+             placeholder=""
+             formControlName="turnips"
+             >
+      <ng-template [ngIf]="turnips_invalid">
+        <div *ngIf="turnips_form.errors.min || turnips_form.errors.max"
+             class="text-danger">
+          turnip prices exceed safe limits, please reconsider
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- unlisted -->
+    <div class="form-check custom-control custom-checkbox">
+      <input class="custom-control-input"
+             type="checkbox"
+             value=""
+             id="unlisted"
+             formControlName="unlisted"
+             >
+      <label class="custom-control-label" for="unlisted">
+        unlisted
+      </label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="whether the session is visible in the session list or not"
+              popoverTitle="unlisted session"
+              ngbPopover="whether the session is visible in the session list or not">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+    </div>
+
+    <!-- public requesters -->
+    <div class="form-check custom-control custom-checkbox">
+      <input class="custom-control-input"
+             type="checkbox"
+             value=""
+             id="publicrequesters"
+             formControlName="public_requesters"
+             >
+      <label class="custom-control-label" for="publicrequesters">
+        public requesters
+      </label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="whether players that are requesters in joining are visible to everyone or not"
+              popoverTitle="public session requesters"
+              ngbPopover="whether players that are requesters in joining are visible to everyone or not"
+              >
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+    </div>
+
+    <!-- verified_only -->
+    <div class="form-check custom-control custom-checkbox">
+      <input class="custom-control-input"
+             type="checkbox"
+             value=""
+             id="verified_only"
+             formControlName="verified_only"
+             >
+      <label class="custom-control-label" for="verified_only">
+        verified-only
+      </label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="whether the session is available only to verified players"
+              popoverTitle="verified_only session"
+              ngbPopover="whether the session is available only to verified players">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary w-100"
+            [disabled]="this.pending || this.new_session_form.pending || !this.new_session_form.valid">
+      create session
+    </button>
+  </form>
+</div>
