@@ -219,12 +219,22 @@
                  formControlName="security_question_answer">
         </div>
 
+        <div class="mb-3">
+          <small>
+            By registering and using this service you agree to the <a href="/#/terms">Terms of Service</a>.
+          </small>
+        </div>
+
         <button type="submit"
                 class="btn btn-success w-100"
                 [disabled]="this.pending || !this.register_form.valid || this.register_form.pending">
           register
         </button>
       </form>
+    </div>
+    <div *ngIf="!this.register_enabled"
+         class="col-md-6">
+      Registrations are currently closed.
     </div>
   </div>
 </div>

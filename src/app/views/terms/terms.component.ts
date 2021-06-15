@@ -3,17 +3,17 @@ import { Component, OnInit } from '@angular/core';
 import { g } from '@shared/globals';
 
 @Component({
-  selector: 'app-about',
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss']
+  selector: 'app-terms',
+  templateUrl: './terms.component.html',
+  styleUrls: ['./terms.component.scss']
 })
-export class AboutComponent implements OnInit
+export class TermsComponent implements OnInit
 {
     g = g;
-
     constructor() { }
 
     ngOnInit(): void
     {
     }
+
 }

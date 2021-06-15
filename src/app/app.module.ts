@@ -9,7 +9,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { NavbarComponent } from './navbar/navbar.component';
-import { FooterComponent } from './footer/footer.component';
 
 import { UuidtagComponent } from './widgets/uuidtag/uuidtag.component';
 import { UserbuttonsComponent } from './widgets/userbuttons/userbuttons.component';
@@ -31,6 +30,8 @@ import { AlertComponent } from './alert/alert.component';
 import { AdminPanelComponent } from './views/admin-panel/admin-panel.component';
 import { AdminSettingsComponent } from './views/admin/admin-settings/admin-settings.component';
 import { AdvancedAccountCreatorComponent } from './views/admin/advanced-account-creator/advanced-account-creator.component';
+import { PrivacyComponent } from './views/privacy/privacy.component';
+import { TermsComponent } from './views/terms/terms.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,6 @@ import { AdvancedAccountCreatorComponent } from './views/admin/advanced-account-
     AboutComponent,
     NotfoundComponent,
     HomeComponent,
-    FooterComponent,
     UserbuttonsComponent,
     LoginComponent,
     LogoutComponent,
@@ -54,7 +54,9 @@ import { AdvancedAccountCreatorComponent } from './views/admin/advanced-account-
     User_playerislandnameComponent,
     AdminPanelComponent,
     AdminSettingsComponent,
-    AdvancedAccountCreatorComponent
+    AdvancedAccountCreatorComponent,
+    PrivacyComponent,
+    TermsComponent
   ],
   imports: [
     BrowserModule,

@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './views/home/home.component';
 import { AboutComponent } from './views/about/about.component';
+import { PrivacyComponent } from './views/privacy/privacy.component';
+import { TermsComponent } from './views/terms/terms.component';
 import { LoginComponent } from './views/login/login.component';
 import { LogoutComponent } from './views/logout/logout.component';
 import { SessionlistComponent } from './views/sessionlist/sessionlist.component';
@@ -20,6 +22,8 @@ import { IsAdminGuard } from './guards/is-admin.guard';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'about', component: AboutComponent },
+  { path: 'privacy', component: PrivacyComponent },
+  { path: 'terms', component: TermsComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoggedOutGuard] },
   { path: 'logout', component: LogoutComponent, canActivate: [LoggedInGuard] },
   { path: 'sessions', component: SessionlistComponent, canActivate: [LoggedInGuard] },

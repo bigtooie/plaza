@@ -6,4 +6,30 @@
     <router-outlet></router-outlet>
 </div>
 
-<app-footer></app-footer>
+<footer>
+  <div class="container mt-5 mb-3 text-muted text-center">
+    <small>
+      <div>
+        <a routerLink="/about">About us</a>
+        |
+        <a routerLink="/terms">Terms of Service</a>
+        |
+        <a routerLink="/privacy">Privacy Policy</a>
+        |
+        {{g.title}} v{{g.version}} beta
+      </div>
+      <div class="mt-3">
+        Animal Crossing is a registered trademark of Nintendo.
+      </div>
+      <div>
+        {{g.title}} in no way claims ownership of any intellectual property associated with Animal Crossing.
+      </div>
+      <div class="mt-3">
+        {{g.title}} is a service for <a href="https://4channel.org/vg/acg">/acg/</a>, the Animal Crossing General on <a href="http://4channel.org">4channel.org</a>
+      </div>
+      <div>
+        {{g.title}} is not affiliated with 4channel.org or 4chan.org.
+      </div>
+    </small>
+  </div>
+</footer>
