@@ -151,7 +151,6 @@
     </button>
     <input type="text"
            class="form-control {{this.register_id_prefix_invalid ? 'is-invalid' : ''}}"
-           required
            (change)="renew_exampleID()"
            formControlName="id_prefix">
     <ng-template [ngIf]="register_id_prefix_invalid">
