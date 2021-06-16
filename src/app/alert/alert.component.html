@@ -1,7 +1,7 @@
 <ng-template #alertdialog let-modal>
-  <div class="modal-header">
-    <h4 *ngIf="title.length > 0"
-        class="modal-title"
+  <div *ngIf="title.length > 0"
+       class="modal-header">
+    <h4 class="modal-title"
         id="modal-basic-title">{{title}}</h4>
     <button *ngIf="show_dismiss"
             type="button"

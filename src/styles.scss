@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5, h6
 {
     color: $teal !important;
     background-color: transparent !important;
-    border-color: $teal-bright !important;
+    border-color: $teal !important;
 }
 
 .page-item:not(.active) .page-link
@@ -82,13 +82,25 @@ h1, h2, h3, h4, h5, h6
 }
 
 // dialog
-.dialog .modal-dialog .modal-content
+.modal-dialog .modal-content
 {
+    border-radius: 3rem;
+    padding: 1rem;
+    background-color: $yellow-bright;
+}
+
+.modal-content .modal-header
+{
+    border-bottom: none !important;
+}
+
+.modal-content .modal-footer
+{
+    border-top: none !important;
 }
 
 .dialog-info .modal-dialog .modal-content
 {
-    @extend .alert-info;
 }
 
 .dialog-warning .modal-dialog .modal-content
@@ -99,4 +111,10 @@ h1, h2, h3, h4, h5, h6
 .dialog-error .modal-dialog .modal-content
 {
     @extend .alert-danger;
+}
+
+.modal-backdrop
+{
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    background-image: url('/assets/images/dots.png');
 }
