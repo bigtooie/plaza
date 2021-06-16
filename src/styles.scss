@@ -30,9 +30,28 @@ h1, h2, h3, h4, h5, h6
 
 .pagination-btn
 {
-    border-radius: 50% !important;
+    border-radius: 3rem !important;
+    border-width: 0.2rem !important;
+    border-style: solid !important;
     margin-left: 0.25rem;
     margin-right: 0.25rem;
+}
+
+.page-item.active .page-link
+{
+    color: $teal !important;
+    background-color: transparent !important;
+    border-color: $teal-bright !important;
+}
+
+.page-item:not(.active) .page-link
+{
+    @extend .btn-primary;
+}
+
+.page-item.disabled .page-link
+{
+    @extend .btn-disabled;
 }
 
 .search-category
