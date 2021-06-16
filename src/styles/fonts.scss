@@ -23,7 +23,6 @@
   font-display: swap;
   src: url(../assets/fonts/Houschka.woff2) format('woff2');
 }
-*/
 
 @font-face {
   font-family: 'Comic Relief';
@@ -31,6 +30,23 @@
   font-weight: 400;
   font-display: swap;
   src: url(../assets/fonts/ComicRelief.woff2) format('woff2');
+}
+*/
+
+@font-face {
+  font-family: 'Libre Franklin';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Libre Franklin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Zilla Slab';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/Zilla Slab.woff2') format('woff2');
 }
 
 @font-face {

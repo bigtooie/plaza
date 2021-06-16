@@ -4,12 +4,28 @@
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 @import "./styles/variables.scss";
 @import "./styles/fonts.scss";
+@import "./styles/buttons.scss";
+
+html
+{
+    background-color: $blue-bright;
+}
 
 body
 {
     color: $font-col;
     background-color: $bg-col;
-    font-family: "Comic Relief";
+    font-family: "Libre Franklin";
+}
+
+h1, h2, h3, h4, h5, h6
+{
+    font-family: "Zilla Slab";
+}
+
+.text-muted
+{
+    color: $font-col-inactive !important;
 }
 
 .pagination-btn

@@ -1,0 +1,65 @@
+
+@import "./variables.scss";
+
+.btn
+{
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+
+    border-radius: 3rem !important;
+    border-width: 0.2rem !important;
+    border-style: solid !important;
+
+    font-weight: bolder;
+}
+
+.btn-sm
+{
+    padding-top: 0.05rem !important;
+    padding-bottom: 0.05rem !important;
+}
+
+.animbtn
+{
+    animation: 1s linear infinite progress-bar-stripes !important;
+    background-size: 1rem 1rem !important;
+}
+
+.btn-primary
+{
+    background-color: $teal !important;
+    border-color: $teal !important;
+    color: white !important;
+}
+
+.btn-primary:focus, .btn-primary:active, .btn-primary:hover
+{
+    @extend .animbtn;
+    border-color: $teal-bright !important;
+    background-color: $teal !important;
+    background-image: linear-gradient(-45deg, $teal-dark 25%, transparent 25%, transparent 50%, $teal-dark 50%, $teal-dark 75%, transparent 75%, transparent) !important;
+}
+
+.btn-danger
+{
+    background-color: $red !important;
+    border-color: $red !important;
+    color: white !important;
+}
+
+.btn-danger:focus, .btn-danger:active, .btn-danger:hover
+{
+    @extend .animbtn;
+    border-color: $red-bright !important;
+    background-color: $red !important;
+    background-image: linear-gradient(-45deg, $red-dark 25%, transparent 25%, transparent 50%, $red-dark 50%, $red-dark 75%, transparent 75%, transparent) !important;
+}
+
+.btn:disabled
+{
+    border-color: $gray !important;
+    background: $gray !important;
+    color: $gray-dark !important;
+}

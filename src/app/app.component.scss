@@ -5,11 +5,43 @@
 {
     border-radius: 0.3em;
     background-color: $container-col;
-    margin-top: 1em;
-    margin-bottom: 1em;
+    margin-top: 2em;
 
     padding-top: 1em;
     padding-bottom: 1em;
     padding-left: 2em;
     padding-right: 2em;
+
+    box-shadow: $shadow;
+}
+
+footer::before
+{
+    background-image: url('/assets/images/wave.svg');
+    background-position: 50% 0%;
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    content: "";
+    height: 10px;
+    left: 0;
+    position: absolute;
+    top: -10px;
+    width: 100%;
+}
+
+footer
+{
+    background-size: auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 5rem;
+    background-color: $blue-bright;
+    color: $blue-dark;
+    position: relative;
+}
+
+footer a, footer a:hover, footer a:focus, footer a:active
+{
+    color: $blue-dark;
+    font-weight: bolder;
 }

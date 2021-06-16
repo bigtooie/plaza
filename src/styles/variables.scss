@@ -1,10 +1,43 @@
 
 @use "sass:color";
 
-$bg-col: #CEE;
-$container-col: rgba(255,255,255,0.8);
-$nav-col: #F5FFFF;
+$white: white;
 
-$font-col: rgb(0, 64, 64);
-$font-col-inactive: color.scale($font-col, $alpha: -60%);
-$font-col-active: rgb(0, 160, 160);
+$green: #19AD5E;
+$green-bright: #7CC49C;
+$green-brighter: #8DCBA6;
+$green-brightest: #E9F4EC;
+
+$teal: #0CC6B8;
+$teal-bright: #4AE5d7;
+$teal-dark: #00B4A8;
+
+$blue-bright: #9AD3E4;
+$blue-dark: #2D6895;
+
+$yellow: #F1E26F;
+$yellow-bright: #FFFAE4;
+$yellow-dark: #C8AC3D;
+
+$red: #E71820;
+$red-bright: #F91616;
+$red-dark: #BF111A;
+
+$pink: #EF83C1;
+
+$brown: #6B5C43;
+
+$gray: #CDC7BB;
+$gray-bright: #C1BEAF;
+$gray-dark: #726d69;
+
+// 
+$bg-col: $green-brightest;
+$container-col: $white;
+$nav-col: $yellow;
+
+$font-col: $brown;
+$font-col-inactive: $gray-dark;
+$font-col-active: $teal-dark;
+
+$shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
