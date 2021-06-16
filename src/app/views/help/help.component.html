@@ -1,0 +1,111 @@
+<ul ngbNav #nav="ngbNav" [(activeId)]="active_tab" class="nav-tabs">
+<li [ngbNavItem]="1">
+<a ngbNavLink>Guide</a>
+<ng-template ngbNavContent>
+</ng-template>
+</li>
+<li [ngbNavItem]="2">
+<!-- Q&A -->
+<a ngbNavLink>Q&amp;A</a>
+<ng-template ngbNavContent>
+
+<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+  <ngb-panel title="Why?">
+    <ng-template ngbPanelContent>
+      <p>The Animal Crossing: New Horizons video game for the Nintendo Switch features multiplayer gameplay (if you can call it that) but was not designed to work well with larger groups or communities of players.</p>
+      <p>While other services have been created to create a better multiplayer experience, we find that these services are either lacking in important features (such as accountability or privacy) or are heavily mismanaged.</p>
+      <p>{{g.title}} has been created with the sole purpose of giving /acg/ a better multiplayer experience.</p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel title="How does {{g.title}} help with Dodo Codes being leaked?">
+    <ng-template ngbPanelContent>
+        <p>On its own, it doesn't.</p>
+        <p>What {{g.title}} does is it gives you full control over who gets access to your Dodo Codes.</p>
+        <p>We do provide a feature to "verify" people based on evidence or trust, and give you the option to block out all non-verified players, effectively forcing players to identify themselves before they may interact with you.</p>
+        <p>In addition, we provide a feature for you to <i class="fa fa-star"></i> players to help you remember players you have positive experiences with.</p>
+        <p>You may also block players, preventing them from accessing your sessions.</p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel>
+    <ng-template ngbPanelTitle>
+      <span>
+          What are <i class="fa fa-star"></i>?
+      </span>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <p>You may <i class="fa fa-star"></i> (star) players to help you remember players you have positive experiences with.</p>
+      <p>Players you gave a <i class="fa fa-star"></i> to appear on top of the list of requesters when you host, and allows you to filter players or sessions based on whether or not you gave them a <i class="fa fa-star"></i>.
+      <p><b>Only you can see which players you gave a <i class="fa fa-star"></i> to.</b></p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel>
+    <ng-template ngbPanelTitle>
+      <span>
+        What are IDs? (e.g. <app-uuidtag [id]="uidexample" [link]="false"></app-uuidtag>)?
+      </span>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <p>IDs are (usually random) values assigned to players on account creation, or host sessions on session creation.</p>
+      <p>They serve to uniquely identify players or sessions.</p>
+      <p>We don't prevent the same player name / island name being used multiple times (because there can be multiple people with the same name and / or island).
+         However this could also lead to impersonation which could lead you to give out your Dodo to a player named "tooie" that is not actually <i>the</i> tooie.
+      </p>
+      <p>IDs and <i class="fa fa-star"></i> exist to help combat impersonation and allow you to easily recognize players you know.</p>
+      <hr/>
+      <p>There are two types of IDs: player IDs and session IDs.</p>
+      <p>Player IDs are rounded and start with a lowercase "p", e.g.: <app-uuidtag [id]="uidexample" [link]="false"></app-uuidtag></p>
+      <p>Session IDs are more square with a striped background and start with a lowercase "s", e.g.: <app-uuidtag [id]="sidexample" [link]="false"></app-uuidtag></p>
+      <hr/>
+      <p>IDs can also have special icons on them.</p>
+      <p>A Player ID with a small circled checkmark denotes a <i>verified</i> player, e.g.: <app-uuidtag [id]="uidexample" [verified]="true" [link]="false"></app-uuidtag></p>
+      <p>A Player ID with a checkmark denotes a <b>Verifier</b>, a player that can verify other players, e.g.: <app-uuidtag [id]="uidexample" [level]="Level.Verifier" [link]="false"></app-uuidtag></p>
+      <p>A Player ID with a hammer denotes a <b>Moderator</b>, a player that can, among other things, ban other players, e.g.: <app-uuidtag [id]="uidexample" [level]="Level.Moderator" [link]="false"></app-uuidtag></p>
+      <p>A Player ID with a leaf denotes an <b>Administrator</b>, a player that do anything, e.g.: <app-uuidtag [id]="uidexample" [level]="Level.Admin" [link]="false"></app-uuidtag></p>
+      <p>A Session ID with a key denotes <i>verified-only</i> session, a session that only <i>verified</i> players may join, e.g.: <app-uuidtag [id]="sidexample" [verified]="true" [link]="false"></app-uuidtag></p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel>
+    <ng-template ngbPanelTitle>
+      <span>
+        How can I get verified?
+      </span>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <p>Provide some <b>public</b> (post in thread) evidence that you own a given ID (e.g. screenshot of your character saying the ID),
+         or contact a Verifier, Moderator or Admin in-game and prove to them that you own a given ID.
+      </p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel>
+    <ng-template ngbPanelTitle>
+      <span>
+        How can I become a verifier?
+      </span>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <p>You don't.</p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel>
+    <ng-template ngbPanelTitle>
+      <span>
+        How can I become a moderator?
+      </span>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <p>You don't.</p>
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>
+
+</ng-template>
+</li>
+</ul>
+
+<div [ngbNavOutlet]="nav" class="p-2 pt-3 bg-white"></div>

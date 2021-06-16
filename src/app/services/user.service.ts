@@ -48,7 +48,7 @@ export class UserService
         else
             this.initial_login_attempt();
 
-        this.login_observable.subscribe();
+        this.login_observable.subscribe(_ => {}, _ => {});
     }
 
     private user_changed()

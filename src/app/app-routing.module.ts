@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './views/home/home.component';
+import { HelpComponent } from './views/help/help.component';
 import { AboutComponent } from './views/about/about.component';
 import { PrivacyComponent } from './views/privacy/privacy.component';
 import { TermsComponent } from './views/terms/terms.component';
@@ -21,6 +22,7 @@ import { IsAdminGuard } from './guards/is-admin.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'help', component: HelpComponent },
   { path: 'about', component: AboutComponent },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'terms', component: TermsComponent },

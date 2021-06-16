@@ -32,6 +32,7 @@ import { AdminSettingsComponent } from './views/admin/admin-settings/admin-setti
 import { AdvancedAccountCreatorComponent } from './views/admin/advanced-account-creator/advanced-account-creator.component';
 import { PrivacyComponent } from './views/privacy/privacy.component';
 import { TermsComponent } from './views/terms/terms.component';
+import { HelpComponent } from './views/help/help.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { TermsComponent } from './views/terms/terms.component';
     AdminSettingsComponent,
     AdvancedAccountCreatorComponent,
     PrivacyComponent,
-    TermsComponent
+    TermsComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,
