@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+# exit after any error
+set -e 
+
+# go to where the script is
+DIR=$(dirname "$0")
+cd "$DIR"
+
+SCRIPT=$(basename "$0")
+
+# FUNCTIONS
+function install_deps()
+{
+    echo "updating ubuntu"
+    apt-get update
+    apt-get upgrade
+    
+    echo "installing ubuntu dependencies"
+    xargs -a ubuntu-deps apt-get -y install
+    
+    echo "installing npm global dependencies"
+    npm i -g npm@6.14.13
+    npm i -g @angular/cli@11.2.9 node-gyp@8.1.0 ts-node@9.1.1 typescript@4.2.4
+
+    echo "installing npm dependencies"
+    npm i
+
+    echo "successfully installed dependencies"
+}
+
+function update()
+{
+    echo "updating..."
+    git pull --depth 1
+    echo "successfully updated, run \"$SCRIPT build\" to build new version"
+}
+
+function build()
+{
+    if [[ x"$2" == x"debug" ]]; then
+        ng build
+    else
+        ng build --prod
+    fi
+}
+
+function start_plaza()
+{
+    if [[ x"$2" == x"debug" ]]; then
+        ts-node server/main.ts
+    else
+        ts-node --transpile-only server/main.ts
+    fi
+}
+
+function show_help()
+{
+    cat << EOF
+$SCRIPT <command>
+control $SCRIPT
+
+COMMANDS
+help            show this help and exit
+install-deps    install dependencies
+update          fetch updates from github
+build           builds the website
+build debug     builds the website in debug mode
+start           starts the server
+start debug     starts the server in debug mode
+EOF
+}
+
+# MAIN
+if [[ x"$1" == x"" ]]; then
+    echo "error: expecting command, run \"$SCRIPT help\" to show commands"
+    exit 1
+fi
+
+case "$1" in
+    install-deps)
+        install_deps
+        ;;
+
+    update)
+        update
+        ;;
+
+    build)
+        build
+        ;;
+
+    start)
+        start_plaza
+        ;;
+
+    help)
+        show_help
+        ;;
+
+    *)
+        echo "unrecognized command, run \"$SCRIPT help\" to show commands"
+        exit 1
+esac
