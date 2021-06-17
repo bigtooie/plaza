@@ -105,3 +105,19 @@ a:hover
 {
     color: $green-dark;
 }
+
+.second {
+}
+ 
+@keyframes load-anim
+{
+    to
+    {
+        transform: rotate(360deg);
+    }
+}
+.load
+{
+    color: $teal-bright !important;
+    animation: load-anim 1.3s steps(8, end) infinite;
+}

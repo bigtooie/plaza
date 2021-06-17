@@ -28,7 +28,7 @@ async function hash_user_password(pw: string)
 function current_expiration_date()
 {
     const session_dur: number = runtime_settings.get(Settings.max_session_duration.key);
-    return Date.now() + session_dur*60*60*1000;
+    return Date.now() - session_dur*60*60*1000;
 }
 
 export async function get_userview(viewer: User.User,
@@ -362,7 +362,7 @@ export async function dodo_in_use(dodo: string): Promise<boolean>
     var filterDoc: any = {};
     filterDoc[schema.sessions.dodo] = dodo.toUpperCase();
     filterDoc[schema.sessions.status] = { $ne: Session.SessionStatus.Closed };
-    filterDoc[schema.sessions.created] = { $lt: new Date(max_dur_date) };
+    filterDoc[schema.sessions.created] = { $gt: new Date(max_dur_date) };
 
     const c = await dbcon.sessions().findOne(filterDoc);
     return (c !== null && c !== undefined);
@@ -612,26 +612,26 @@ export async function get_sessions(viewer: User.User,
     case (Req.SessionStatusSearchFilter.Open):
     {
         status_filterDoc[schema.sessions.status] = Session.SessionStatus.Open;
-        status_filterDoc[schema.sessions.created] = { $lt: new Date(max_dur_date) };
+        status_filterDoc[schema.sessions.created] = { $gt: new Date(max_dur_date) };
         break;
     }
     case (Req.SessionStatusSearchFilter.Full):
     {
         status_filterDoc[schema.sessions.status] = Session.SessionStatus.Full;
-        status_filterDoc[schema.sessions.created] = { $lt: new Date(max_dur_date) };
+        status_filterDoc[schema.sessions.created] = { $gt: new Date(max_dur_date) };
         break;
     }
     case (Req.SessionStatusSearchFilter.OpenOrFull):
     {
         status_filterDoc[schema.sessions.status] = { $in: [Session.SessionStatus.Open, Session.SessionStatus.Full] };
-        status_filterDoc[schema.sessions.created] = { $lt: new Date(max_dur_date) };
+        status_filterDoc[schema.sessions.created] = { $gt: new Date(max_dur_date) };
         break;
     }
     case (Req.SessionStatusSearchFilter.Closed):
     {
         var orDoc: any[] = [{}, {}];
         orDoc[0][schema.sessions.status] = Session.SessionStatus.Closed;
-        orDoc[1][schema.sessions.created] = { $gte: new Date(max_dur_date) };
+        orDoc[1][schema.sessions.created] = { $lte: new Date(max_dur_date) };
 
         status_filterDoc['$or'] = orDoc;
     }
@@ -893,7 +893,7 @@ async function post_process_session(sess: Session.Session)
 
     const max_dur_date = current_expiration_date();
 
-    if (sess.created.getTime() >= max_dur_date)
+    if (sess.created.getTime() <= max_dur_date)
     {
         const updateDoc: any = {};
         updateDoc['$set'] = {};
@@ -951,7 +951,7 @@ export async function get_session_of_user(uid: UserID): Promise<Session.Session>
 
     const c = await dbcon.sessions().findOne({'host.uuid': uid.value,
                                              status: { $in: [Session.SessionStatus.Open, Session.SessionStatus.Full] },
-                                             created: { $lt: new Date(max_dur_date) }
+                                             created: { $gt: new Date(max_dur_date) }
     });
 
     return get_session_from_result(c);
@@ -963,7 +963,7 @@ export async function get_session_of_user_by_rid(rid: string): Promise<Session.S
 
     const c = await dbcon.sessions().findOne({'host.rid': rid,
                                              status: { $in: [Session.SessionStatus.Open, Session.SessionStatus.Full] },
-                                             created: { $lt: new Date(max_dur_date) }
+                                             created: { $gt: new Date(max_dur_date) }
     });
 
     return get_session_from_result(c);
