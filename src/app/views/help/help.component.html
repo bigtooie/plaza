@@ -60,11 +60,11 @@
       <p>Session IDs are more square with a striped background and start with a lowercase "s", e.g.: <app-uuidtag [id]="sidexample" [link]="false"></app-uuidtag></p>
       <hr/>
       <p>IDs can also have special icons on them.</p>
-      <p>A Player ID with a small circled checkmark denotes a <i>verified</i> player, e.g.: <app-uuidtag [id]="uidexample" [verified]="true" [link]="false"></app-uuidtag></p>
-      <p>A Player ID with a checkmark denotes a <b>Verifier</b>, a player that can verify other players, e.g.: <app-uuidtag [id]="uidexample" [level]="Level.Verifier" [link]="false"></app-uuidtag></p>
-      <p>A Player ID with a hammer denotes a <b>Moderator</b>, a player that can, among other things, ban other players, e.g.: <app-uuidtag [id]="uidexample" [level]="Level.Moderator" [link]="false"></app-uuidtag></p>
-      <p>A Player ID with a leaf denotes an <b>Administrator</b>, a player that do anything, e.g.: <app-uuidtag [id]="uidexample" [level]="Level.Admin" [link]="false"></app-uuidtag></p>
-      <p>A Session ID with a key denotes <i>verified-only</i> session, a session that only <i>verified</i> players may join, e.g.: <app-uuidtag [id]="sidexample" [verified]="true" [link]="false"></app-uuidtag></p>
+      <p><app-uuidtag [id]="uidexample" [verified]="true" [link]="false"></app-uuidtag>: A Player ID with a small circled checkmark denotes a <i>verified</i> player.</p>
+      <p><app-uuidtag [id]="uidexample" [level]="Level.Verifier" [link]="false"></app-uuidtag>: A Player ID with a checkmark denotes a <b>Verifier</b>, a player that can verify other players.</p>
+      <p><app-uuidtag [id]="uidexample" [level]="Level.Moderator" [link]="false"></app-uuidtag>: A Player ID with a hammer denotes a <b>Moderator</b>, a player that can, among other things, ban other players.</p>
+      <p><app-uuidtag [id]="uidexample" [level]="Level.Admin" [link]="false"></app-uuidtag>: A Player ID with a leaf denotes an <b>Administrator</b>, a player that can do anything.</p>
+      <p><app-uuidtag [id]="sidexample" [verified]="true" [link]="false"></app-uuidtag>: A Session ID with a key denotes <i>verified-only</i> session, a session that only <i>verified</i> players may join.</p>
     </ng-template>
   </ngb-panel>
 

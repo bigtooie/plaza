@@ -57,6 +57,21 @@
     background-image: linear-gradient(-45deg, $red-dark 25%, transparent 25%, transparent 50%, $red-dark 50%, $red-dark 75%, transparent 75%, transparent) !important;
 }
 
+.btn-success
+{
+    background-color: $green !important;
+    border-color: $green !important;
+    color: white !important;
+}
+
+.btn-success:focus, .btn-success:active, .btn-success:hover
+{
+    @extend .animbtn;
+    border-color: $green-neon !important;
+    background-color: $green !important;
+    background-image: linear-gradient(-45deg, $green-dark 25%, transparent 25%, transparent 50%, $green-dark 50%, $green-dark 75%, transparent 75%, transparent) !important;
+}
+
 .btn:disabled, .btn-disabled
 {
     border-color: $gray !important;

@@ -6,6 +6,7 @@
 @import "./styles/fonts.scss";
 @import "./styles/buttons.scss";
 @import "./styles/forms.scss";
+@import "./styles/modal.scss";
 
 html
 {
@@ -74,40 +75,33 @@ h1, h2, h3, h4, h5, h6
     color: $font-col;
 }
 
-// dialog
-.modal-dialog .modal-content
+.accordion > .card
 {
-    border-radius: 3rem;
-    padding: 1rem;
-    background-color: $yellow-bright;
+    border: none !important;
 }
 
-.modal-content .modal-header
+.accordion > .card > .card-header
 {
-    border-bottom: none !important;
-}
-
-.modal-content .modal-footer
-{
-    border-top: none !important;
-}
-
-.dialog-info .modal-dialog .modal-content
-{
-}
-
-.dialog-warning .modal-dialog .modal-content
-{
-    @extend .alert-warning;
-}
-
-.dialog-error .modal-dialog .modal-content
-{
-    @extend .alert-danger;
-}
-
-.modal-backdrop
-{
-    background-color: rgba(0, 0, 0, 0.6) !important;
     background-image: url('/assets/images/dots.png');
+    background-color: $green;
+    color: $white !important;
+    font-family: 'Zilla Slab';
+    border-bottom: 0.2rem dashed $brown-bright;
+}
+
+.accordion > .card > .card-header > .btn-link
+{
+    width: 100%;
+    font-size: 14pt;
+    color: $white !important;
+}
+
+a
+{
+    color: $green;
+}
+
+a:hover
+{
+    color: $green-dark;
 }

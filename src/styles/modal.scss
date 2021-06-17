@@ -1,0 +1,40 @@
+
+@import "./variables.scss";
+
+// dialog
+.modal-dialog .modal-content
+{
+    border-radius: 3rem;
+    padding: 1rem;
+    background-color: $yellow-bright;
+}
+
+.modal-content .modal-header
+{
+    border-bottom: none !important;
+}
+
+.modal-content .modal-footer
+{
+    border-top: none !important;
+}
+
+.dialog-info .modal-dialog .modal-content
+{
+}
+
+.dialog-warning .modal-dialog .modal-content
+{
+    @extend .alert-warning;
+}
+
+.dialog-error .modal-dialog .modal-content
+{
+    color: $red;
+}
+
+.modal-backdrop
+{
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    background-image: url('/assets/images/dots.png');
+}
