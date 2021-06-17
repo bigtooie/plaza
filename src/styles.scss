@@ -5,6 +5,7 @@
 @import "./styles/variables.scss";
 @import "./styles/fonts.scss";
 @import "./styles/buttons.scss";
+@import "./styles/forms.scss";
 
 html
 {
@@ -52,14 +53,6 @@ h1, h2, h3, h4, h5, h6
 .page-item.disabled .page-link
 {
     @extend .btn-disabled;
-}
-
-.search-category
-{
-    border-top-left-radius: 0.25rem !important;
-    border-bottom-left-radius: 0.25rem !important;
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
 }
 
 .text-monospace

@@ -1,0 +1,35 @@
+
+@import "./variables.scss";
+
+select, .plaza-custom-input
+{
+    border-radius: 3rem !important;
+    color: $brown !important;
+    background-color: $white !important;
+    border-color: $white !important;
+    border-width: 0.2rem !important;
+    box-shadow: 0 0 0 0.2rem $brown-bright !important;
+    font-weight: bolder !important;
+    position: relative !important;
+}
+
+.form-control
+{
+    @extend .plaza-custom-input;
+    padding: 0.5rem 1.3rem !important;
+}
+
+.form-control:focus, select:focus
+{
+    color: $brown !important;
+    background-color: $white !important;
+    border-color: $teal !important;
+    border-width: 0.2rem !important;
+    box-shadow: 0 0 0 0.2rem $brown-bright !important;
+}
+
+.input-group > .form-control:not(:first-child), .input-group-append
+{
+    margin-left: 1rem !important;
+}
+

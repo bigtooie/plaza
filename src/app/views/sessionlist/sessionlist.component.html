@@ -17,7 +17,7 @@
            class="form-control"
            formControlName="search_text">
     <div class="input-group-append">
-      <button class="btn btn-outline-primary"
+      <button class="btn btn-primary"
               type="submit"
               [disabled]="this.pending">
         search
@@ -48,7 +48,7 @@
               aria-pressed="false"
               (click)="collapse.toggle()"
               [attr.aria-expanded]="!filters_collapsed">
-        toggle filters
+        <i class="fa fa-filter"></i>
       </button>
     </div>
   </div>
