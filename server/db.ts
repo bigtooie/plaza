@@ -9,7 +9,7 @@ import { g } from '../shared/globals';
 import { clamp, remove_if, abbreviate_name, empty_or_nothing } from '../shared/utils';
 import * as User from '../shared/User';
 import * as Session from '../shared/Session';
-import * as Req from '../shared/RequestResponse'; // ONLY TEMPORARY
+import * as Req from '../shared/RequestResponse';
 import * as Settings from '../shared/RuntimeSettings';
 
 import { default_admin_username, default_admin_password, db_password_bcrypt_rounds } from './secret/secret';

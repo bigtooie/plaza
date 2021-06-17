@@ -238,6 +238,7 @@ export async function Register(req: express.Request, res: express.Response)
             if (ra === undefined || ra.length <= 0 ||
                 ra.match(runtime_settings.get(Settings.register_security_question_answer.key)) === null)
             {
+                logger.warn(`incorrect security question answer: ${ra}`);
                 res.status(403).json(new Req.FailedResponse("incorrect security question answer"));
                 return;
             }
