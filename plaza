@@ -28,7 +28,7 @@ function install_deps()
     apt-get upgrade
     
     echo "installing ubuntu dependencies"
-    xargs -a ubuntu-deps apt-get -y install
+    xargs -a ./ubuntu-deps.txt apt-get -y install
     
     echo "installing npm global dependencies"
     npm i -g npm@6.14.13
