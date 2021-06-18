@@ -43,6 +43,7 @@ function install_deps()
 function update()
 {
     echo "updating..."
+    git reset --hard
     git pull origin main --depth 1
     echo "successfully updated, run \"$SCRIPT build\" to build new version"
 }
