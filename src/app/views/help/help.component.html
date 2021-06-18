@@ -10,10 +10,18 @@
 <ng-template ngbNavContent>
 
 <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+  <ngb-panel title="What?">
+    <ng-template ngbPanelContent>
+      <p>The Animal Crossing: New Horizons video game for the Nintendo Switch features multiplayer gameplay (if you can call it that).</p>
+      <p>Dodo Codes are used to connect to and play with other players.</p>
+      <p>{{g.title}} allows players to share these Dodo Codes with full control over who gets access to Dodo Codes.</p>
+    </ng-template>
+  </ngb-panel>
+
   <ngb-panel title="Why?">
     <ng-template ngbPanelContent>
-      <p>The Animal Crossing: New Horizons video game for the Nintendo Switch features multiplayer gameplay (if you can call it that) but was not designed to work well with larger groups or communities of players.</p>
-      <p>While other services have been created to create a better multiplayer experience, we find that these services are either lacking in important features (such as accountability or privacy) or are heavily mismanaged.</p>
+      <p>Animal Crossing: New Horizons was not designed to work well with larger groups or communities of players.</p>
+      <p>While other services have been created to create a better multiplayer experience, we find that these services are either lacking in important features (such as accountability) or are heavily mismanaged.</p>
       <p>{{g.title}} has been created with the sole purpose of giving /acg/ a better multiplayer experience.</p>
     </ng-template>
   </ngb-panel>
@@ -31,7 +39,7 @@
   <ngb-panel>
     <ng-template ngbPanelTitle>
       <span>
-          What are <i class="fa fa-star"></i>?
+        What are <i class="fa fa-star"></i>?
       </span>
     </ng-template>
     <ng-template ngbPanelContent>
@@ -68,12 +76,7 @@
     </ng-template>
   </ngb-panel>
 
-  <ngb-panel>
-    <ng-template ngbPanelTitle>
-      <span>
-        How can I get verified?
-      </span>
-    </ng-template>
+  <ngb-panel title="How can I get verified?">
     <ng-template ngbPanelContent>
       <p>Provide some <b>public</b> (post in thread) evidence that you own a given ID (e.g. screenshot of your character saying the ID),
          or contact a Verifier, Moderator or Admin in-game and prove to them that you own a given ID.
@@ -81,23 +84,20 @@
     </ng-template>
   </ngb-panel>
 
-  <ngb-panel>
-    <ng-template ngbPanelTitle>
-      <span>
-        How can I become a verifier?
-      </span>
+  <ngb-panel title="Waah! Registrations are closed?">
+    <ng-template ngbPanelContent>
+      <p>Calm down pussy. Contact an administrator or a moderator, they can help you with that.</p>
+      <p>Maybe.</p>
     </ng-template>
+  </ngb-panel>
+
+  <ngb-panel title="How can I become a verifier?">
     <ng-template ngbPanelContent>
       <p>You don't.</p>
     </ng-template>
   </ngb-panel>
 
-  <ngb-panel>
-    <ng-template ngbPanelTitle>
-      <span>
-        How can I become a moderator?
-      </span>
-    </ng-template>
+  <ngb-panel title="How can I become a moderator?">
     <ng-template ngbPanelContent>
       <p>You don't.</p>
     </ng-template>
