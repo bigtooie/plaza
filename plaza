@@ -9,6 +9,17 @@ cd "$DIR"
 
 SCRIPT=$(basename "$0")
 
+function get_override_files()
+{
+    if [ -f "$DIR/../globals.ts" ]; then
+        cp "$DIR/../globals.ts" "./shared/globals.ts"
+    fi
+
+    if [ -f "$DIR/../secret.ts" ]; then
+        cp "$DIR/../secret.ts" "./server/secret/secret.ts"
+    fi
+}
+
 # FUNCTIONS
 function install_deps()
 {
@@ -38,6 +49,7 @@ function update()
 
 function build()
 {
+    get_override_files
     if [[ x"$1" == x"debug" ]]; then
         ng build
     else
@@ -47,6 +59,7 @@ function build()
 
 function start_plaza()
 {
+    get_override_files
     if [[ x"$1" == x"debug" ]]; then
         ts-node server/main.ts
     else
