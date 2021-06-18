@@ -14,11 +14,12 @@ import { PlayerlistComponent } from './views/playerlist/playerlist.component';
 import { PlayerviewComponent } from './views/playerview/playerview.component';
 import { NewsessionComponent } from './views/newsession/newsession.component';
 import { NotfoundComponent } from './views/notfound/notfound.component';
-import { AdminPanelComponent } from './views/admin-panel/admin-panel.component';
+import { ControlPanelComponent } from './views/control-panel/control-panel.component';
 
 import { LoggedInGuard } from './guards/logged-in.guard';
 import { LoggedOutGuard } from './guards/logged-out.guard';
 import { IsAdminGuard } from './guards/is-admin.guard';
+import { IsModGuard } from './guards/is-mod.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -34,7 +35,7 @@ const routes: Routes = [
   { path: 'p/:id', component: PlayerviewComponent, canActivate: [LoggedInGuard] },
   { path: 'host', component: NewsessionComponent, canActivate: [LoggedInGuard] },
 
-  { path: 'admin', component: AdminPanelComponent, canActivate: [IsAdminGuard] },
+  { path: 'settings', component: ControlPanelComponent, canActivate: [IsModGuard] },
   { path: '**', component: NotfoundComponent }
 ];
 

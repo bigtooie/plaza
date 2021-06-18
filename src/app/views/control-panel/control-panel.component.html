@@ -2,7 +2,14 @@
   <li [ngbNavItem]="1">
     <a ngbNavLink>Global Settings</a>
     <ng-template ngbNavContent>
-      <app-admin-settings></app-admin-settings>
+      <ng-template [ngIf]="userService.user.settings.level >= Level.Admin">
+        <app-admin-settings></app-admin-settings>
+      </ng-template>
+      <ng-template [ngIf]="userService.user.settings.level < Level.Admin">
+        <div class="alert alert-danger">
+          You do not have permission to change global settings.
+        </div>
+      </ng-template>
     </ng-template>
   </li>
   <li [ngbNavItem]="2">

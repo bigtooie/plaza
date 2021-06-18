@@ -167,7 +167,7 @@
     <select formControlName="level"
             class="form-control"
             id="levelSelect">
-      <option *ngFor="let val of LevelValues"
+      <option *ngFor="let val of AvailableLevels"
               [ngValue]="val">
         {{LevelNames[val]}}
       </option>

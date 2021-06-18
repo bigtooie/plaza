@@ -27,7 +27,7 @@ import { AboutComponent } from './views/about/about.component';
 import { NotfoundComponent } from './views/notfound/notfound.component';
 import { NewsessionComponent } from './views/newsession/newsession.component';
 import { AlertComponent } from './alert/alert.component';
-import { AdminPanelComponent } from './views/admin-panel/admin-panel.component';
+import { ControlPanelComponent } from './views/control-panel/control-panel.component';
 import { AdminSettingsComponent } from './views/admin/admin-settings/admin-settings.component';
 import { AdvancedAccountCreatorComponent } from './views/admin/advanced-account-creator/advanced-account-creator.component';
 import { PrivacyComponent } from './views/privacy/privacy.component';
@@ -53,7 +53,7 @@ import { HelpComponent } from './views/help/help.component';
     AlertComponent,
     SessionstatusComponent,
     User_playerislandnameComponent,
-    AdminPanelComponent,
+    ControlPanelComponent,
     AdminSettingsComponent,
     AdvancedAccountCreatorComponent,
     PrivacyComponent,

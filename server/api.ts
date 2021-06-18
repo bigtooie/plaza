@@ -157,6 +157,27 @@ export async function is_admin(req: express.Request, res: express.Response, next
     next();
 }
 
+export async function is_mod_or_admin(req: express.Request, res: express.Response, next: any)
+{
+    try
+    {
+        const usr = res.locals.user;
+
+        if (usr === undefined || usr.level < User.Level.Moderator)
+        {
+            res.status(403).json(new Req.FailedResponse("unauthorized", true));
+            return;
+        }
+    }
+    catch (err)
+    {
+        error_handler(err, res);
+        return;
+    }
+
+    next();
+}
+
 export async function Login(req: express.Request, res: express.Response)
 {
     try
@@ -284,14 +305,28 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
             return;
         }
 
+        const creator = res.locals.user;
+
         User.validate_username(rreq.username);
         User.validate_playername(rreq.playername);
         User.validate_islandname(rreq.islandname);
         User.validate_password_hash(rreq.password);
         User.validate_level(rreq.level);
 
-        if (rreq.id_prefix.match(BASE58pattern) === null)
-            throw new Error("illegal ID prefix");
+        if (rreq.id_prefix !== undefined
+         && rreq.id_prefix.length > 0
+         && rreq.id_prefix.match(BASE58pattern) === null)
+        {
+            res.status(400).json(new Req.FailedResponse("illegal ID prefix"));
+            return;
+        }
+
+        if (creator.level < User.Level.Admin
+         && creator.level <= rreq.level)
+        {
+            res.status(400).json(new Req.FailedResponse("you are not authorized to create an account with this level"));
+            return;
+        }
 
         const taken = await db.username_taken(rreq.username);
 
@@ -310,10 +345,9 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
                                            rreq.level
                                           );
 
-        const admn = res.locals.user;
-        const view = await db.get_userview(admn, usr);
+        const view = await db.get_userview(creator, usr);
 
-        logger.info(`admin ${admn.id.readable} successfully registered user ${usr.id.readable}`);
+        logger.info(`${User.LevelNames[creator.level]} ${creator.id.readable} successfully registered user ${usr.id.readable}`);
         res.status(200).json(new Req.AdvancedRegisterResponse(view));
     }
     catch (err)
@@ -1387,7 +1421,7 @@ const methods: APIMethod[] = [
     method(endpoints.set_runtime_setting, authenticate, is_admin, SetRuntimeSetting),
 
     // admin stuff
-    method(endpoints.advanced_register, authenticate, is_admin, AdvancedRegister)
+    method(endpoints.advanced_register, authenticate, is_mod_or_admin, AdvancedRegister)
 ];
 
 export function register_all(app: express.Application)

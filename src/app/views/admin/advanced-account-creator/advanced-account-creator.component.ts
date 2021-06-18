@@ -8,6 +8,7 @@ import { ApiService } from '@services/api.service';
 import { UserService } from '@services/user.service';
 
 import { BASE58pattern, UserID, prefix_uuid } from '@shared/ID';
+import { remove_if } from '@shared/utils';
 import * as User from '@shared/User';
 
 function form_control_invalid(fc: AbstractControl) : boolean
@@ -23,6 +24,7 @@ function form_control_invalid(fc: AbstractControl) : boolean
 export class AdvancedAccountCreatorComponent implements OnInit
 {
     Level = User.Level;
+    AvailableLevels = User.LevelValues;
     LevelValues = User.LevelValues;
     LevelNames = User.LevelNames;
     MAX_USERNAME_LENGTH = User.MAX_USERNAME_LENGTH;
@@ -93,6 +95,15 @@ export class AdvancedAccountCreatorComponent implements OnInit
 
     ngOnInit(): void
     {
+        this.set_available_levels();
+    }
+
+    set_available_levels()
+    {
+        this.AvailableLevels = User.LevelValues;
+
+        if (this.userService.user.settings.level < User.Level.Admin)
+            remove_if(this.AvailableLevels, (x: User.Level) => x >= this.userService.user.settings.level);
     }
 
     renew_exampleID()

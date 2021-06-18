@@ -38,7 +38,7 @@ function update()
 
 function build()
 {
-    if [[ x"$2" == x"debug" ]]; then
+    if [[ x"$1" == x"debug" ]]; then
         ng build
     else
         ng build --prod
@@ -47,7 +47,7 @@ function build()
 
 function start_plaza()
 {
-    if [[ x"$2" == x"debug" ]]; then
+    if [[ x"$1" == x"debug" ]]; then
         ts-node server/main.ts
     else
         ts-node --transpile-only server/main.ts
@@ -87,11 +87,11 @@ case "$1" in
         ;;
 
     build)
-        build
+        build "$2"
         ;;
 
     start)
-        start_plaza
+        start_plaza "$2"
         ;;
 
     help)

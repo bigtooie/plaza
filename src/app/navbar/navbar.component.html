@@ -36,9 +36,9 @@
                currently hosting &nbsp;<app-uuidtag [id]="userService.current_session.id" [link]="false"></app-uuidtag>
              </a>
           </li>
-          <li *ngIf="userService.user.settings.level >= Level.Admin"
+          <li *ngIf="userService.user.settings.level >= Level.Moderator"
               class="nav-item">
-              <a class="nav-link" routerLink="/admin" routerLinkActive="active">
+              <a class="nav-link" routerLink="/settings" routerLinkActive="active">
                 <i class="fa fa-cog"></i>
               </a>
           </li>
