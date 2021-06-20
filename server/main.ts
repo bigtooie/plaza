@@ -18,7 +18,7 @@ db.init().then(() =>
         app.use(logger_http);
 
     app.use(express.json());
-    app.use(express.static(path.join(__dirname, '../dist/doodoosnipper/')));
+    app.use(express.static(path.join(__dirname, '../dist/plaza/')));
     api.register_all(app);
 
     const server = http.createServer(app);
