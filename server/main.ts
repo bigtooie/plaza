@@ -7,10 +7,14 @@ import { g } from '../shared/globals';
 import * as api from './api';
 import * as sockets from './sockets';
 import * as db from './db';
+import * as runtime_settings from './runtime_settings';
 import { logger, logger_http, info } from './log';
 
-db.init().then(() =>
+async function main()
 {
+    await runtime_settings.load_all();
+    await db.init();
+
     logger.info("Database successfully initiated");
     const app = express();
 
@@ -27,5 +31,6 @@ db.init().then(() =>
     sockets.init(server);
 
     info(`${g.title} version ${g.version} server started`);
-})
+}
 
+main();

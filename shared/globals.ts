@@ -29,6 +29,8 @@ const g: any =
         // garbage collection of expired login sessions (in hours)
         login_session_gc_interval: 1,
 
+        runtime_settings_file: "rt.json",
+
         database:
         {
             name: "plaza"

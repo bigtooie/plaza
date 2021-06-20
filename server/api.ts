@@ -1354,6 +1354,7 @@ export async function SetRuntimeSetting(req: express.Request, res: express.Respo
 
         runtime_settings.set(set.key, val);
 
+        await runtime_settings.save_all();
         logger.info(`admin ${usr.id.readable} set setting ${set.key}`);
         res.status(200).json(new Req.SetRuntimeSettingResponse());
     }
