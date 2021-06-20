@@ -113,7 +113,7 @@
     </ng-template>
   </div>
   <hr/>
-  <ng-template [ngIf]="userService.logged_in && this.userService.user.id.value !== session.host.id.value">
+  <ng-template [ngIf]="session.settings.status !== SessionStatus.Closed && userService.logged_in && this.userService.user.id.value !== session.host.id.value">
     <ng-template [ngIf]="!session.settings.verified_only || userService.user.settings.level >= Level.Moderator || userService.user.verification_post.length > 0">
       <button *ngIf="this.session.requester_status === RequesterStatus.None
                   || this.session.requester_status === RequesterStatus.Withdrawn"
