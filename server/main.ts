@@ -12,7 +12,17 @@ import * as db from './db';
 import * as runtime_settings from './runtime_settings';
 import { logger, logger_http, info } from './log';
 
-const keypath = (filename: string) => `/etc/letsencrypt/live/plaza.tooie.net/${filename}`;
+function redirect_http_to_https()
+{
+    const redirect = express();
+
+    redirect.get('*', (req: express.Request, res: express.Response) =>
+    {  
+        res.redirect('https://' + req.headers.host + req.url);
+    });
+
+    redirect.listen(80);
+}
 
 async function main()
 {
@@ -31,15 +41,17 @@ async function main()
 
     var server: any = undefined;
 
-    if (fs.existsSync(keypath('privkey.pem')))
+    if (fs.existsSync(g.server.privkey))
     {
         logger.info("Key exists, hosting HTTPS");
         server = https.createServer({
-                key: fs.readFileSync(keypath('privkey.pem')),
-                cert: fs.readFileSync(keypath('cert.pem')),
-                ca: fs.readFileSync(keypath('chain.pem')),
+                key: fs.readFileSync(g.server.privkey),
+                cert: fs.readFileSync(g.server.cert),
+                ca: fs.readFileSync(g.server.chain),
             },
             app);
+
+        redirect_http_to_https();
     }
     else
     {

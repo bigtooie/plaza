@@ -31,6 +31,10 @@ const g: any =
 
         runtime_settings_file: "rt.json",
 
+        privkey: '/etc/letsencrypt/live/plaza.tooie.net/privkey.pem',
+        cert: '/etc/letsencrypt/live/plaza.tooie.net/cert.pem',
+        chain: '/etc/letsencrypt/live/plaza.tooie.net/chain.pem',
+
         database:
         {
             name: "plaza"
