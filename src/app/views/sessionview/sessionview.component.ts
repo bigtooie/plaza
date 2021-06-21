@@ -412,6 +412,9 @@ export class SessionviewComponent implements OnInit, OnDestroy
 
     submit_edit_turnips()
     {
+        if (this.turnips === undefined || this.turnips === null)
+            this.turnips = 0;
+
         this.submit_edit_request({turnip_prices: this.turnips});
     }
 

@@ -858,26 +858,6 @@ export async function get_sessions(viewer: User.User,
                 session_searchDoc[`host_user.${schema.users.rid}`] = regexDoc;
                 break;
             }
-            /*
-            case Req.GetSessionsSearchTextCategory.HostName:
-            {
-                if (viewer.level < User.Level.Moderator)
-                {
-                    var orDoc: any[] = [{}, {}];
-                    orDoc[0][`host_user.${schema.users.uuid}`] = { $eq: viewer.id.value };
-                    orDoc[1][`host_user.${schema.users.playername_hidden}`] = { $eq: false };
-
-                    var andDoc: any[] = [{}, {}];
-                    andDoc[0]['$or'] = orDoc;
-                    andDoc[1][`host_user.${schema.users.playername}`] = regexDoc;
-
-                    session_searchDoc['$and'] = andDoc;
-                }
-                else
-                    session_searchDoc[`host_user.${schema.users.playername}`] = regexDoc;
-                break;
-            }
-            */
             case Req.GetSessionsSearchTextCategory.Host:
             {
                 var playername: string = "";
