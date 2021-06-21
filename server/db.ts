@@ -389,25 +389,161 @@ export async function get_users(usr: User.User,
             cd[schema.users.rid] = regexDoc;
             break;
         }
-        case Req.GetUsersSearchTextCategory.PlayerName:
+        case Req.GetUsersSearchTextCategory.Name:
         {
-            if (usr.level < User.Level.Moderator)
+            var playername: string = "";
+            var islandname: string = "";
+            var combined: boolean = false;
+
+            if (rreq.search_text.trim().toLowerCase() === "from")
             {
-                var orDoc: any[] = [{}, {}];
-                orDoc[0][schema.users.uuid] = { $eq: usr.id.value };
-                orDoc[1][schema.users.playername_hidden] = { $eq: false };
-
-                var andDoc: any[] = [{}, {}];
-                andDoc[0]['$or'] = orDoc;
-                andDoc[1][schema.users.playername] = regexDoc;
-
-                and_conditions.push(andDoc);
+                playername = rreq.search_text;
+                islandname = rreq.search_text;
+                combined = false;
             }
             else
-                cd[schema.users.playername] = regexDoc;
+            {
+                // split if by "from" to get the parts to search for
+                const split = rreq.search_text.split(" from ").map(s => s.trim());
+
+                if (split.length === 1)
+                {
+                    playername = rreq.search_text;
+                    islandname = rreq.search_text;
+                    combined = false;
+                }
+                else if (split.length === 2)
+                {
+                    playername = split[0];
+                    islandname = split[1];
+                    combined = true;
+                }
+                else
+                    break;
+            }
+
+            if (playername.length <= 0 || islandname.length <= 0)
+                break;
+
+            if (playername !== "*")
+                var r1 = new RegExp(playername);
+
+            if (islandname !== "*")
+                var r2 = new RegExp(islandname);
+
+            if (playername === "*" && islandname === "*")
+                break;
+
+            const playernameDoc: any = { $regex: playername, $options: 'i' };
+            const playernameDoc_first: any = { $regex: `^${playername}`, $options: 'i' };
+            const islandnameDoc: any = { $regex: islandname, $options: 'i' };
+            const islandnameDoc_first: any = { $regex: `^${islandname}`, $options: 'i' };
+
+            if (usr.level < User.Level.Moderator)
+            {
+                var playername_searchDoc: any = {};
+                var islandname_searchDoc: any = {};
+
+                if (playername !== "*")
+                {
+                    var playername_orDoc: any[] = [{}, {}];
+                    playername_orDoc[0][schema.users.uuid] = { $eq: usr.id.value };
+                    playername_orDoc[1][schema.users.playername_hidden] = { $eq: false };
+
+                    var playername_andDoc: any[] = [{}, {}];
+                    playername_andDoc[0]['$or'] = playername_orDoc;
+                    playername_andDoc[1][schema.users.playername] = playernameDoc;
+
+                    // sorry multi-word-name people
+                    if (playername.length === 1)
+                    {
+                        var playername_andDoc2: any[] = [{}, {}];
+                        playername_andDoc2[0][schema.users.playername_hidden] = { $eq: true };
+                        playername_andDoc2[1][schema.users.playername] = playernameDoc_first;
+
+                        var playername_orDoc2: any[] = [{}, {}];
+                        playername_orDoc2[0]['$and'] = playername_andDoc;
+                        playername_orDoc2[1]['$and'] = playername_andDoc2;
+                        playername_searchDoc['$or'] = playername_orDoc2;
+                    }
+                    else
+                        playername_searchDoc['$and'] = playername_andDoc;
+                }
+
+                if (islandname !== "*")
+                {
+                    var islandname_orDoc: any[] = [{}, {}];
+                    islandname_orDoc[0][schema.users.uuid] = { $eq: usr.id.value };
+                    islandname_orDoc[1][schema.users.islandname_hidden] = { $eq: false };
+
+                    var islandname_andDoc: any[] = [{}, {}];
+                    islandname_andDoc[0]['$or'] = islandname_orDoc;
+                    islandname_andDoc[1][schema.users.islandname] = islandnameDoc;
+
+                    // sorry multi-word-island people
+                    if (islandname.length === 1)
+                    {
+                        var islandname_andDoc2: any[] = [{}, {}];
+                        islandname_andDoc2[0][schema.users.islandname_hidden] = { $eq: true };
+                        islandname_andDoc2[1][schema.users.islandname] = islandnameDoc_first;
+
+                        var islandname_orDoc2: any[] = [{}, {}];
+                        islandname_orDoc2[0]['$and'] = islandname_andDoc;
+                        islandname_orDoc2[1]['$and'] = islandname_andDoc2;
+                        islandname_searchDoc['$or'] = islandname_orDoc2;
+                    }
+                    else
+                        islandname_searchDoc['$and'] = islandname_andDoc;
+                }
+
+                if (combined)
+                {
+                    if (playername !== "*")
+                        and_conditions.push(playername_searchDoc);
+
+                    if (islandname !== "*")
+                        and_conditions.push(islandname_searchDoc);
+                }
+                else if (playername !== "*" && islandname !== "*")
+                {
+                    var orDoc: any[] = [{}, {}];
+                    orDoc[0] = playername_searchDoc;
+                    orDoc[1] = islandname_searchDoc;
+
+                    and_conditions.push({ $or: orDoc });
+                }
+                else if (playername !== "*")
+                    and_conditions.push(playername_searchDoc)
+                else if (islandname !== "*")
+                    and_conditions.push(islandname_searchDoc)
+            }
+            else
+            {
+                if (combined)
+                {
+                    if (playername !== "*")
+                        cd[schema.users.playername] = playernameDoc;
+
+                    if (islandname !== "*")
+                        cd[schema.users.islandname] = islandnameDoc;
+                }
+                else if (playername !== "*" && islandname !== "*")
+                {
+                    var orDoc: any[] = [{}, {}];
+                    orDoc[0][schema.users.playername] = playernameDoc;
+                    orDoc[1][schema.users.islandname] = islandnameDoc;
+
+                    and_conditions.push({ $or: orDoc });
+                }
+                else if (playername !== "*")
+                    cd[schema.users.playername] = playernameDoc;
+                else if (islandname !== "*")
+                    cd[schema.users.islandname] = islandnameDoc;
+            }
 
             break;
         }
+        /*
         case Req.GetUsersSearchTextCategory.IslandName:
         {
             if (usr.level < User.Level.Moderator)
@@ -427,6 +563,7 @@ export async function get_users(usr: User.User,
 
             break;
         }
+        */
         case Req.GetUsersSearchTextCategory.Username:
         {
             if (usr.level < User.Level.Admin)

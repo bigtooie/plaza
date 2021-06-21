@@ -190,8 +190,16 @@ export async function Login(req: express.Request, res: express.Response)
             return;
         }
 
-        User.validate_username(rreq.username);
-        User.validate_password_hash(rreq.password);
+        try
+        {
+            User.validate_username(rreq.username);
+            User.validate_password_hash(rreq.password);
+        }
+        catch (err)
+        {
+            res.status(400).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         const usr = await db.get_user_by_username(rreq.username);
 
@@ -247,10 +255,18 @@ export async function Register(req: express.Request, res: express.Response)
             return;
         }
 
-        User.validate_username(rreq.username);
-        User.validate_playername(rreq.playername);
-        User.validate_islandname(rreq.islandname);
-        User.validate_password_hash(rreq.password);
+        try
+        {
+            User.validate_username(rreq.username);
+            User.validate_playername(rreq.playername);
+            User.validate_islandname(rreq.islandname);
+            User.validate_password_hash(rreq.password);
+        }
+        catch (err)
+        {
+            res.status(400).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         if (runtime_settings.get(Settings.register_require_security_question.key))
         {
@@ -307,11 +323,19 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
 
         const creator = res.locals.user;
 
-        User.validate_username(rreq.username);
-        User.validate_playername(rreq.playername);
-        User.validate_islandname(rreq.islandname);
-        User.validate_password_hash(rreq.password);
-        User.validate_level(rreq.level);
+        try
+        {
+            User.validate_username(rreq.username);
+            User.validate_playername(rreq.playername);
+            User.validate_islandname(rreq.islandname);
+            User.validate_password_hash(rreq.password);
+            User.validate_level(rreq.level);
+        }
+        catch (err)
+        {
+            res.status(400).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         if (rreq.id_prefix !== undefined
          && rreq.id_prefix.length > 0
@@ -396,7 +420,15 @@ export async function UsernameTaken(req: express.Request, res: express.Response)
             return;
         }
 
-        User.validate_username(rreq.username);
+        try
+        {
+            User.validate_username(rreq.username);
+        }
+        catch (err)
+        {
+            res.status(400).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         const username_taken = await db.username_taken(rreq.username);
 
@@ -428,7 +460,15 @@ export async function DodoInUse(req: express.Request, res: express.Response)
             return;
         }
 
-        Session.validate_session_dodo(rreq.dodo);
+        try
+        {
+            Session.validate_session_dodo(rreq.dodo);
+        }
+        catch (err)
+        {
+            res.status(400).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         const dodo_in_use = await db.dodo_in_use(rreq.dodo);
 
@@ -534,7 +574,17 @@ export async function GetUsers(req: express.Request, res: express.Response)
         }
         
         const usr = res.locals.user;
-        const resp = await db.get_users(usr, rreq);
+        var resp: Req.GetUsersResponse = undefined;
+
+        try
+        {
+            resp = await db.get_users(usr, rreq);
+        }
+        catch (err)
+        {
+            res.status(403).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         const uid = get_userid_by_tokenstring(rreq.token.value);
         logger.info(`user ${uid.readable} successfully requested users`);
@@ -736,10 +786,18 @@ export async function NewSession(req: express.Request, res: express.Response)
             return;
         }
 
-        Session.validate_session_dodo(rreq.dodo);
-        Session.validate_session_title(rreq.title);
-        Session.validate_session_description(rreq.description);
-        Session.validate_session_turnip_prices(rreq.turnips);
+        try
+        {
+            Session.validate_session_dodo(rreq.dodo);
+            Session.validate_session_title(rreq.title);
+            Session.validate_session_description(rreq.description);
+            Session.validate_session_turnip_prices(rreq.turnips);
+        }
+        catch (err)
+        {
+            res.status(403).json(new Req.FailedResponse(err.message));
+            return;
+        }
 
         const uid = get_userid_by_tokenstring(rreq.token.value);
         const cursess = await db.get_session_of_user(uid);
@@ -1109,7 +1167,15 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
              && set.dodo_leaked)
                 leaked_dodo = target.dodo;
 
-            Session.validate_session_dodo(set.dodo);
+            try
+            {
+                Session.validate_session_dodo(set.dodo);
+            }
+            catch (err)
+            {
+                res.status(400).json(new Req.FailedResponse(err.message));
+                return;
+            }
 
             logger.info(`user ${usr.id.readable} set dodo of session ${target.id.readable} to ${set.dodo}`);
             set.updated = await db.set_session_dodo(target.id, set.dodo);
@@ -1123,7 +1189,15 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
                 return;
             }
 
-            Session.validate_session_title(set.title);
+            try
+            {
+                Session.validate_session_title(set.title);
+            }
+            catch (err)
+            {
+                res.status(403).json(new Req.FailedResponse(err.message));
+                return;
+            }
 
             logger.debug(`user ${usr.id.readable} set title of session ${target.id.readable} to ${set.title}`);
             set.updated = await db.set_session_title(target.id, set.title);
@@ -1137,7 +1211,15 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
                 return;
             }
 
-            Session.validate_session_description(set.description);
+            try
+            {
+                Session.validate_session_description(set.description);
+            }
+            catch (err)
+            {
+                res.status(403).json(new Req.FailedResponse(err.message));
+                return;
+            }
 
             logger.debug(`user ${usr.id.readable} set description of session ${target.id.readable} to ${set.description}`);
             set.updated = await db.set_session_description(target.id, set.description);
@@ -1151,7 +1233,15 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
                 return;
             }
 
-            Session.validate_session_turnip_prices(set.turnip_prices);
+            try
+            {
+                Session.validate_session_turnip_prices(set.turnip_prices);
+            }
+            catch (err)
+            {
+                res.status(403).json(new Req.FailedResponse(err.message));
+                return;
+            }
 
             logger.debug(`user ${usr.id.readable} set turnip prices of session ${target.id.readable} to ${set.turnip_prices}`);
             set.updated = await db.set_session_turnip_prices(target.id, set.turnip_prices);

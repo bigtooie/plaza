@@ -108,7 +108,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
 
     private set_form_defaults()
     {
-        this.search_text_category = Req.GetUsersSearchTextCategory.PlayerName;
+        this.search_text_category = Req.GetUsersSearchTextCategory.Name;
         this.blocked_filter = Req.SearchFilter.Hide;
         this.reversed = true;
     }
@@ -183,7 +183,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
         if (this.search_text.length > 0)
             params.search_text = this.search_text;
 
-        if (this.search_text_category !== Req.GetUsersSearchTextCategory.PlayerName)
+        if (this.search_text_category !== Req.GetUsersSearchTextCategory.Name)
             params.category = this.search_text_category;
 
         if (this.starred_filter !== Req.SearchFilter.None)

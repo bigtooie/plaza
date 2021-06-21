@@ -6,8 +6,7 @@ import * as base from './base';
 export enum GetUsersSearchTextCategory
 {
     ID = "ID",
-    PlayerName = "Player Name",
-    IslandName = "Island Name",
+    Name = "Name",
     Username = "Username"
 }
 
