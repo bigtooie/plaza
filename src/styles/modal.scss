@@ -33,6 +33,12 @@
     color: $red;
 }
 
+.modal-footer
+{
+    justify-content: center !important;
+    gap: 2rem;
+}
+
 .modal-backdrop
 {
     background-color: rgba(0, 0, 0, 0.6) !important;

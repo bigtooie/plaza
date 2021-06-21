@@ -1,4 +1,11 @@
 <ng-template [ngIf]="!pending && session !== undefined">
+  <!-- close button -->
+  <button *ngIf="can_edit"
+          (click)="show_close_session_dialog()"
+          class="btn btn-danger close-btn float-right">
+    <i class="fa fa-times"></i>
+  </button>
+
   <!-- heading -->
   <div style="text-align: center">
     session 
@@ -255,7 +262,7 @@
   </div>
   <div class="modal-footer">
     <button type="button"
-            class="btn btn-danger"
+            class="btn btn-primary"
             (click)="modal.close('cancel')"
             [disabled]="pending || edit_pending || dodo_form.pending">
       cancel
@@ -297,7 +304,7 @@
   </div>
   <div class="modal-footer">
     <button type="button"
-            class="btn btn-danger"
+            class="btn btn-primary"
             (click)="modal.close('cancel')"
             [disabled]="pending || edit_pending || title_form.pending">
       cancel
@@ -339,7 +346,7 @@
   </div>
   <div class="modal-footer">
     <button type="button"
-            class="btn btn-danger"
+            class="btn btn-primary"
             (click)="modal.close('cancel')"
             [disabled]="pending || edit_pending || description_form.pending">
       cancel
@@ -377,7 +384,7 @@
   </div>
   <div class="modal-footer">
     <button type="button"
-            class="btn btn-danger"
+            class="btn btn-primary"
             (click)="modal.close('cancel')"
             [disabled]="pending || edit_pending || turnips_form.pending">
       cancel
@@ -398,33 +405,34 @@
     <h4 class="modal-title">Edit Session Status</h4>
   </div>
   <div class="modal-body">
-    once a session is closed it stays closed
-    <div class="form-group">
-      <label class="form-select-label flex-sm-column col-form-label mr-sm-3 pt-sm-1">
-        Session Status
-      </label>
-      <select [formControl]="session_status_form"
-              class="custom-select custom-select-sm col-sm">
-        <option *ngFor="let val of SessionStatusValues"
-                [ngValue]="val">
-          <app-sessionstatus [status]="val"></app-sessionstatus>
-        </option>
-      </select>
-    </div>
-    <hr/>
-    <div *ngIf="session_status === SessionStatus.Closed"
-         class="custom-control custom-checkbox">
-      <input type="checkbox"
-             class="custom-control-input"
-             id="dodo_leaked_2"
-             [formControl]="dodo_leaked_form"
-             >
-      <label class="custom-control-label" for="dodo_leaked_2">dodo was leaked</label>
+    <div class="form-group row" style="font-size: 18pt">
+      <div class="col-sm-6 text-center">
+        <input [formControl]="session_status_form"
+               value="{{SessionStatus.Open}}"
+               type="radio"
+               id="openRadio"
+               name="customRadio"
+               >
+        <label for="openRadio">
+          <app-sessionstatus [status]="SessionStatus.Open"></app-sessionstatus>
+        </label>
+      </div>
+      <div class="col-sm-6 text-center">
+        <input [formControl]="session_status_form"
+               value="{{SessionStatus.Full}}"
+               type="radio"
+               id="fullRadio"
+               name="customRadio"
+               >
+        <label for="fullRadio">
+          <app-sessionstatus [status]="SessionStatus.Full"></app-sessionstatus>
+        </label>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
     <button type="button"
-            class="btn btn-danger"
+            class="btn btn-primary"
             (click)="modal.close('cancel')"
             [disabled]="pending || edit_pending || session_status_form.pending">
       cancel
@@ -435,6 +443,39 @@
             (click)="submit_edit_session_status()"
             [disabled]="pending || edit_pending || session_status_form.pending">
       submit
+    </button>
+  </div>
+</ng-template>
+
+<!--close session dialog-->
+<ng-template #closeSessionDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">End Session?</h4>
+  </div>
+  <div class="modal-body">
+    once a session is closed it stays closed
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox"
+             class="custom-control-input"
+             id="dodo_leaked_2"
+             [formControl]="dodo_leaked_form"
+             >
+      <label class="custom-control-label" for="dodo_leaked_2">dodo was leaked</label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-primary"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      cancel
+    </button>
+
+    <button type="button"
+            class="btn btn-danger"
+            (click)="submit_close_session()"
+            [disabled]="pending || edit_pending">
+      end session
     </button>
   </div>
 </ng-template>
