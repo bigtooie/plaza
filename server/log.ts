@@ -21,7 +21,7 @@ const logger = pino(
     stream
 );
 
-const logger_http = pino_http({logger: logger});
+const logger_http = pino_http({logger: logger, useLevel: 'debug'});
 export { logger, logger_http }
 
 export function debug(...args: any[])

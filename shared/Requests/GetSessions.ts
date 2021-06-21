@@ -8,8 +8,7 @@ export enum GetSessionsSearchTextCategory
 {
     ID = "ID",
     HostID = "Host ID",
-    HostName = "Host Name",
-    IslandName = "Island Name",
+    Host = "Host",
     Title = "Title",
     Description = "Description",
     Username = "Username"

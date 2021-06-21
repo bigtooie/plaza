@@ -425,14 +425,14 @@ export async function get_users(usr: User.User,
             if (playername.length <= 0 || islandname.length <= 0)
                 break;
 
+            if (playername === "*" && islandname === "*")
+                break;
+
             if (playername !== "*")
                 var r1 = new RegExp(playername);
 
             if (islandname !== "*")
                 var r2 = new RegExp(islandname);
-
-            if (playername === "*" && islandname === "*")
-                break;
 
             const playernameDoc: any = { $regex: playername, $options: 'i' };
             const playernameDoc_first: any = { $regex: `^${playername}`, $options: 'i' };
@@ -543,27 +543,6 @@ export async function get_users(usr: User.User,
 
             break;
         }
-        /*
-        case Req.GetUsersSearchTextCategory.IslandName:
-        {
-            if (usr.level < User.Level.Moderator)
-            {
-                var orDoc: any[] = [{}, {}];
-                orDoc[0][schema.users.uuid] = { $eq: usr.id.value };
-                orDoc[1][schema.users.islandname_hidden] = { $eq: false };
-
-                var andDoc: any[] = [{}, {}];
-                andDoc[0]['$or'] = orDoc;
-                andDoc[1][schema.users.islandname] = regexDoc;
-
-                and_conditions.push(andDoc);
-            }
-            else
-                cd[schema.users.islandname] = regexDoc;
-
-            break;
-        }
-        */
         case Req.GetUsersSearchTextCategory.Username:
         {
             if (usr.level < User.Level.Admin)
@@ -879,6 +858,7 @@ export async function get_sessions(viewer: User.User,
                 session_searchDoc[`host_user.${schema.users.rid}`] = regexDoc;
                 break;
             }
+            /*
             case Req.GetSessionsSearchTextCategory.HostName:
             {
                 if (viewer.level < User.Level.Moderator)
@@ -897,22 +877,159 @@ export async function get_sessions(viewer: User.User,
                     session_searchDoc[`host_user.${schema.users.playername}`] = regexDoc;
                 break;
             }
-            case Req.GetSessionsSearchTextCategory.IslandName:
+            */
+            case Req.GetSessionsSearchTextCategory.Host:
             {
-                if (viewer.level < User.Level.Moderator)
+                var playername: string = "";
+                var islandname: string = "";
+                var combined: boolean = false;
+
+                if (rreq.search_text.trim().toLowerCase() === "from")
                 {
-                    var orDoc: any[] = [{}, {}];
-                    orDoc[0][`host_user.${schema.users.uuid}`] = { $eq: viewer.id.value };
-                    orDoc[1][`host_user.${schema.users.islandname_hidden}`] = { $eq: false };
-
-                    var andDoc: any[] = [{}, {}];
-                    andDoc[0]['$or'] = orDoc;
-                    andDoc[1][`host_user.${schema.users.islandname}`] = regexDoc;
-
-                    session_searchDoc['$and'] = andDoc;
+                    playername = rreq.search_text;
+                    islandname = rreq.search_text;
+                    combined = false;
                 }
                 else
-                    session_searchDoc[`host_user.${schema.users.islandname}`] = regexDoc;
+                {
+                    // split if by "from" to get the parts to search for
+                    const split = rreq.search_text.split(" from ").map(s => s.trim());
+
+                    if (split.length === 1)
+                    {
+                        playername = rreq.search_text;
+                        islandname = rreq.search_text;
+                        combined = false;
+                    }
+                    else if (split.length === 2)
+                    {
+                        playername = split[0];
+                        islandname = split[1];
+                        combined = true;
+                    }
+                    else
+                        break;
+                }
+
+                if (playername.length <= 0 || islandname.length <= 0)
+                    break;
+
+                if (playername === "*" && islandname === "*")
+                    break;
+
+                if (playername !== "*")
+                    var r1 = new RegExp(playername);
+
+                if (islandname !== "*")
+                    var r2 = new RegExp(islandname);
+
+                const playernameDoc: any = { $regex: playername, $options: 'i' };
+                const playernameDoc_first: any = { $regex: `^${playername}`, $options: 'i' };
+                const islandnameDoc: any = { $regex: islandname, $options: 'i' };
+                const islandnameDoc_first: any = { $regex: `^${islandname}`, $options: 'i' };
+
+                if (viewer.level < User.Level.Moderator)
+                {
+                    var playername_searchDoc: any = {};
+                    var islandname_searchDoc: any = {};
+
+                    if (playername !== "*")
+                    {
+                        var playername_orDoc: any[] = [{}, {}];
+                        playername_orDoc[0][`host_user.${schema.users.uuid}`] = { $eq: viewer.id.value };
+                        playername_orDoc[1][`host_user.${schema.users.playername_hidden}`] = { $eq: false };
+
+                        var playername_andDoc: any[] = [{}, {}];
+                        playername_andDoc[0]['$or'] = playername_orDoc;
+                        playername_andDoc[1][`host_user.${schema.users.playername}`] = playernameDoc;
+
+                        // sorry multi-word-name people
+                        if (playername.length === 1)
+                        {
+                            var playername_andDoc2: any[] = [{}, {}];
+                            playername_andDoc2[0][`host_user.${schema.users.playername_hidden}`] = { $eq: true };
+                            playername_andDoc2[1][`host_user.${schema.users.playername}`] = playernameDoc_first;
+
+                            var playername_orDoc2: any[] = [{}, {}];
+                            playername_orDoc2[0]['$and'] = playername_andDoc;
+                            playername_orDoc2[1]['$and'] = playername_andDoc2;
+                            playername_searchDoc['$or'] = playername_orDoc2;
+                        }
+                        else
+                            playername_searchDoc['$and'] = playername_andDoc;
+                    }
+
+                    if (islandname !== "*")
+                    {
+                        var islandname_orDoc: any[] = [{}, {}];
+                        islandname_orDoc[0][`host_user.${schema.users.uuid}`] = { $eq: viewer.id.value };
+                        islandname_orDoc[1][`host_user.${schema.users.islandname_hidden}`] = { $eq: false };
+
+                        var islandname_andDoc: any[] = [{}, {}];
+                        islandname_andDoc[0]['$or'] = islandname_orDoc;
+                        islandname_andDoc[1][`host_user.${schema.users.islandname}`] = islandnameDoc;
+
+                        // sorry multi-word-island people
+                        if (islandname.length === 1)
+                        {
+                            var islandname_andDoc2: any[] = [{}, {}];
+                            islandname_andDoc2[0][`host_user.${schema.users.islandname_hidden}`] = { $eq: true };
+                            islandname_andDoc2[1][`host_user.${schema.users.islandname}`] = islandnameDoc_first;
+
+                            var islandname_orDoc2: any[] = [{}, {}];
+                            islandname_orDoc2[0]['$and'] = islandname_andDoc;
+                            islandname_orDoc2[1]['$and'] = islandname_andDoc2;
+                            islandname_searchDoc['$or'] = islandname_orDoc2;
+                        }
+                        else
+                            islandname_searchDoc['$and'] = islandname_andDoc;
+                    }
+
+                    if (combined)
+                    {
+                        if (playername !== "*")
+                            session_searchDoc['$and'] = [playername_searchDoc];
+
+                        if (islandname !== "*")
+                            session_searchDoc['$and'] = [islandname_searchDoc];
+                    }
+                    else if (playername !== "*" && islandname !== "*")
+                    {
+                        var orDoc: any[] = [{}, {}];
+                        orDoc[0] = playername_searchDoc;
+                        orDoc[1] = islandname_searchDoc;
+
+                        session_searchDoc['$or'] = [playername_searchDoc];
+                    }
+                    else if (playername !== "*")
+                        session_searchDoc['$and'] = [playername_searchDoc];
+                    else if (islandname !== "*")
+                        session_searchDoc['$and'] = [islandname_searchDoc];
+                }
+                else
+                {
+                    if (combined)
+                    {
+                        if (playername !== "*")
+                            session_searchDoc[`host_user.${schema.users.playername}`] = playernameDoc;
+
+                        if (islandname !== "*")
+                            session_searchDoc[`host_user.${schema.users.islandname}`] = islandnameDoc;
+                    }
+                    else if (playername !== "*" && islandname !== "*")
+                    {
+                        var orDoc: any[] = [{}, {}];
+                        orDoc[0][`host_user.${schema.users.playername}`] = playernameDoc;
+                        orDoc[1][`host_user.${schema.users.islandname}`] = islandnameDoc;
+
+                        session_searchDoc['$or'] = orDoc;
+                    }
+                    else if (playername !== "*")
+                        session_searchDoc[`host_user.${schema.users.playername}`] = playernameDoc;
+                    else if (islandname !== "*")
+                        session_searchDoc[`host_user.${schema.users.islandname}`] = playernameDoc;
+                }
+
                 break;
             }
             case Req.GetSessionsSearchTextCategory.Title:
@@ -937,7 +1054,6 @@ export async function get_sessions(viewer: User.User,
             }
         }
     }
-
 
     // response
     var resp = new Req.GetSessionsResponse();
