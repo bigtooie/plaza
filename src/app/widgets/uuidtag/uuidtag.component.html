@@ -1,5 +1,5 @@
 <a *ngIf="!this.link"
-   class="uuidtag badge {{border_style}}"
+   class="badge text-monospace {{border_style}}"
    style="background-color: #{{id.color}} !important; color: #{{id.textcolor}} !important;">
   {{id.readable}} 
   <i *ngIf="level > Level.Normal"
@@ -10,7 +10,7 @@
 </a>
 
 <a *ngIf="this.link"
-   class="uuidtag badge {{border_style}}"
+   class="badge text-monospace {{border_style}}"
    style="background-color: #{{id.color}} !important; color: #{{id.textcolor}} !important;"
    routerLink="{{this.router_link}}">
   {{id.readable}}
