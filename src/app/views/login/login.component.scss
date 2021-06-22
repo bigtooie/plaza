@@ -1,5 +1,6 @@
 
-@import "../../../../node_modules/bootstrap/scss/bootstrap.scss";
+// FUCK google for being so incompetent with angular
+// @import "../../../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../../../styles/variables.scss";
 
 .form
@@ -42,10 +43,10 @@
 
 .hint
 {
-    @extend .small;
-    @extend .text-muted;
-    @extend .mb-2;
-
+    color: $font-col-inactive !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 80%;
+    font-weight: 400;
     line-height: 1;
     font-style: italic;
 }
