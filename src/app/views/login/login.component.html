@@ -1,236 +1,208 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-6 mb-5 splitborder">
-      <h4 class="text-center">Log in</h4>
+    <div class="col-md-6 mb-5 p-2">
+      <div class="form login-form">
+        <h4 class="text-center">Log in</h4>
 
-      <form [formGroup]="login_form"
-            (ngSubmit)="submit_login()">
-        <div class="mb-3">
-          <label class="form-label">username</label>
-          <button type="button"
-                  tabindex="-1"
-                  class="btn helpbutton"
-                  placement="bottom"
-                  triggers="focus"
-                  title="name used to log in to this site, not player name"
-                  popoverTitle="username"
-                  ngbPopover="name used to log in to this site, not player name">
-            <i class="fa fa-question-circle text-primary"></i>
+        <form [formGroup]="login_form"
+              (ngSubmit)="submit_login()">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input id="username"
+                   type="text"
+                   class="form-control {{this.login_username_invalid ? 'is-invalid' : ''}}"
+                   placeholder="(not player name)"
+                   required
+                   formControlName="username"
+                   >
+            <ng-template [ngIf]="login_username_invalid">
+              <div *ngIf="login_username.errors.required"
+                   class="text-danger">
+                username required
+              </div>
+              <div *ngIf="login_username.errors.maxlength"
+                   class="text-danger">
+                max username length is {{MAX_USERNAME_LENGTH}}
+              </div>
+              <div *ngIf="login_username.errors.pattern"
+                   class="text-danger">
+                username contains illegal characters
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password"
+                   class="form-control {{this.login_password_invalid ? 'is-invalid' : ''}}"
+                   required
+                   formControlName="password">
+            <ng-template [ngIf]="login_password_invalid">
+              <div *ngIf="login_password.errors.required"
+                   class="text-danger">
+                password required
+              </div>
+              <div *ngIf="login_password.errors.maxlength"
+                   class="text-danger">
+                max password length is {{MAX_PASSWORD_LENGTH}}
+              </div>
+            </ng-template>
+          </div>
+
+          <button type="submit"
+                  class="btn btn-primary w-100"
+                  [disabled]="this.pending || this.login_form.pending || !this.login_form.valid">
+            log in
           </button>
-          <input id="username"
-                 type="text"
-                 class="form-control {{this.login_username_invalid ? 'is-invalid' : ''}}"
-                 placeholder="(not player name)"
-                 required
-                 formControlName="username"
-                 >
-          <ng-template [ngIf]="login_username_invalid">
-            <div *ngIf="login_username.errors.required"
-                 class="text-danger">
-              username required
-            </div>
-            <div *ngIf="login_username.errors.maxlength"
-                 class="text-danger">
-              max username length is {{MAX_USERNAME_LENGTH}}
-            </div>
-            <div *ngIf="login_username.errors.pattern"
-                 class="text-danger">
-              username contains illegal characters
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">password</label>
-          <input type="password"
-                 class="form-control {{this.login_password_invalid ? 'is-invalid' : ''}}"
-                 required
-                 formControlName="password">
-          <ng-template [ngIf]="login_password_invalid">
-            <div *ngIf="login_password.errors.required"
-                 class="text-danger">
-              password required
-            </div>
-            <div *ngIf="login_password.errors.maxlength"
-                 class="text-danger">
-              max password length is {{MAX_PASSWORD_LENGTH}}
-            </div>
-          </ng-template>
-        </div>
-
-        <button type="submit"
-                class="btn btn-primary w-100"
-                [disabled]="this.pending || this.login_form.pending || !this.login_form.valid">
-          log in
-        </button>
-      </form>
+        </form>
+      </div>
     </div>
 
     <!--register-->
     <div *ngIf="this.register_enabled"
-         class="col-md-6">
-      <h4 class="text-center">Register</h4>
+         class="col-md-6 p-2">
+      <div class="form register-form">
+        <h4 class="text-center">Register</h4>
 
-      <form [formGroup]="register_form"
-            (ngSubmit)="submit_register()">
-        <div class="mb-3">
-          <label class="form-label">
-            username
-            <i *ngIf="register_form.pending"
-               class="ml-1 spinner-border spinner-border-sm"
-               role="status"></i>
-          </label>
-          <button type="button"
-                  tabindex="-1"
-                  class="btn helpbutton"
-                  placement="bottom"
-                  triggers="focus"
-                  title="name used to log in to this site, not player name. only you can see this name."
-                  popoverTitle="username"
-                  ngbPopover="name used to log in to this site, not player name. only you can see this name.">
-            <i class="fa fa-question-circle text-primary"></i>
+        <form [formGroup]="register_form"
+              (ngSubmit)="submit_register()">
+          <div class="mb-3">
+            <label class="form-label-with-hint">
+              Username
+              <i *ngIf="register_form.pending"
+                 class="ml-1 fa fa-spinner load"
+                 role="status"></i>
+            </label>
+            <div class="hint">
+              name used to log in to this site, not player name. only you and admins can see this.
+            </div>
+            <input type="text"
+                   placeholder="(not player name)"
+                   class="form-control {{this.register_username_invalid ? 'is-invalid' : ''}}"
+                   required
+                   formControlName="username">
+            <ng-template [ngIf]="register_username_invalid">
+              <div *ngIf="register_username.errors.required"
+                   class="text-danger">
+                username required
+              </div>
+              <div *ngIf="register_username.errors.maxlength"
+                   class="text-danger">
+                max username length is {{MAX_USERNAME_LENGTH}}
+              </div>
+              <div *ngIf="register_username.errors.pattern"
+                   class="text-danger">
+                username contains illegal characters
+              </div>
+              <div *ngIf="register_username.errors.name_taken"
+                   class="text-danger">
+                username already taken
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-with-hint">
+              Player Name
+            </label>
+            <div class="hint">
+              full name of your character, not visible to others by default
+            </div>
+            <input type="text"
+                   class="form-control {{this.register_playername_invalid ? 'is-invalid' : ''}}"
+                   required
+                   formControlName="playername">
+            <ng-template [ngIf]="register_playername_invalid">
+              <div *ngIf="register_playername.errors.required"
+                   class="text-danger">
+                player name required
+              </div>
+              <div *ngIf="register_playername.errors.maxlength"
+                   class="text-danger">
+                max playername length is {{MAX_PLAYERNAME_LENGTH}}
+              </div>
+              <div *ngIf="register_playername.errors.pattern"
+                   class="text-danger">
+                playername contains illegal characters
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-with-hint">
+              Island
+            </label>
+            <div class="hint">
+              full name of your island, not visible to others by default
+            </div>
+            <input type="text"
+                   class="form-control {{this.register_islandname_invalid ? 'is-invalid' : ''}}"
+                   required
+                   formControlName="islandname">
+            <ng-template [ngIf]="register_islandname_invalid">
+              <div *ngIf="register_islandname.errors.required"
+                   class="text-danger">
+                island name required
+              </div>
+              <div *ngIf="register_islandname.errors.maxlength"
+                   class="text-danger">
+                max islandname length is {{MAX_ISLANDNAME_LENGTH}}
+              </div>
+              <div *ngIf="register_islandname.errors.pattern"
+                   class="text-danger">
+                islandname contains illegal characters
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-with-hint">
+              Password
+            </label>
+            <div class="hint">
+              password used to log in to this site, is stored securely
+            </div>
+            <input type="password"
+                   class="form-control {{this.register_password_invalid ? 'is-invalid' : ''}}"
+                   required
+                   formControlName="password">
+            <ng-template [ngIf]="register_password_invalid">
+              <div *ngIf="register_password.errors.required"
+                   class="text-danger">
+                password required
+              </div>
+              <div *ngIf="register_password.errors.maxlength"
+                   class="text-danger">
+                max password length is {{MAX_PASSWORD_LENGTH}}
+              </div>
+            </ng-template>
+          </div>
+
+          <div *ngIf="security_question.length > 0"
+               class="mb-3">
+            <label class="form-label">
+              security question:
+              <br/>
+              {{security_question}}
+            </label>
+            <input type="text"
+                   class="form-control"
+                   formControlName="security_question_answer">
+          </div>
+
+          <div class="mb-3">
+            <small>
+              By registering and using this service you agree to the <a href="/#/terms">Terms of Service</a>.
+            </small>
+          </div>
+
+          <button type="submit"
+                  class="btn btn-success w-100"
+                  [disabled]="this.pending || !this.register_form.valid || this.register_form.pending">
+            register
           </button>
-          <input type="text"
-                 placeholder="(not player name)"
-                 class="form-control {{this.register_username_invalid ? 'is-invalid' : ''}}"
-                 required
-                 formControlName="username">
-          <ng-template [ngIf]="register_username_invalid">
-            <div *ngIf="register_username.errors.required"
-                 class="text-danger">
-              username required
-            </div>
-            <div *ngIf="register_username.errors.maxlength"
-                 class="text-danger">
-              max username length is {{MAX_USERNAME_LENGTH}}
-            </div>
-            <div *ngIf="register_username.errors.pattern"
-                 class="text-danger">
-              username contains illegal characters
-            </div>
-            <div *ngIf="register_username.errors.name_taken"
-                 class="text-danger">
-              username already taken
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">player name</label>
-          <button type="button"
-                  tabindex="-1"
-                  class="btn helpbutton"
-                  placement="bottom"
-                  triggers="focus"
-                  title="name of your character, not visible to other people by default"
-                  popoverTitle="player name"
-                  ngbPopover="name of your character, not visible to other people by default">
-            <i class="fa fa-question-circle text-primary"></i>
-          </button>
-          <input type="text"
-                 class="form-control {{this.register_playername_invalid ? 'is-invalid' : ''}}"
-                 required
-                 formControlName="playername">
-          <ng-template [ngIf]="register_playername_invalid">
-            <div *ngIf="register_playername.errors.required"
-                 class="text-danger">
-              player name required
-            </div>
-            <div *ngIf="register_playername.errors.maxlength"
-                 class="text-danger">
-              max playername length is {{MAX_PLAYERNAME_LENGTH}}
-            </div>
-            <div *ngIf="register_playername.errors.pattern"
-                 class="text-danger">
-              playername contains illegal characters
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">island name</label>
-          <button type="button"
-                  tabindex="-1"
-                  class="btn helpbutton"
-                  placement="bottom"
-                  triggers="focus"
-                  title="name of your island, not visible to other people by default"
-                  popoverTitle="island name"
-                  ngbPopover="name of your island, not visible to other people by default">
-            <i class="fa fa-question-circle text-primary"></i>
-          </button>
-          <input type="text"
-                 class="form-control {{this.register_islandname_invalid ? 'is-invalid' : ''}}"
-                 required
-                 formControlName="islandname">
-          <ng-template [ngIf]="register_islandname_invalid">
-            <div *ngIf="register_islandname.errors.required"
-                 class="text-danger">
-              island name required
-            </div>
-            <div *ngIf="register_islandname.errors.maxlength"
-                 class="text-danger">
-              max islandname length is {{MAX_ISLANDNAME_LENGTH}}
-            </div>
-            <div *ngIf="register_islandname.errors.pattern"
-                 class="text-danger">
-              islandname contains illegal characters
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">password</label>
-          <button type="button"
-                  tabindex="-1"
-                  class="btn helpbutton"
-                  placement="bottom"
-                  triggers="focus"
-                  title="password used to log into this site, dont lose it. is stored securely or whatever"
-                  popoverTitle="password"
-                  ngbPopover="password used to log into this site, dont lose it. is stored securely or whatever">
-            <i class="fa fa-question-circle text-primary"></i>
-          </button>
-          <input type="password"
-                 class="form-control {{this.register_password_invalid ? 'is-invalid' : ''}}"
-                 required
-                 formControlName="password">
-          <ng-template [ngIf]="register_password_invalid">
-            <div *ngIf="register_password.errors.required"
-                 class="text-danger">
-              password required
-            </div>
-            <div *ngIf="register_password.errors.maxlength"
-                 class="text-danger">
-              max password length is {{MAX_PASSWORD_LENGTH}}
-            </div>
-          </ng-template>
-        </div>
-
-        <div *ngIf="security_question.length > 0"
-             class="mb-3">
-          <label class="form-label">
-            security question:
-            <br/>
-            {{security_question}}
-          </label>
-          <input type="text"
-                 class="form-control"
-                 formControlName="security_question_answer">
-        </div>
-
-        <div class="mb-3">
-          <small>
-            By registering and using this service you agree to the <a href="/#/terms">Terms of Service</a>.
-          </small>
-        </div>
-
-        <button type="submit"
-                class="btn btn-success w-100"
-                [disabled]="this.pending || !this.register_form.valid || this.register_form.pending">
-          register
-        </button>
-      </form>
+        </form>
+      </div>
     </div>
     <div *ngIf="!this.register_enabled"
          class="col-md-6">

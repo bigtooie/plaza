@@ -1,9 +1,24 @@
 
+@import "../../../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../../../styles/variables.scss";
 
-.splitborder
+.form
 {
-    border-right: 0.15em solid $font-col;
+    border-radius: 3rem;
+    background-image: url('/assets/images/dots.png');
+    padding: 1rem;
+    padding-bottom: 2rem;
+}
+
+.login-form
+{
+    background-color: #EEFFEE;
+}
+
+.register-form
+{
+    color: $blue-dark;
+    background-color: #DDFFFF;
 }
 
 .helpbutton
@@ -12,4 +27,25 @@
     border: none !important;
     padding: 0.2em !important;
     margin-left: 1em;
+}
+
+.form-label
+{
+    font-family: 'Zilla Slab';
+}
+
+.form-label-with-hint
+{
+    @extend .form-label;
+    margin-bottom: 0 !important;
+}
+
+.hint
+{
+    @extend .small;
+    @extend .text-muted;
+    @extend .mb-2;
+
+    line-height: 1;
+    font-style: italic;
 }
