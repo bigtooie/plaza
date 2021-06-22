@@ -203,8 +203,31 @@
               placement="bottom"
               triggers="focus"
               title="whether the session is available only to verified players"
-              popoverTitle="verified_only session"
+              popoverTitle="verified-only session"
               ngbPopover="whether the session is available only to verified players">
+        <i class="fa fa-question-circle text-primary"></i>
+      </button>
+    </div>
+
+    <!-- auto accept verified -->
+    <div class="form-check custom-control custom-checkbox">
+      <input class="custom-control-input"
+             type="checkbox"
+             value=""
+             id="auto_accept_verified"
+             formControlName="auto_accept_verified"
+             >
+      <label class="custom-control-label" for="auto_accept_verified">
+        auto-accept verified players
+      </label>
+      <button type="button"
+              tabindex="-1"
+              class="btn helpbutton"
+              placement="bottom"
+              triggers="focus"
+              title="verified players will be accepted automatically, useful for AFK hosting"
+              popoverTitle="auto-accept verified players"
+              ngbPopover="verified players will be accepted automatically, useful for AFK hosting">
         <i class="fa fa-question-circle text-primary"></i>
       </button>
     </div>

@@ -51,7 +51,8 @@ export class NewsessionComponent implements OnInit
         turnips: [0, [Validators.min(Session.MIN_TURNIPS), Validators.max(Session.MAX_TURNIPS)]],
         unlisted: [false],
         public_requesters: [false],
-        verified_only: [false]
+        verified_only: [false],
+        auto_accept_verified: [false]
     });
 
     private _form_get = (name: string) => this.new_session_form.get(name).value;
@@ -81,6 +82,8 @@ export class NewsessionComponent implements OnInit
     set public_requesters(val: boolean) { this._form_set("public_requesters", val); }
     get verified_only(): boolean { return this._form_get("verified_only"); }
     set verified_only(val: boolean) { this._form_set("verified_only", val); }
+    get auto_accept_verified(): boolean { return this._form_get("auto_accept_verified"); }
+    set auto_accept_verified(val: boolean) { this._form_set("auto_accept_verified", val); }
 
     constructor(public userService: UserService,
                 public alert: AlertService,
@@ -113,7 +116,8 @@ export class NewsessionComponent implements OnInit
                                             this.turnips,
                                             this.unlisted,
                                             this.public_requesters,
-                                            this.verified_only
+                                            this.verified_only,
+                                            this.auto_accept_verified
                                            )
             .subscribe((_) =>
             {

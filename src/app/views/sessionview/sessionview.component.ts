@@ -271,6 +271,9 @@ export class SessionviewComponent implements OnInit, OnDestroy
         if ('verified_only' in changes)
             this.session.settings.verified_only = changes.verified_only;
 
+        if ('auto_accept_verified' in changes)
+            this.session.settings.auto_accept_verified = changes.auto_accept_verified;
+
         if ('updated' in changes)
             this.session.updated = new Date(changes.updated);
 
@@ -288,7 +291,7 @@ export class SessionviewComponent implements OnInit, OnDestroy
             if (changes.dodo.length > 0)
                 this.session.settings.dodo = changes.dodo;
             else
-                this.alert.show_info("Dodo Changed!", "The Dodo Code has changed.");
+                this.alert.show_info("", "The Dodo Code has changed.");
         }
     }
 
@@ -454,6 +457,11 @@ export class SessionviewComponent implements OnInit, OnDestroy
     toggle_verified_only()
     {
         this.submit_edit_request({verified_only: !this.session.settings.verified_only});
+    }
+
+    toggle_auto_accept_verified()
+    {
+        this.submit_edit_request({auto_accept_verified: !this.session.settings.auto_accept_verified});
     }
 
     request_dodo()

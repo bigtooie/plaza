@@ -263,6 +263,7 @@ export class ApiService
                        unlisted: boolean,
                        public_requesters: boolean,
                        verified_only: boolean,
+                       auto_accept_verified: boolean,
                       ): Observable<Req.NewSessionResponse>
     {
         if (this.token === undefined)
@@ -278,7 +279,8 @@ export class ApiService
                                       turnips,
                                       unlisted,
                                       public_requesters,
-                                      verified_only
+                                      verified_only,
+                                      auto_accept_verified
                                      ));
     }
 

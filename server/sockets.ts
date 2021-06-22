@@ -275,10 +275,10 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
             return;
         }
 
+        const verified = await db.get_user_verified(usr.id);
+
         if (sess.verified_only)
         {
-            const verified = await db.get_user_verified(usr.id);
-
             if (!verified)
             {
                 socket.emit(Msg.ErrorID, `cannot join because this session is verified-only`);
@@ -302,7 +302,15 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
 
         logger.info(`user ${usr.id.readable} requested dodo of session ${sess.id.readable}`);
 
-        await db.user_requests_dodo(usr.id, sess.id);
+        var auto_accept = false;
+
+        if (verified && sess.auto_accept_verified)
+        {
+            auto_accept = true;
+            logger.info(`user ${usr.id.readable} got auto-accepted to session ${sess.id.readable}`);
+        }
+
+        await db.user_requests_dodo(usr.id, sess.id, auto_accept);
         socket.join(WATCH_SESSION_REQUESTORS_CHANGES_ROOM(sess.id));
 
         // notify people
@@ -404,6 +412,20 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
                 socket.emit(Msg.ErrorID, `invalid requester status`);
                 return;
             }
+
+            // auto-accept
+            if ((req.status === Session.RequesterStatus.Withdrawn
+                 || req.status === Session.RequesterStatus.None)
+              && msg.status === Session.RequesterStatus.Sent
+              && sess.auto_accept_verified)
+            {
+                const verified = await db.get_user_verified(usr.id);
+                if (verified)
+                {
+                    logger.info(`user ${usr.id.readable} got auto-accepted to session ${msg.session.readable}`);
+                    msg.status = Session.RequesterStatus.Accepted;
+                }
+            }
         }
 
         await db.set_requester_status(msg.session, msg.user, msg.status);
@@ -488,6 +510,9 @@ export async function session_changed(changer: UserID, sid: SessionID, changes: 
 
     if ('verified_only' in changes)
         public_changes.verified_only = changes.verified_only;
+
+    if ('auto_accept_verified' in changes)
+        public_changes.auto_accept_verified = changes.auto_accept_verified;
 
     if ('status' in changes)
         public_changes.status = changes.status;

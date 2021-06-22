@@ -1148,6 +1148,13 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
             set.updated = await db.set_session_verified_only(target.id, set.verified_only);
         }
 
+        if ('auto_accept_verified' in set && (typeof set.auto_accept_verified === 'boolean'))
+        {
+            // you can change auto_accept_verified after session is closed
+            logger.debug(`user ${usr.id.readable} set session ${target.id.readable} to ${set.auto_accept_verified ? 'auto-accept verified' : 'not auto-accept verified'}`);
+            set.updated = await db.set_session_auto_accept_verified(target.id, set.auto_accept_verified);
+        }
+
         if ('dodo' in set && (typeof set.dodo === 'string'))
         {
             if (target.status === Session.SessionStatus.Closed)

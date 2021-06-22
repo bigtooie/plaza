@@ -13,7 +13,8 @@ export class NewSessionRequest extends base.AuthenticatedRequest
         public turnips: number,
         public unlisted: boolean,
         public public_requesters: boolean,
-        public verified_only: boolean
+        public verified_only: boolean,
+        public auto_accept_verified: boolean,
     )
     {
         super(token);
@@ -32,7 +33,8 @@ export class NewSessionRequest extends base.AuthenticatedRequest
             other.turnips,
             other.unlisted,
             other.public_requesters,
-            other.verified_only
+            other.verified_only,
+            other.auto_accept_verified
         );
     }
 
@@ -45,6 +47,7 @@ export class NewSessionRequest extends base.AuthenticatedRequest
             && 'unlisted' in x
             && 'public_requesters' in x
             && 'verified_only' in x
+            && 'auto_accept_verified' in x
             ;
     }
 }

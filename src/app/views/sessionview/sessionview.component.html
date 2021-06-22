@@ -116,6 +116,13 @@
               >
         {{session.settings.verified_only ? 'verified-only' : 'not verified-only'}}
       </button>
+      <button (click)="toggle_auto_accept_verified()"
+              [disabled]="edit_pending"
+              aria-toggle="button"
+              class="btn btn-sm btn-secondary ml-2"
+              >
+        {{session.settings.auto_accept_verified ? 'auto-accept verified' : 'not auto-accept verified'}}
+      </button>
 
     </ng-template>
   </div>

@@ -158,10 +158,11 @@ export class UserService
                        turnips: number = 0,
                        unlisted: boolean = false,
                        public_requesters: boolean = false,
-                       verified_only: boolean = false
+                       verified_only: boolean = false,
+                       auto_accept_verified: boolean = false
                       ): Observable<Req.NewSessionResponse>
     {
-        return this.api.create_new_session(dodo, title, description, turnips, unlisted, public_requesters, verified_only)
+        return this.api.create_new_session(dodo, title, description, turnips, unlisted, public_requesters, verified_only, auto_accept_verified)
                    .pipe(map((resp: Req.NewSessionResponse) =>
                 {
                     this.current_session_pending = false;

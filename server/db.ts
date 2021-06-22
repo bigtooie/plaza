@@ -100,6 +100,7 @@ export async function get_sessionview(viewer: User.User,
     sv.settings.unlisted = sess.unlisted;
     sv.settings.public_requesters = sess.public_requesters;
     sv.settings.verified_only = sess.verified_only;
+    sv.settings.auto_accept_verified = sess.auto_accept_verified;
     sv.settings.dodo = '';
 
     sv.id = sess.id;
@@ -1121,21 +1122,33 @@ export async function get_sessions(viewer: User.User,
 
 async function post_process_session(sess: Session.Session)
 {
-    if (sess.status === Session.SessionStatus.Closed)
-        return sess;
+    const updateDoc: any = {};
+    updateDoc['$set'] = {};
 
-    const max_dur_date = current_expiration_date();
-
-    if (sess.created.getTime() <= max_dur_date)
+    // post 0.9.0
+    if (sess.auto_accept_verified === null || sess.auto_accept_verified === undefined)
     {
-        const updateDoc: any = {};
-        updateDoc['$set'] = {};
-        updateDoc['$set'][schema.sessions.status] = Session.SessionStatus.Closed;
-        await modify_session(sess.id, updateDoc, false);
+        sess.auto_accept_verified = false;
 
-        logger.info(`DB: Session ${sess.id.readable} expired`);
-        sess.status = Session.SessionStatus.Closed;
+        updateDoc['$set'][schema.sessions.auto_accept_verified] = sess.auto_accept_verified;
+        logger.info(`DB: Session ${sess.id.readable} updated to have auto_accept_verified`);
     }
+
+    if (sess.status !== Session.SessionStatus.Closed)
+    {
+        const max_dur_date = current_expiration_date();
+
+        if (sess.created.getTime() <= max_dur_date)
+        {
+            sess.status = Session.SessionStatus.Closed;
+
+            updateDoc['$set'][schema.sessions.status] = sess.status;
+            logger.info(`DB: Session ${sess.id.readable} expired`);
+        }
+    }
+
+    if (!empty_or_nothing(updateDoc['$set']))
+        await modify_session(sess.id, updateDoc, false);
 
     return sess;
 }
@@ -1216,6 +1229,7 @@ export async function new_session(uid: UserID,
     sess.status = Session.SessionStatus.Open;
     sess.public_requesters = rreq.public_requesters;
     sess.verified_only = rreq.verified_only;
+    sess.auto_accept_verified = rreq.auto_accept_verified;
     sess.created = new Date();
     sess.updated = new Date();
     sess.requesters = [];
@@ -1237,7 +1251,8 @@ export async function new_session(uid: UserID,
         turnip_prices: sess.turnip_prices,
         status: sess.status,
         unlisted: sess.unlisted,
-        public_requesters: sess.public_requesters
+        public_requesters: sess.public_requesters,
+        auto_accept_verified: sess.auto_accept_verified
     });
 
     return sess;
@@ -1408,6 +1423,9 @@ export const set_session_unlisted = async (id: SessionID, unlisted: boolean) =>
 export const set_session_verified_only = async (id: SessionID, verified_only: boolean) =>
     modify_session(id, { $set: { verified_only: verified_only } });
 
+export const set_session_auto_accept_verified = async (id: SessionID, auto_accept_verified: boolean) =>
+    modify_session(id, { $set: { auto_accept_verified: auto_accept_verified } });
+
 export const set_session_public_requesters = async (id: SessionID, public_requesters: boolean) =>
     modify_session(id, { $set: { public_requesters: public_requesters } });
 
@@ -1415,12 +1433,17 @@ export const set_session_status = async (id: SessionID, status: Session.SessionS
     modify_session(id, { $set: { status: status } });
 
 // joining
-export async function user_requests_dodo(uid: UserID, sid: SessionID)
+export async function user_requests_dodo(uid: UserID, sid: SessionID, auto_accept: boolean = false)
 {
     var req = new Session.Requester();
     req.user = uid;
     req.session = sid;
-    req.status = Session.RequesterStatus.Sent;
+
+    if (auto_accept)
+        req.status = Session.RequesterStatus.Accepted;
+    else
+        req.status = Session.RequesterStatus.Sent;
+
     req.requested_at = new Date();
 
     return modify_session(

@@ -114,6 +114,7 @@ export class Session
     unlisted: boolean = false;
     public_requesters: boolean = false;
     verified_only: boolean = false;
+    auto_accept_verified: boolean = false;
 
     static copy(other: Session): Session
     {
@@ -134,6 +135,7 @@ export class Session
         ret.unlisted = other.unlisted;
         ret.public_requesters = other.public_requesters;
         ret.verified_only = other.verified_only;
+        ret.auto_accept_verified = other.auto_accept_verified;
 
         return ret;
     }
@@ -149,6 +151,7 @@ export class SessionViewSettings
     unlisted: boolean;
     public_requesters: boolean;
     verified_only: boolean;
+    auto_accept_verified: boolean;
 }
 
 export class SessionView
