@@ -50,9 +50,19 @@
 }
 
 @font-face {
+  font-family: 'Courier Prime';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Courier Prime.woff2') format('woff2');
+}
+
+/*
+@font-face {
   font-family: 'Iosevka';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: url(../assets/fonts/iosevka-ss02.woff2) format('woff2');
 }
+*/
