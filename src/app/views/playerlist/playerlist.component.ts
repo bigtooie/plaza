@@ -10,7 +10,7 @@ import { PagingComponent } from '../../classes/PagingComponent';
 
 import { UserView, Level } from '@shared/User';
 import * as Req from '@shared/RequestResponse';
-import { range, clamp, remove_if } from '@shared/utils';
+import { range, clamp, remove_if, any_differ } from '@shared/utils';
 
 class PlayerlistParams
 {
@@ -91,7 +91,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
                   .subscribe(params =>
                              {
                                  this.set_form_to_params(params);
-                                 this.search_submit(false, false);
+                                 this.search_submit(false);
                              });
 
         this.set_GetUsersSearchTextCategoryValues();
@@ -206,14 +206,15 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
         localStorage.setItem(PlayerlistParams.StorageKey, JSON.stringify(params));
     }
 
-    search_submit(reset_page: boolean = true, set_params: boolean = true) : void
+    search_submit(reset_page: boolean = true) : void
     {
         if (reset_page)
             this.page = 0;
 
         const params = this.get_params_from_form();
+        const current_url_params = this.route.snapshot.queryParams;
 
-        if (set_params)
+        if (any_differ(params, current_url_params))
         {
             this.router.navigate([], {
                 queryParams: params

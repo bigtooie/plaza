@@ -12,7 +12,7 @@ import { Level } from '@shared/User';
 import { Session, SessionView } from '@shared/Session';
 
 import * as Req from '@shared/RequestResponse';
-import { range, clamp, get_duration_text_since, remove_if } from '@shared/utils';
+import { range, clamp, get_duration_text_since, remove_if, any_differ } from '@shared/utils';
 
 class SessionlistParams
 {
@@ -258,10 +258,15 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
             this.page = 0;
 
         const params = this.get_params_from_form();
+        const current_url_params = this.route.snapshot.queryParams;
 
-        this.router.navigate([], {
-            queryParams: params
-        });
+        if (any_differ(params, current_url_params))
+        {
+            this.router.navigate([], {
+                queryParams: params
+            });
+            return;
+        }
 
         this.save_params_to_storage(params);
 

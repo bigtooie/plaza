@@ -12,6 +12,19 @@ export function clamp(v: number, mn: number, mx: number): number
     return Math.max(mn, Math.min(mx, v));
 }
 
+export function any_differ(any1: any, any2: any)
+{
+    for (const i in any1)
+        if (any1[i] !== any2[i])
+            return true;
+
+    for (const i in any2)
+        if (any2[i] !== any1[i])
+            return true;
+
+    return false;
+}
+
 // https://stackoverflow.com/a/3426956
 export function hash_code(str: string) : number
 {
