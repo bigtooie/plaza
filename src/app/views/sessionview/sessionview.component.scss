@@ -1,10 +1,20 @@
 
+@import "../../../styles/variables.scss";
+
 .description
 {
     background-color: #FFF;
+    border-radius: 1rem;
+    background-color: $yellow-bright;
 }
 
-.close-btn
+.settings-bar
+{
+    float: right;
+    margin-left: -100%;
+}
+
+.settings-bar-btn
 {
     font-size: 16pt;
     padding: 0rem 0.5rem !important;

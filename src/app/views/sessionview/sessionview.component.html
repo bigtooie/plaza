@@ -1,132 +1,122 @@
-<ng-template [ngIf]="!pending && session !== undefined">
+<div *ngIf="!pending && session !== undefined"
+     class="session">
   <!-- close button -->
-  <button *ngIf="can_edit"
-          (click)="show_close_session_dialog()"
-          class="btn btn-danger close-btn float-right">
-    <i class="fa fa-times"></i>
-  </button>
+  <div *ngIf="can_edit_after_closed"
+       class="settings-bar">
+    <button *ngIf="can_edit"
+            (click)="show_edit_session_dialog()"
+            class="btn btn-secondary settings-bar-btn">
+      <i class="fa fa-gear"></i>
+    </button>
+    <button *ngIf="can_edit"
+            (click)="show_close_session_dialog()"
+            class="btn btn-danger settings-bar-btn ml-2">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+  <div style="font-size: 16pt">
+    <app-uuidtag [id]="session.id"
+                 [verified]="session.settings.verified_only"
+                 [link]="false"
+                 [show_copy]="true"></app-uuidtag>
+  </div>
 
   <!-- heading -->
-  <div style="text-align: center">
-    session 
-    <h3>
-      <a *ngIf="session.settings.title.length > 0">
-        {{sanitize(session.settings.title)}}
-      </a>
-      
-      <i *ngIf="session.settings.title.length === 0"
-         class="fst-italic">
-        no title
-      </i>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <div style="text-align: center">
+        <h3>
+          <a *ngIf="session.settings.title.length > 0">
+            {{sanitize(session.settings.title)}}
+          </a>
+          
+          <i *ngIf="session.settings.title.length === 0"
+             class="fst-italic">
+            no title
+          </i>
 
-      <button *ngIf="this.can_edit"
-              (click)="show_edit_title_dialog()"
-              [disabled]="edit_pending"
-              class="iconbtn">
-        <i class="fa fa-pencil" title="copy"></i>
-      </button>
-    </h3>
-    <h4>
-      <app-uuidtag [id]="session.id"
-                   [verified]="session.settings.verified_only"
-                   [link]="false"
-                   [show_copy]="true"></app-uuidtag>
-    </h4>
-    <div *ngIf="this.can_edit">
-      {{session.settings.dodo}}
-      <button *ngIf="this.can_edit"
-              (click)="show_edit_dodo_dialog()"
-              [disabled]="edit_pending"
-              class="iconbtn">
-        <i class="fa fa-pencil" title="copy"></i>
-      </button>
+          <button *ngIf="this.can_edit"
+                  (click)="show_edit_title_dialog()"
+                  [disabled]="edit_pending"
+                  class="iconbtn">
+            <i class="fa fa-pencil" title="copy"></i>
+          </button>
+        </h3>
+
+        <div>
+          by 
+          <app-uuidtag [id]="session.host.id" [level]="session.host.settings.level" [verified]="session.host.verification_post.length > 0"></app-uuidtag>
+
+          <app-user-playerislandname [user]="session.host"></app-user-playerislandname>
+
+          <app-userbuttons [user]="session.host"></app-userbuttons>
+        </div>
+
+        <hr/>
+
+        <h4>
+          <app-sessionstatus [status]="session.settings.status"></app-sessionstatus>
+          <button *ngIf="this.can_edit"
+                  (click)="show_edit_session_status_dialog()"
+                  [disabled]="edit_pending"
+                  class="iconbtn">
+            <i class="fa fa-pencil" title="copy"></i>
+          </button>
+        </h4>
+
+        <hr/>
+
+        <div *ngIf="this.can_edit">
+          <button (click)="show_edit_dodo_dialog()"
+                  [disabled]="edit_pending"
+                  class="btn btn-sm btn-primary">
+            Show / Edit Dodo Code
+          </button>
+        </div>
+
+        <div>
+          last updated 
+          <a ngbTooltip="created on {{session.created.toLocaleString()}}, last updated {{session.updated.toLocaleString()}}">
+            {{this.time_since_last_update_string}}
+          </a>
+        </div>
+
+        <div *ngIf="session.settings.turnip_prices > 0 || this.can_edit">
+          Turnip prices: {{session.settings.turnip_prices}}
+
+          <button *ngIf="this.can_edit"
+                  (click)="show_edit_turnip_prices_dialog()"
+                  [disabled]="edit_pending"
+                  class="iconbtn">
+            <i class="fa fa-pencil" title="copy"></i>
+          </button>
+        </div>
+
+        <hr/>
+
+        <div class="description">
+          <button *ngIf="this.can_edit"
+                  (click)="show_edit_description_dialog()"
+                  [disabled]="edit_pending"
+                  class="iconbtn float-right"
+                  style="margin-left: -100%; font-size: 14pt;">
+            <i class="fa fa-pencil" title="copy"></i>
+          </button>
+          <div *ngIf="session.settings.description.length > 0"
+                class="ml-3 mr-3">
+            {{sanitize(session.settings.description)}}
+          </div>
+          <div *ngIf="session.settings.description.length <= 0"
+                class="ml-3 mr-3 text-muted small font-italic">
+            no description
+          </div>
+        </div>
+      </div>
     </div>
-
-    <app-sessionstatus [status]="session.settings.status"></app-sessionstatus>
-    <button *ngIf="this.can_edit"
-            (click)="show_edit_session_status_dialog()"
-            [disabled]="edit_pending"
-            class="iconbtn">
-      <i class="fa fa-pencil" title="copy"></i>
-    </button>
-
-    <div>
-      by 
-      <app-uuidtag [id]="session.host.id" [level]="session.host.settings.level" [verified]="session.host.verification_post.length > 0"></app-uuidtag>
-
-      <app-user-playerislandname [user]="session.host"></app-user-playerislandname>
-
-      <app-userbuttons [user]="session.host"></app-userbuttons>
-    </div>
-
-    <div>
-      last updated 
-      <a ngbTooltip="created on {{session.created.toLocaleString()}}, last updated {{session.updated.toLocaleString()}}">
-        {{this.time_since_last_update_string}}
-      </a>
-    </div>
-
-    <div *ngIf="session.settings.turnip_prices > 0 || this.can_edit">
-      Turnip prices: {{session.settings.turnip_prices}}
-
-      <button *ngIf="this.can_edit"
-              (click)="show_edit_turnip_prices_dialog()"
-              [disabled]="edit_pending"
-              class="iconbtn">
-        <i class="fa fa-pencil" title="copy"></i>
-      </button>
-    </div>
-
-    <h5>
-      description
-
-      <button *ngIf="this.can_edit"
-              (click)="show_edit_description_dialog()"
-              [disabled]="edit_pending"
-              class="iconbtn">
-        <i class="fa fa-pencil" title="copy"></i>
-      </button>
-    </h5>
-
-    <div class="container description">
-      <span *ngIf="session.settings.description.length > 0">
-        {{sanitize(session.settings.description)}}
-      </span>
-    </div>
-
-    <ng-template [ngIf]="this.can_edit_after_closed">
-      <button (click)="toggle_unlisted()"
-              [disabled]="edit_pending"
-              aria-toggle="button"
-              class="btn btn-sm btn-secondary"
-              >
-        {{session.settings.unlisted ? 'unlisted' : 'listed'}}
-      </button>
-      <button (click)="toggle_public_requesters()"
-              [disabled]="edit_pending"
-              aria-toggle="button"
-              class="btn btn-sm btn-secondary ml-2"
-              >
-        {{session.settings.public_requesters ? 'requesters public' : 'requesters private'}}
-      </button>
-      <button (click)="toggle_verified_only()"
-              [disabled]="edit_pending"
-              aria-toggle="button"
-              class="btn btn-sm btn-secondary ml-2"
-              >
-        {{session.settings.verified_only ? 'verified-only' : 'not verified-only'}}
-      </button>
-      <button (click)="toggle_auto_accept_verified()"
-              [disabled]="edit_pending"
-              aria-toggle="button"
-              class="btn btn-sm btn-secondary ml-2"
-              >
-        {{session.settings.auto_accept_verified ? 'auto-accept verified' : 'not auto-accept verified'}}
-      </button>
-
-    </ng-template>
   </div>
   <hr/>
+  <!-- session join part -->
   <ng-template [ngIf]="session.settings.status !== SessionStatus.Closed && userService.logged_in && this.userService.user.id.value !== session.host.id.value">
     <ng-template [ngIf]="!session.settings.verified_only || userService.user.settings.level >= Level.Moderator || userService.user.verification_post.length > 0">
       <button *ngIf="this.session.requester_status === RequesterStatus.None
@@ -190,7 +180,8 @@
         {{req.user.playername}}
         <app-userbuttons [user]="req.user"></app-userbuttons>
 
-        <ng-template [ngIf]="is_host">
+        <div *ngIf="is_host"
+             class="float-right">
           <button *ngIf="req.status === RequesterStatus.Sent"
                   (click)="accept_requester(req.user.id)"
                   type="button"
@@ -201,7 +192,7 @@
           <button *ngIf="req.status === RequesterStatus.Sent"
                   (click)="reject_requester(req.user.id)"
                   type="button"
-                  class="btn btn-danger"
+                  class="btn btn-danger ml-2"
                   >
             reject
           </button>
@@ -214,12 +205,12 @@
                      req.status === RequesterStatus.Rejected ? 'widthdraw reject' :
                      '' }}
           </button>
-        </ng-template>
+        </div>
       </li>
     </ng-template>
   </ul>
   </ng-template>
-</ng-template>
+</div>
 
 <div *ngIf="!pending && session === undefined" class="alert alert-danger" role="alert">
   This session does not exist.
@@ -233,9 +224,13 @@
 <!--dodo dialog-->
 <ng-template #editDodoDialog let-modal let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <h4 class="modal-title">Edit Dodo Code</h4>
+    <h4 class="modal-title">Dodo Code</h4>
   </div>
   <div class="modal-body">
+    <small *ngIf="userService.user.settings.level >= Level.Moderator
+           && userService.user.id.value !== session.host.id.value">
+      As Moderator / Admin, you can see all Dodo Codes. Only use this information to do your job, e.g. verify if a Dodo Code is legitimate or not.
+    </small>
     <input id="dodo"
            maxlength="5"
            class="form-control {{dodo_invalid ? 'is-invalid' : ''}}"
@@ -450,6 +445,67 @@
             (click)="submit_edit_session_status()"
             [disabled]="pending || edit_pending || session_status_form.pending">
       submit
+    </button>
+  </div>
+</ng-template>
+
+<!--edit session dialog-->
+<ng-template #editSessionDialog let-modal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Extra Session Settings</h4>
+  </div>
+  <div class="modal-body">
+    <div>
+      <p>Whether or not the session should appear publically in the session list.</p>
+      <p>The session is always accessible by the direct link.</p>
+      <button (click)="toggle_unlisted()"
+              [disabled]="edit_pending"
+              aria-toggle="button"
+              class="btn btn-secondary"
+              >
+        {{session.settings.unlisted ? 'unlisted' : 'listed'}}
+      </button>
+    </div>
+    <hr/>
+    <div>
+      <p>TODO</p>
+      <button (click)="toggle_public_requesters()"
+              [disabled]="edit_pending"
+              aria-toggle="button"
+              class="btn btn-secondary"
+              >
+        {{session.settings.public_requesters ? 'requesters public' : 'requesters private'}}
+      </button>
+    </div>
+    <hr/>
+    <div>
+      <p>Whether or not only verified players have access to this session.</p>
+      <button (click)="toggle_verified_only()"
+              [disabled]="edit_pending"
+              aria-toggle="button"
+              class="btn btn-secondary"
+              >
+        {{session.settings.verified_only ? 'verified-only' : 'not verified-only'}}
+      </button>
+    </div>
+    <hr/>
+    <div>
+      <p>Whether or not to automatically accept verified players who want to join.</p>
+      <button (click)="toggle_auto_accept_verified()"
+              [disabled]="edit_pending"
+              aria-toggle="button"
+              class="btn btn-secondary"
+              >
+        {{session.settings.auto_accept_verified ? 'auto-accept verified' : 'not auto-accept verified'}}
+      </button>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-primary"
+            (click)="modal.close('cancel')"
+            [disabled]="pending || edit_pending">
+      OK
     </button>
   </div>
 </ng-template>

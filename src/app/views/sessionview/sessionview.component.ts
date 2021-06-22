@@ -47,6 +47,7 @@ export class SessionviewComponent implements OnInit, OnDestroy
     @ViewChild("editDescriptionDialog", { static: false }) editDescriptionDialog: ElementRef;
     @ViewChild("editTurnipsDialog", { static: false }) editTurnipsDialog: ElementRef;
     @ViewChild("editSessionStatusDialog", { static: false }) editSessionStatusDialog: ElementRef;
+    @ViewChild("editSessionDialog", { static: false }) editSessionDialog: ElementRef;
     @ViewChild("closeSessionDialog", { static: false }) closeSessionDialog: ElementRef;
     dialogRef: any;
 
@@ -431,6 +432,11 @@ export class SessionviewComponent implements OnInit, OnDestroy
     submit_edit_session_status()
     {
         this.submit_edit_request({status: this.session_status, dodo_leaked: this.dodo_leaked});
+    }
+
+    show_edit_session_dialog()
+    {
+        this.dialogRef = this.modalService.open(this.editSessionDialog, {backdrop: 'static'});
     }
 
     show_close_session_dialog()
