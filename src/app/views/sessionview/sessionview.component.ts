@@ -106,7 +106,7 @@ export class SessionviewComponent implements OnInit, OnDestroy
     set turnips(val: number) { this.turnips_form.setValue(val, {onlySelf: true}); }
     get turnips_invalid(): boolean { return form_control_invalid(this.turnips_form); }
 
-    session_status_form = new FormControl('');
+    session_status_form = new FormControl(0);
 
     get session_status(): Session.SessionStatus { return this.session_status_form.value; }
     set session_status(val: Session.SessionStatus) { this.session_status_form.setValue(val, {onlySelf: true}); }
@@ -445,7 +445,15 @@ export class SessionviewComponent implements OnInit, OnDestroy
 
     submit_edit_session_status()
     {
-        this.submit_edit_request({status: this.session_status, dodo_leaked: this.dodo_leaked});
+        const stat = this.session_status;
+        var status: number = 0;
+
+        if (typeof stat === "string")
+            status = parseInt(stat);
+        else
+            status = stat;
+
+        this.submit_edit_request({status: status, dodo_leaked: this.dodo_leaked});
     }
 
     show_edit_session_dialog()
