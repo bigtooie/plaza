@@ -265,6 +265,15 @@ export class UserService
 
         this.socket_callback(Msg.SessionChanged, (res: Msg.SessionChanged) =>
         {
+            if (this.current_session !== undefined && res.session.value === this.current_session.id.value)
+            {
+                if ('status' in res.changes)
+                    this.current_session.settings.status = res.changes.status;
+
+                if ('requester_count' in res.changes)
+                    this.current_session.requester_count = res.changes.requester_count;
+            }
+
             const callback = this.w.watched_session_changes.get(res.session.value);
 
             if (callback === undefined)
