@@ -43,6 +43,7 @@ export const sessions =
     status: 'status',
     unlisted: 'unlisted',
     public_requesters: 'public_requesters',
+    public_requester_count: 'public_requester_count',
     verified_only: 'verified_only',
     auto_accept_verified: 'auto_accept_verified'
 };

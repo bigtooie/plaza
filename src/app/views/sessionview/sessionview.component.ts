@@ -171,6 +171,14 @@ export class SessionviewComponent implements OnInit, OnDestroy
              || this.userService.user.id.value === this.session.host.id.value)))
     }
 
+    get can_watch_requester_count(): boolean
+    {
+        return this.session !== undefined && (this.session.settings.public_requester_count
+        || (this.userService.logged_in
+            && (this.userService.user.settings.level >= User.Level.Moderator
+             || this.userService.user.id.value === this.session.host.id.value)))
+    }
+
     get is_host(): boolean
     {
         return this.session !== undefined
@@ -269,6 +277,12 @@ export class SessionviewComponent implements OnInit, OnDestroy
         if ('public_requesters' in changes)
             this.session.settings.public_requesters = changes.public_requesters;
 
+        if ('public_requester_count' in changes)
+            this.session.settings.public_requester_count = changes.public_requester_count;
+
+        if ('requester_count' in changes)
+            this.session.requester_count = changes.requester_count;
+
         if ('verified_only' in changes)
             this.session.settings.verified_only = changes.verified_only;
 
@@ -342,7 +356,7 @@ export class SessionviewComponent implements OnInit, OnDestroy
     }
 
     // edit
-    private submit_edit_request(data: any, callback: any = undefined)
+    private submit_edit_request(data: any, callback: any = undefined, close: boolean = true)
     {
         if (this.edit_pending)
             return;
@@ -353,7 +367,7 @@ export class SessionviewComponent implements OnInit, OnDestroy
                 .subscribe(
                 (_) =>
                 {
-                    if (this.dialogRef !== undefined)
+                    if (this.dialogRef !== undefined && close)
                         this.dialogRef.close();
 
                     if (callback !== undefined)
@@ -366,7 +380,7 @@ export class SessionviewComponent implements OnInit, OnDestroy
                     this.alert.show_error("Wuh-oh!", err.message,
                         () =>
                         {
-                            if (this.dialogRef !== undefined)
+                            if (this.dialogRef !== undefined && close)
                                 this.dialogRef.close();
 
                             this.edit_pending = false;
@@ -452,22 +466,22 @@ export class SessionviewComponent implements OnInit, OnDestroy
 
     toggle_unlisted()
     {
-        this.submit_edit_request({unlisted: !this.session.settings.unlisted});
+        this.submit_edit_request({unlisted: !this.session.settings.unlisted}, undefined, false);
     }
 
-    toggle_public_requesters()
+    toggle_public_requester_count()
     {
-        this.submit_edit_request({public_requesters: !this.session.settings.public_requesters});
+        this.submit_edit_request({public_requester_count: !this.session.settings.public_requester_count}, undefined, false);
     }
 
     toggle_verified_only()
     {
-        this.submit_edit_request({verified_only: !this.session.settings.verified_only});
+        this.submit_edit_request({verified_only: !this.session.settings.verified_only}, undefined, false);
     }
 
     toggle_auto_accept_verified()
     {
-        this.submit_edit_request({auto_accept_verified: !this.session.settings.auto_accept_verified});
+        this.submit_edit_request({auto_accept_verified: !this.session.settings.auto_accept_verified}, undefined, false);
     }
 
     request_dodo()

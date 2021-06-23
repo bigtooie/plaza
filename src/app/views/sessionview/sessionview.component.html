@@ -3,8 +3,7 @@
   <!-- close button -->
   <div *ngIf="can_edit_after_closed"
        class="settings-bar">
-    <button *ngIf="can_edit"
-            (click)="show_edit_session_dialog()"
+    <button (click)="show_edit_session_dialog()"
             class="btn btn-secondary settings-bar-btn">
       <i class="fa fa-gear"></i>
     </button>
@@ -115,7 +114,9 @@
       </div>
     </div>
   </div>
+
   <hr/>
+
   <!-- session join part -->
   <ng-template [ngIf]="session.settings.status !== SessionStatus.Closed && userService.logged_in && this.userService.user.id.value !== session.host.id.value">
     <ng-template [ngIf]="!session.settings.verified_only || userService.user.settings.level >= Level.Moderator || userService.user.verification_post.length > 0">
@@ -168,6 +169,11 @@
   </a>
 
   <hr/>
+  <div *ngIf="can_watch_requester_count"
+       class="mb-2">
+    {{session.requester_count[RequesterStatus.Accepted]}} accepted / 
+    {{session.requester_count[RequesterStatus.Sent]}} requesting to get in
+  </div>
   <!-- requesters -->
   <ng-template [ngIf]="can_watch_requesters">
   <ul class="list-group">
@@ -461,6 +467,7 @@
       <button (click)="toggle_unlisted()"
               [disabled]="edit_pending"
               aria-toggle="button"
+              type="button"
               class="btn btn-secondary"
               >
         {{session.settings.unlisted ? 'unlisted' : 'listed'}}
@@ -468,13 +475,14 @@
     </div>
     <hr/>
     <div>
-      <p>TODO</p>
-      <button (click)="toggle_public_requesters()"
+      <p>Whether or not to publically display the number of players who have access to the Dodo Code and how many requested the Dodo Code in total.</p>
+      <button (click)="toggle_public_requester_count()"
               [disabled]="edit_pending"
               aria-toggle="button"
+              type="button"
               class="btn btn-secondary"
               >
-        {{session.settings.public_requesters ? 'requesters public' : 'requesters private'}}
+        {{session.settings.public_requester_count ? 'requester count public' : 'requester count private'}}
       </button>
     </div>
     <hr/>
@@ -483,6 +491,7 @@
       <button (click)="toggle_verified_only()"
               [disabled]="edit_pending"
               aria-toggle="button"
+              type="button"
               class="btn btn-secondary"
               >
         {{session.settings.verified_only ? 'verified-only' : 'not verified-only'}}
@@ -494,6 +503,7 @@
       <button (click)="toggle_auto_accept_verified()"
               [disabled]="edit_pending"
               aria-toggle="button"
+              type="button"
               class="btn btn-secondary"
               >
         {{session.settings.auto_accept_verified ? 'auto-accept verified' : 'not auto-accept verified'}}

@@ -210,6 +210,10 @@ function register_watch_session_callbacks(socket: sio.Socket, usr: User.User)
 async function notify_new_requester(req: Session.Requester)
 {
     const room = WATCH_SESSION_REQUESTORS_ROOM(req.session);
+    const sess = await db.get_session_by_id(req.session);
+
+    const reqc = db.get_requester_count(sess);
+    const publicreqc = db.get_public_requester_count(sess);
 
     for (const [_, socket] of io.sockets.sockets)
     {
@@ -222,6 +226,12 @@ async function notify_new_requester(req: Session.Requester)
         if (rv === undefined)
             continue;
 
+        if (usr.level >= User.Level.Moderator
+         || usr.id.value === sess.host.value)
+            socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': reqc}));
+        else if (sess.public_requester_count)
+            socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': publicreqc}));
+
         socket.emit(Msg.NewRequester.ID, new Msg.NewRequester(rv));
     }
 }
@@ -231,12 +241,21 @@ async function notify_requester_changed(req: Session.Requester)
     const room = WATCH_SESSION_REQUESTORS_CHANGES_ROOM(req.session);
     const sess = await db.get_session_by_id(req.session);
 
+    const reqc = db.get_requester_count(sess);
+    const publicreqc = db.get_public_requester_count(sess);
+
     for (const [_, socket] of io.sockets.sockets)
     {
         if (!socket.rooms.has(room))
             continue;
 
         const usr = await get_user_from_socket(socket);
+
+        if (usr.level >= User.Level.Moderator
+         || usr.id.value === sess.host.value)
+            socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': reqc}));
+        else if (sess.public_requester_count)
+            socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': publicreqc}));
 
         if (sess.public_requesters
          || (usr !== undefined
@@ -507,6 +526,9 @@ export async function session_changed(changer: UserID, sid: SessionID, changes: 
 
     if ('public_requesters' in changes)
         public_changes.public_requesters = changes.public_requesters;
+
+    if ('public_requester_count' in changes)
+        public_changes.public_requester_count = changes.public_requester_count;
 
     if ('verified_only' in changes)
         public_changes.verified_only = changes.verified_only;

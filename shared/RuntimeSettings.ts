@@ -175,7 +175,7 @@ export const registrations_enabled = new BoolSetting(
     true,
     Visibility.Public,
     "Account Registration",
-    "Whether new accounts can be registered or not. Admins can always register new accounts."
+    "Whether new accounts can be registered or not. Admins and Moderators can always register new accounts."
 );
 
 export const register_require_security_question = new BoolSetting(

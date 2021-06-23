@@ -50,7 +50,7 @@ export class NewsessionComponent implements OnInit
         ],
         turnips: [0, [Validators.min(Session.MIN_TURNIPS), Validators.max(Session.MAX_TURNIPS)]],
         unlisted: [false],
-        public_requesters: [false],
+        public_requester_count: [false],
         verified_only: [false],
         auto_accept_verified: [false]
     });
@@ -78,8 +78,8 @@ export class NewsessionComponent implements OnInit
     set turnips(val: number) { this._form_set("turnips", val); }
     get unlisted(): boolean { return this._form_get("unlisted"); }
     set unlisted(val: boolean) { this._form_set("unlisted", val); }
-    get public_requesters(): boolean { return this._form_get("public_requesters"); }
-    set public_requesters(val: boolean) { this._form_set("public_requesters", val); }
+    get public_requester_count(): boolean { return this._form_get("public_requester_count"); }
+    set public_requester_count(val: boolean) { this._form_set("public_requester_count", val); }
     get verified_only(): boolean { return this._form_get("verified_only"); }
     set verified_only(val: boolean) { this._form_set("verified_only", val); }
     get auto_accept_verified(): boolean { return this._form_get("auto_accept_verified"); }
@@ -115,7 +115,8 @@ export class NewsessionComponent implements OnInit
                                             this.description,
                                             this.turnips,
                                             this.unlisted,
-                                            this.public_requesters,
+                                            false, // public_requesters
+                                            this.public_requester_count,
                                             this.verified_only,
                                             this.auto_accept_verified
                                            )

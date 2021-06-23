@@ -1266,6 +1266,18 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
             set.updated = await db.set_session_public_requesters(target.id, set.public_requesters);
         }
 
+        if ('public_requester_count' in set && (typeof set.public_requester_count === 'boolean'))
+        {
+            if (target.status === Session.SessionStatus.Closed)
+            {
+                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                return;
+            }
+
+            logger.debug(`user ${usr.id.readable} set requester count of session ${target.id.readable} to ${set.public_requester_count ? 'public' : 'private'}`);
+            set.updated = await db.set_session_public_requester_count(target.id, set.public_requester_count);
+        }
+
         if ('status' in set && (typeof set.status === 'number'))
         {
             if (target.status === Session.SessionStatus.Closed)

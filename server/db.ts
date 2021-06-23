@@ -87,6 +87,26 @@ export async function get_userview(viewer: User.User,
     return uv;
 }
 
+export function get_requester_count(sess: Session.Session): number[]
+{
+    const ret: number[] = [0, 0, 0, 0, 0];
+
+    for (const req of sess.requesters)
+        ret[req.status] += 1;
+
+    return ret;
+}
+
+export function get_public_requester_count(sess: Session.Session): number[]
+{
+    const ret = get_requester_count(sess);
+    ret[Session.RequesterStatus.None] = 0;
+    ret[Session.RequesterStatus.Withdrawn] = 0;
+    ret[Session.RequesterStatus.Rejected] = 0;
+
+    return ret;
+}
+
 export async function get_sessionview(viewer: User.User,
                                       sess: Session.Session
                                      ): Promise<Session.SessionView>
@@ -99,6 +119,7 @@ export async function get_sessionview(viewer: User.User,
     sv.settings.status = sess.status;
     sv.settings.unlisted = sess.unlisted;
     sv.settings.public_requesters = sess.public_requesters;
+    sv.settings.public_requester_count = sess.public_requester_count;
     sv.settings.verified_only = sess.verified_only;
     sv.settings.auto_accept_verified = sess.auto_accept_verified;
     sv.settings.dodo = '';
@@ -107,12 +128,21 @@ export async function get_sessionview(viewer: User.User,
     sv.created = sess.created;
     sv.updated = sess.updated;
     sv.requester_status = Session.RequesterStatus.None;
+    sv.requester_count = [0, 0, 0, 0, 0];
+
+    if (sess.public_requester_count)
+        sv.requester_count = get_public_requester_count(sess);
 
     if (viewer !== undefined)
     {
-        if (viewer.id.value === sess.host.value
-         || viewer.level >= User.Level.Moderator)
+        const host_or_mod = (viewer.id.value === sess.host.value
+                          || viewer.level >= User.Level.Moderator);
+
+        if (host_or_mod)
+        {
             sv.settings.dodo = sess.dodo;
+            sv.requester_count = get_requester_count(sess);
+        }
 
         for (const req of sess.requesters)
             if (req.user.value === viewer.id.value)
@@ -1126,6 +1156,22 @@ async function post_process_session(sess: Session.Session)
     updateDoc['$set'] = {};
 
     // post 0.9.0
+    if (sess.public_requester_count === null || sess.public_requester_count === undefined)
+    {
+        sess.public_requester_count = false;
+
+        updateDoc['$set'][schema.sessions.public_requester_count] = sess.public_requester_count;
+        logger.info(`DB: Session ${sess.id.readable} updated to have public_requester_count`);
+    }
+
+    if (sess.verified_only === null || sess.verified_only === undefined)
+    {
+        sess.verified_only = false;
+
+        updateDoc['$set'][schema.sessions.verified_only] = sess.verified_only;
+        logger.info(`DB: Session ${sess.id.readable} updated to have verified_only`);
+    }
+
     if (sess.auto_accept_verified === null || sess.auto_accept_verified === undefined)
     {
         sess.auto_accept_verified = false;
@@ -1228,6 +1274,7 @@ export async function new_session(uid: UserID,
     sess.unlisted = rreq.unlisted;
     sess.status = Session.SessionStatus.Open;
     sess.public_requesters = rreq.public_requesters;
+    sess.public_requester_count = rreq.public_requester_count;
     sess.verified_only = rreq.verified_only;
     sess.auto_accept_verified = rreq.auto_accept_verified;
     sess.created = new Date();
@@ -1252,6 +1299,8 @@ export async function new_session(uid: UserID,
         status: sess.status,
         unlisted: sess.unlisted,
         public_requesters: sess.public_requesters,
+        public_requester_count: sess.public_requester_count,
+        verified_only: sess.verified_only,
         auto_accept_verified: sess.auto_accept_verified
     });
 
@@ -1420,14 +1469,17 @@ export const set_session_turnip_prices = async (id: SessionID, turnip_prices: nu
 export const set_session_unlisted = async (id: SessionID, unlisted: boolean) =>
     modify_session(id, { $set: { unlisted: unlisted } });
 
+export const set_session_public_requesters = async (id: SessionID, public_requesters: boolean) =>
+    modify_session(id, { $set: { public_requesters: public_requesters } });
+
+export const set_session_public_requester_count = async (id: SessionID, public_requester_count: boolean) =>
+    modify_session(id, { $set: { public_requester_count: public_requester_count } });
+
 export const set_session_verified_only = async (id: SessionID, verified_only: boolean) =>
     modify_session(id, { $set: { verified_only: verified_only } });
 
 export const set_session_auto_accept_verified = async (id: SessionID, auto_accept_verified: boolean) =>
     modify_session(id, { $set: { auto_accept_verified: auto_accept_verified } });
-
-export const set_session_public_requesters = async (id: SessionID, public_requesters: boolean) =>
-    modify_session(id, { $set: { public_requesters: public_requesters } });
 
 export const set_session_status = async (id: SessionID, status: Session.SessionStatus) =>
     modify_session(id, { $set: { status: status } });

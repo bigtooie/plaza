@@ -112,7 +112,10 @@ export class Session
     turnip_prices: number = 0;
     status: SessionStatus = SessionStatus.Open;
     unlisted: boolean = false;
+
+    // public_requesters is deprecated since 0.9.3
     public_requesters: boolean = false;
+    public_requester_count: boolean = false;
     verified_only: boolean = false;
     auto_accept_verified: boolean = false;
 
@@ -134,6 +137,7 @@ export class Session
         ret.status = other.status;
         ret.unlisted = other.unlisted;
         ret.public_requesters = other.public_requesters;
+        ret.public_requester_count = other.public_requester_count;
         ret.verified_only = other.verified_only;
         ret.auto_accept_verified = other.auto_accept_verified;
 
@@ -150,6 +154,7 @@ export class SessionViewSettings
     status: SessionStatus;
     unlisted: boolean;
     public_requesters: boolean;
+    public_requester_count: boolean;
     verified_only: boolean;
     auto_accept_verified: boolean;
 }
@@ -161,6 +166,7 @@ export class SessionView
     created: Date;
     updated: Date;
     requester_status: RequesterStatus; // status of the user who views the session
+    requester_count: number[]; // number of requesters of each status
     settings: SessionViewSettings;
 
     static copy(other: SessionView): SessionView
@@ -174,6 +180,7 @@ export class SessionView
         ret.created = new Date(other.created);
         ret.updated = new Date(other.updated);
         ret.requester_status = other.requester_status;
+        ret.requester_count = other.requester_count;
 
         ret.settings = other.settings;
 

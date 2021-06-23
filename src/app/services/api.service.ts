@@ -262,6 +262,7 @@ export class ApiService
                        turnips: number,
                        unlisted: boolean,
                        public_requesters: boolean,
+                       public_requester_count: boolean,
                        verified_only: boolean,
                        auto_accept_verified: boolean,
                       ): Observable<Req.NewSessionResponse>
@@ -279,6 +280,7 @@ export class ApiService
                                       turnips,
                                       unlisted,
                                       public_requesters,
+                                      public_requester_count,
                                       verified_only,
                                       auto_accept_verified
                                      ));
