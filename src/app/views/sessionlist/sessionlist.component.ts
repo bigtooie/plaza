@@ -25,6 +25,7 @@ class SessionlistParams
     status?: string = undefined;
     host_starred?: string = undefined;
     host_blocked?: string = undefined;
+    host_verified?: string = undefined;
     order_by?: string = undefined;
     order?: string = undefined;
 }
@@ -40,6 +41,7 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
     GetSessionsOrderCategoryValues = Req.GetSessionsOrderCategoryValues;
     SessionStatusSearchFilterValues = Req.SessionStatusSearchFilterValues;
     SearchFilterValues = Req.SearchFilterValues;
+    OnlySearchFilterValues = Req.OnlySearchFilterValues;
     range = range;
     get_duration_text_since = get_duration_text_since;
 
@@ -52,6 +54,7 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
         status_filter: [Req.SessionStatusSearchFilter.OpenOrFull],
         host_starred_filter: [Req.SearchFilter.None],
         host_blocked_filter: [Req.SearchFilter.Hide],
+        host_verified_filter: [Req.OnlySearchFilter.None],
         order_by: [Req.GetSessionsOrderCategory.Updated],
         reversed: true
     });
@@ -75,6 +78,8 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
     set host_starred_filter(val: Req.SearchFilter) { this._form_set("host_starred_filter", val); }
     get host_blocked_filter(): Req.SearchFilter { return this._form_get("host_blocked_filter"); }
     set host_blocked_filter(val: Req.SearchFilter) { this._form_set("host_blocked_filter", val); }
+    get host_verified_filter(): Req.OnlySearchFilter { return this._form_get("host_verified_filter"); }
+    set host_verified_filter(val: Req.OnlySearchFilter) { this._form_set("host_verified_filter", val); }
     get order_by(): Req.GetSessionsOrderCategory { return this._form_get("order_by"); }
     set order_by(val: Req.GetSessionsOrderCategory) { this._form_set("order_by", val); }
     get reversed(): boolean { return this._form_get("reversed"); }
@@ -174,6 +179,10 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
             if (Req.SearchFilterValues.indexOf(params.host_blocked) > -1)
                 this.host_blocked_filter = params.host_blocked;
 
+        if ('host_verified' in params)
+            if (Req.OnlySearchFilterValues.indexOf(params.host_verified) > -1)
+                this.host_verified_filter = params.host_verified;
+
         if ('order_by' in params)
             if (Req.GetSessionsOrderCategoryValues.indexOf(params.order_by) > -1)
                 this.order_by = params.order_by;
@@ -235,6 +244,9 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
         if (this.host_blocked_filter !== Req.SearchFilter.Hide)
             params.host_blocked = this.host_blocked_filter;
 
+        if (this.host_verified_filter !== Req.OnlySearchFilter.None)
+            params.host_verified = this.host_verified_filter;
+
         if (this.order_by !== Req.GetSessionsOrderCategory.Updated)
             params.order_by = this.order_by;
 
@@ -279,6 +291,7 @@ export class SessionlistComponent extends PagingComponent<SessionView> implement
                               this.status_filter,
                               this.host_starred_filter,
                               this.host_blocked_filter,
+                              this.host_verified_filter,
                               this.order_by,
                               this.reversed
                              )

@@ -47,6 +47,7 @@ export class GetSessionsRequest extends base.AuthenticatedRequest
         public status_filter: SessionStatusSearchFilter,
         public host_starred_filter: base.SearchFilter,
         public host_blocked_filter: base.SearchFilter,
+        public host_verified_filter: base.OnlySearchFilter,
         public order_by: GetSessionsOrderCategory,
         public reversed: boolean
     )
@@ -68,6 +69,7 @@ export class GetSessionsRequest extends base.AuthenticatedRequest
             other.status_filter,
             other.host_starred_filter,
             other.host_blocked_filter,
+            other.host_verified_filter,
             other.order_by,
             other.reversed
         );

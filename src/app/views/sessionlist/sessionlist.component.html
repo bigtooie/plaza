@@ -87,7 +87,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="gap: 1rem;">
       <div class="col-sm mr-sm-5">
         <div class="row form-group">
           <label class="form-select-label flex-sm-column col-form-label mr-sm-3 pt-sm-1">
@@ -111,6 +111,21 @@
           <select formControlName="host_blocked_filter"
                   class="custom-select custom-select-sm col-sm">
             <option *ngFor="let val of SearchFilterValues"
+                    [ngValue]="val">
+              {{val}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-sm">
+        <div class="row form-group">
+          <label class="form-select-label flex-sm-column col-form-label mr-sm-3 pt-sm-1">
+            host <i class="fa fa-check-circle"></i>
+          </label>
+          <select formControlName="host_verified_filter"
+                  class="custom-select custom-select-sm col-sm">
+            <option *ngFor="let val of OnlySearchFilterValues"
                     [ngValue]="val">
               {{val}}
             </option>

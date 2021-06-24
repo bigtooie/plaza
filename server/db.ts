@@ -858,8 +858,8 @@ export async function get_sessions(viewer: User.User,
             }
         },
         {
-            $set: { 'host_user': { $first: '$host_user_result' } }
-        },
+            $set: { 'host_user': { $first: '$host_user_result' } },
+        }
     ];
 
     if (viewer.level < User.Level.Moderator)
@@ -869,6 +869,24 @@ export async function get_sessions(viewer: User.User,
         });
 
         host_joinDoc.push({ $match: { 'blocked_by_host': false } });
+    }
+
+    const host_verifiedDoc: any = {};
+
+    switch (rreq.host_verified_filter)
+    {
+    case (Req.OnlySearchFilter.None):
+        break;
+    case (Req.OnlySearchFilter.Only):
+        host_verifiedDoc['$match'] = 
+            {
+                $or:
+                [
+                    {'host_user.level': { $gte: User.Level.Verifier }},
+                    { $expr: { $gt: [ {'$strLenCP': '$host_user.verification_post'}, 0] }}
+                ]
+            };
+        break;
     }
 
     var session_searchDoc: any = {};
@@ -1098,6 +1116,9 @@ export async function get_sessions(viewer: User.User,
         pipeline.push({ $match: filterDoc });
 
     pipeline.push.apply(pipeline, host_joinDoc);
+
+    if (!empty_or_nothing(host_verifiedDoc))
+        pipeline.push(host_verifiedDoc);
 
     if (!empty_or_nothing(session_searchDoc))
         pipeline.push({ $match: session_searchDoc});

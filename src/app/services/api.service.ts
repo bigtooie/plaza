@@ -17,9 +17,7 @@ import { APIEndpointType, APIEndpoint, endpoints } from '@shared/APIEndpoints';
 import * as Settings from '@shared/RuntimeSettings';
 import * as Req from '@shared/RequestResponse';
 
-const fake_delay = 2000;
-
-const users: User[] = [];
+const average_use_time = 4 * 60 * 60 * 1000;
 
 function id_from_param(id?: string | ID) : string | undefined
 {
@@ -51,18 +49,29 @@ export class ApiService
 
     private load_from_storage()
     {
-        const t = sessionStorage.getItem(storageKey);
+        const t = localStorage.getItem(storageKey);
 
-        if (t !== null)
-            this.token = new Token(t);
+        if (t === null || t === undefined)
+            return;
+
+        const tok = new Token(t);
+        const dt = tok.expire_date.getTime() - Date.now();
+
+        if (dt < average_use_time)
+        {
+            this.token = undefined;
+            this.save_to_storage();
+        }
+        else
+            this.token = tok;
     }
 
     private save_to_storage()
     {
         if (this.token !== undefined)
-            sessionStorage.setItem(storageKey, this.token.jwt);
+            localStorage.setItem(storageKey, this.token.jwt);
         else
-            sessionStorage.removeItem(storageKey);
+            localStorage.removeItem(storageKey);
     }
 
     private send_request<T>(type: Copyable<T>, ep: APIEndpoint, request: any): Observable<T | undefined>
@@ -233,6 +242,7 @@ export class ApiService
                  status_filter: Req.SessionStatusSearchFilter,
                  host_starred_filter: Req.SearchFilter,
                  host_blocked_filter: Req.SearchFilter,
+                 host_verified_filter: Req.OnlySearchFilter,
                  order_by: Req.GetSessionsOrderCategory,
                  reversed: boolean
                 ): Observable<Req.GetSessionsResponse | undefined>
@@ -251,6 +261,7 @@ export class ApiService
                                        status_filter,
                                        host_starred_filter,
                                        host_blocked_filter,
+                                       host_verified_filter,
                                        order_by,
                                        reversed
                                       ));

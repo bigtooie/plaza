@@ -1,8 +1,5 @@
 import { Token } from "../Token";
 
-const EntriesPerPage: number = 10;
-export { EntriesPerPage };
-
 export enum SearchFilter
 {
     None = "-",
@@ -10,8 +7,15 @@ export enum SearchFilter
     Hide = "hide"
 }
 
-const SearchFilterValues: string[] = Object.values(SearchFilter);
-export { SearchFilterValues };
+export const SearchFilterValues: string[] = Object.values(SearchFilter);
+
+export enum OnlySearchFilter
+{
+    None = "-",
+    Only = "only"
+}
+
+export const OnlySearchFilterValues: string[] = Object.values(OnlySearchFilter);
  
 export abstract class Request
 {
