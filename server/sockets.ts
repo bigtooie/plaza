@@ -18,6 +18,16 @@ const WATCH_SESSION_ROOM = (sid: SessionID) => sid.value;
 const WATCH_SESSION_REQUESTORS_ROOM = (sid: SessionID) => sid.value + "-req";
 const WATCH_SESSION_REQUESTORS_CHANGES_ROOM = (sid: SessionID) => sid.value + "-req-chg";
 
+function get_userid_by_tokenstring(token: TokenString): UserID
+{
+    const sess = login_sessions.get_session_by_tokenstring(token);
+
+    if (sess === undefined)
+        return undefined;
+
+    return sess.user;
+}
+
 async function get_user_by_tokenstring(token: TokenString): Promise<User.User>
 {
     const sess = login_sessions.get_session_by_tokenstring(token);
@@ -28,7 +38,23 @@ async function get_user_by_tokenstring(token: TokenString): Promise<User.User>
     return db.get_user_by_id(sess.user);
 }
 
-var io: sio.Server = undefined;
+function get_userid_from_socket(socket: sio.Socket): UserID
+{
+    if ('auth' in socket.handshake && 'token' in socket.handshake.auth)
+    {
+        const token_ = socket.handshake.auth.token;
+
+        if (token_ !== undefined)
+        {
+            const token = new Token(token_);
+
+            if (login_sessions.is_verified_token(token))
+                return get_userid_by_tokenstring(token.value);
+        }
+    }
+
+    return undefined;
+}
 
 async function get_user_from_socket(socket: sio.Socket): Promise<User.User>
 {
@@ -47,6 +73,8 @@ async function get_user_from_socket(socket: sio.Socket): Promise<User.User>
 
     return Promise.resolve(undefined);
 }
+
+var io: sio.Server = undefined;
 
 function socket_callback<T>(socket: sio.Socket,
                             type: Msg.Message<T>,
@@ -217,7 +245,10 @@ async function notify_new_requester(req: Session.Requester)
 
     for (const [_, socket] of io.sockets.sockets)
     {
-        if (!socket.rooms.has(room))
+        const uid = get_userid_from_socket(socket);
+        const is_host = (uid !== undefined && uid.value === sess.host.value);
+
+        if (!socket.rooms.has(room) && !is_host)
             continue;
 
         const usr = await get_user_from_socket(socket);
@@ -227,7 +258,7 @@ async function notify_new_requester(req: Session.Requester)
             continue;
 
         if (usr.level >= User.Level.Moderator
-         || usr.id.value === sess.host.value)
+         || is_host)
             socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': reqc}));
         else if (sess.public_requester_count)
             socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': publicreqc}));
@@ -246,13 +277,16 @@ async function notify_requester_changed(req: Session.Requester)
 
     for (const [_, socket] of io.sockets.sockets)
     {
-        if (!socket.rooms.has(room))
+        const uid = get_userid_from_socket(socket);
+        const is_host = (uid !== undefined && uid.value === sess.host.value);
+
+        if (!socket.rooms.has(room) && !is_host)
             continue;
 
         const usr = await get_user_from_socket(socket);
 
         if (usr.level >= User.Level.Moderator
-         || usr.id.value === sess.host.value)
+         || is_host)
             socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': reqc}));
         else if (sess.public_requester_count)
             socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': publicreqc}));
