@@ -5,10 +5,9 @@
 {
     border-radius: 0.3em;
     background-color: $container-col;
-    margin-top: 2em;
 
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
     padding-left: 2em;
     padding-right: 2em;
 
@@ -34,7 +33,7 @@ footer
     background-size: auto;
     padding-top: 1rem;
     padding-bottom: 1rem;
-    margin-top: 5rem;
+    margin-top: 0;
     background-color: $blue-bright;
     color: $blue-dark;
     position: relative;
@@ -44,4 +43,12 @@ footer a, footer a:hover, footer a:focus, footer a:active
 {
     color: $blue-dark;
     font-weight: bolder;
+}
+
+@media (min-width: 768px)
+{
+    .mt-md-6
+    {
+        margin-top: 5rem !important;
+    }
 }
