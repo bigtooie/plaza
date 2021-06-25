@@ -1312,6 +1312,21 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         if (leaked_dodo.length > 0)
             await db.dodo_leaked(target.dodo, target.id);
 
+        if ('dodo' in set)
+        {
+            const reqs = target.requesters.filter((r: Session.Requester) => r.got_dodo);
+
+            for (const r of reqs)
+                r.got_dodo = false;
+
+            const updates = reqs.map((r: Session.Requester) => db.set_requester_got_dodo(r.session, r.user, false))
+            await Promise.all(updates);
+
+            // could be optimized...
+            const notifs = reqs.map((r: Session.Requester) => sock.notify_requester_got_dodo_changed(r));
+            await Promise.all(notifs);
+        }
+
         await sock.session_changed(usr.id, target.id, set);
 
         res.status(200).json(new Req.UpdateSessionSettingsResponse());
@@ -1353,17 +1368,19 @@ export async function GetDodo(req: express.Request, res: express.Response)
 
         const usr = res.locals.user;
         var isok = false;
+        var got_dodo_already = false;
+
+        for (const req of sess.requesters)
+            if (req.user.value === usr.id.value)
+            {
+                isok = req.status === Session.RequesterStatus.Accepted;
+                got_dodo_already = req.got_dodo;
+                break;
+            }
 
         // admins can always get dodo except when theyre blocked
         if (usr.level >= User.Level.Admin)
             isok = true
-        else
-            for (const req of sess.requesters)
-                if (req.user.value === usr.id.value)
-                {
-                    isok = req.status === Session.RequesterStatus.Accepted;
-                    break;
-                }
 
         if (!isok)
         {
@@ -1380,6 +1397,14 @@ export async function GetDodo(req: express.Request, res: express.Response)
         }
 
         await db.register_dodo_obtained(usr.id, sess.id, sess.dodo);
+
+        if (!got_dodo_already)
+        {
+            await db.set_requester_got_dodo(sess.id, usr.id, true);
+            const req = await db.get_requester_by_id(sess.id, usr.id);
+
+            await sock.notify_requester_got_dodo_changed(req);
+        }
 
         logger.info(`user ${usr.id.readable} successfully requested dodo of session ${id.readable}`);
         res.status(200).json(new Req.GetDodoResponse(sess.dodo));

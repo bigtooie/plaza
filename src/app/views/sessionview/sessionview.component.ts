@@ -321,23 +321,35 @@ export class SessionviewComponent implements OnInit, OnDestroy
 
     private onRequesterUpdate(c: Msg.RequesterUpdate)
     {
-        for (var req of this.requesters)
-            if (req.user.id.value === c.user.value)
-                req.status = c.status;
+        const changes = c.changes;
+        const is_me = (this.userService.logged_in && this.userService.user.id.value === c.user.value);
 
-        if (this.userService.logged_in
-         && this.userService.user.id.value === c.user.value)
+        if ('got_dodo' in changes)
         {
-            this.session.requester_status = c.status;
+            for (var req of this.requesters)
+                if (req.user.id.value === c.user.value)
+                    req.got_dodo = changes.got_dodo;
+        }
 
-            if (this.session.requester_status === Session.RequesterStatus.Accepted)
-                this.alert.show_info("Hooray!", "You got accepted! You can now get the dodo by pressing the 'show dodo' button");
-            else if (this.session.requester_status === Session.RequesterStatus.Rejected)
-                this.alert.show_info("Oh no!", "You got rejected!");
-            else if (this.session.requester_status === Session.RequesterStatus.Withdrawn)
+        if ('status' in changes)
+        {
+            for (var req of this.requesters)
+                if (req.user.id.value === c.user.value)
+                    req.status = changes.status;
+
+            if (is_me)
             {
-                if (!this.can_watch_requesters)
-                    this.userService.unwatch_session_requesters_updated(this.session.id);
+                this.session.requester_status = changes.status;
+
+                if (this.session.requester_status === Session.RequesterStatus.Accepted)
+                    this.alert.show_info("Hooray!", "You got accepted! You can now get the dodo by pressing the 'show dodo' button");
+                else if (this.session.requester_status === Session.RequesterStatus.Rejected)
+                    this.alert.show_info("Oh no!", "You got rejected!");
+                else if (this.session.requester_status === Session.RequesterStatus.Withdrawn)
+                {
+                    if (!this.can_watch_requesters)
+                        this.userService.unwatch_session_requesters_updated(this.session.id);
+                }
             }
         }
     }

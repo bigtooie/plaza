@@ -30,6 +30,7 @@ export class Requester
     session: SessionID; // what session is the whomst interested in
     status: RequesterStatus = RequesterStatus.None;
     requested_at: Date = new Date();
+    got_dodo: boolean = false;
 
     static copy(other: Requester): Requester
     {
@@ -41,6 +42,7 @@ export class Requester
         r.session = SessionID.copy(other.session);
         r.status = other.status;
         r.requested_at = new Date(other.requested_at);
+        r.got_dodo = other.got_dodo;
         return r;
     }
 }
@@ -51,6 +53,7 @@ export class RequesterView
     session: SessionID;
     status: RequesterStatus;
     requested_at: Date;
+    got_dodo: boolean;
 
     static copy(other: RequesterView)
     {
@@ -62,6 +65,7 @@ export class RequesterView
         ret.session = SessionID.copy(other.session);
         ret.requested_at = new Date(other.requested_at);
         ret.status = other.status;
+        ret.got_dodo = other.got_dodo;
         return ret;
     }
 }

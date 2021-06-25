@@ -170,6 +170,7 @@ export async function get_requesterview_of_session(viewer: User.User,
         rv.user = await get_userview(viewer, viewer);
         rv.session = req.session;
         rv.status = req.status;
+        rv.got_dodo = req.got_dodo;
     }
     else if (session.public_requesters
           || (viewer.id.value === session.host.value)
@@ -179,6 +180,7 @@ export async function get_requesterview_of_session(viewer: User.User,
         rv.user = await get_userview(viewer, viewed);
         rv.session = req.session;
         rv.status = req.status;
+        rv.got_dodo = req.got_dodo;
     }
     else
         return undefined;
@@ -1548,6 +1550,11 @@ function get_requester_from_result(c: any): Session.Requester
     req.status = c.status;
     req.requested_at = c.requested_at;
 
+    // post 0.9.4
+    req.got_dodo = false;
+    if ('got_dodo' in c)
+        req.got_dodo = c.got_dodo;
+
     return req;
 }
 
@@ -1602,6 +1609,18 @@ export async function set_requester_status(sid: SessionID, uid: UserID, status: 
 {
     const set: any = {};
     set[`${schema.sessions.requesters}.$.${schema.requesters.status}`] = status;
+
+    const updateDoc: any = { $set: set };
+    const filterDoc: any = { uuid: sid.value };
+    filterDoc[`${schema.sessions.requesters}.${schema.requesters.user.uuid}`] = uid.value;
+
+    return modify_session_filter(filterDoc, updateDoc, false);
+}
+
+export async function set_requester_got_dodo(sid: SessionID, uid: UserID, got_dodo: boolean)
+{
+    const set: any = {};
+    set[`${schema.sessions.requesters}.$.${schema.requesters.got_dodo}`] = got_dodo;
 
     const updateDoc: any = { $set: set };
     const filterDoc: any = { uuid: sid.value };

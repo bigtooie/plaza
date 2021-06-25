@@ -267,7 +267,7 @@ async function notify_new_requester(req: Session.Requester)
     }
 }
 
-async function notify_requester_changed(req: Session.Requester)
+async function notify_requester_status_changed(req: Session.Requester)
 {
     const room = WATCH_SESSION_REQUESTORS_CHANGES_ROOM(req.session);
     const sess = await db.get_session_by_id(req.session);
@@ -279,24 +279,54 @@ async function notify_requester_changed(req: Session.Requester)
     {
         const uid = get_userid_from_socket(socket);
         const is_host = (uid !== undefined && uid.value === sess.host.value);
+        const is_requester = (uid !== undefined && uid.value === req.user.value);
 
         if (!socket.rooms.has(room) && !is_host)
             continue;
 
         const usr = await get_user_from_socket(socket);
+        const is_at_least_mod = (usr !== undefined && usr.level >= User.Level.Moderator);
 
-        if (usr.level >= User.Level.Moderator
-         || is_host)
+        if (is_at_least_mod || is_host)
             socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': reqc}));
         else if (sess.public_requester_count)
             socket.emit(Msg.SessionChanged.ID, new Msg.SessionChanged(sess.id, {'requester_count': publicreqc}));
 
         if (sess.public_requesters
-         || (usr !== undefined
-          && (usr.level >= User.Level.Moderator || req.user.value === usr.id.value || sess.host.value === usr.id.value)))
+         || is_at_least_mod
+         || is_requester
+         || is_host)
         {
             logger.info(`notifying user ${usr ? usr.id.readable : '<anonymous>'} that requester ${req.user.readable} of session ${sess.host.readable} changed state to ${req.status}`);
-            socket.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(req.session, req.user, req.status));
+            socket.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(req.session, req.user, { status: req.status }));
+        }
+    }
+}
+
+export async function notify_requester_got_dodo_changed(req: Session.Requester)
+{
+    const room = WATCH_SESSION_REQUESTORS_CHANGES_ROOM(req.session);
+    const sess = await db.get_session_by_id(req.session);
+
+    for (const [_, socket] of io.sockets.sockets)
+    {
+        const uid = get_userid_from_socket(socket);
+        const is_host = (uid !== undefined && uid.value === sess.host.value);
+        const is_requester = (uid !== undefined && uid.value === req.user.value);
+
+        if (!socket.rooms.has(room) && !is_host)
+            continue;
+
+        const usr = await get_user_from_socket(socket);
+        const is_at_least_mod = (usr !== undefined && usr.level >= User.Level.Moderator);
+
+        if (sess.public_requesters
+         || is_at_least_mod
+         || is_requester
+         || is_host)
+        {
+            logger.info(`notifying user ${usr ? usr.id.readable : '<anonymous>'} that requester ${req.user.readable} of session ${sess.host.readable} ${req.got_dodo ? 'got' : 'ungot'} dodo`);
+            socket.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(req.session, req.user, { got_dodo: req.got_dodo }));
         }
     }
 }
@@ -386,6 +416,11 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
             return;
         }
 
+        var status = msg.changes.status;
+
+        if (status === undefined)
+            return;
+
         const req = await db.get_requester_by_id(msg.session, msg.user);
 
         if (req === undefined)
@@ -403,7 +438,7 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
             return;
         }
 
-        if (msg.status === Session.RequesterStatus.None)
+        if (status === Session.RequesterStatus.None)
         {
             socket.emit(Msg.ErrorID, `cant set requester status to none`);
             return;
@@ -419,8 +454,8 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
             }
 
             if (req.status === Session.RequesterStatus.Sent)
-            if (msg.status !== Session.RequesterStatus.Accepted
-             && msg.status !== Session.RequesterStatus.Rejected)
+            if (status !== Session.RequesterStatus.Accepted
+             && status !== Session.RequesterStatus.Rejected)
             {
                 socket.emit(Msg.ErrorID, `invalid requester status`);
                 return;
@@ -428,7 +463,7 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
 
             if (req.status === Session.RequesterStatus.Accepted
              || req.status === Session.RequesterStatus.Rejected)
-            if (msg.status !== Session.RequesterStatus.Withdrawn)
+            if (status !== Session.RequesterStatus.Withdrawn)
             {
                 socket.emit(Msg.ErrorID, `invalid requester status`);
                 return;
@@ -453,14 +488,14 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
 
             if (req.status === Session.RequesterStatus.None
              || req.status === Session.RequesterStatus.Withdrawn)
-            if (msg.status !== Session.RequesterStatus.Sent)
+            if (status !== Session.RequesterStatus.Sent)
             {
                 socket.emit(Msg.ErrorID, `invalid requester status`);
                 return;
             }
 
             if (req.status === Session.RequesterStatus.Sent
-             && msg.status !== Session.RequesterStatus.Withdrawn)
+             && status !== Session.RequesterStatus.Withdrawn)
             {
                 socket.emit(Msg.ErrorID, `invalid requester status`);
                 return;
@@ -469,24 +504,24 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
             // auto-accept
             if ((req.status === Session.RequesterStatus.Withdrawn
                  || req.status === Session.RequesterStatus.None)
-              && msg.status === Session.RequesterStatus.Sent
+              && status === Session.RequesterStatus.Sent
               && sess.auto_accept_verified)
             {
                 const verified = await db.get_user_verified(usr.id);
                 if (verified)
                 {
                     logger.info(`user ${usr.id.readable} got auto-accepted to session ${msg.session.readable}`);
-                    msg.status = Session.RequesterStatus.Accepted;
+                    status = Session.RequesterStatus.Accepted;
                 }
             }
         }
 
-        await db.set_requester_status(msg.session, msg.user, msg.status);
+        await db.set_requester_status(msg.session, msg.user, status);
 
         const req_ = await db.get_requester_by_id(msg.session, msg.user);
-        notify_requester_changed(req_);
+        notify_requester_status_changed(req_);
 
-        logger.info(`user ${usr.id.readable} set requester status of ${req.user.readable} of session ${msg.session.readable} to ${msg.status}`);
+        logger.info(`user ${usr.id.readable} set requester status of ${req.user.readable} of session ${msg.session.readable} to ${status}`);
     });
 }
 

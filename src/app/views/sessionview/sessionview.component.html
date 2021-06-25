@@ -174,16 +174,17 @@
     {{session.requester_count[RequesterStatus.Accepted]}} accepted / 
     {{session.requester_count[RequesterStatus.Sent]}} requesting to get in
   </div>
+
   <!-- requesters -->
   <ng-template [ngIf]="can_watch_requesters">
   <ul class="list-group">
     <ng-template ngFor let-req [ngForOf]="requesters">
       <li *ngIf="req.status !== RequesterStatus.None
               && req.status !== RequesterStatus.Withdrawn"
-          class="list-group-item"
-          >
-          <app-uuidtag [id]="req.user.id" [level]="req.user.settings.level" [verified]="req.user.verification_post.length > 0"></app-uuidtag>
-        {{req.user.playername}}
+          class="list-group-item">
+        <i class="fa fa-plane {{req.got_dodo ? 'got-dodo' : 'no-dodo' }} mr-2"></i>
+        <app-uuidtag [id]="req.user.id" [level]="req.user.settings.level" [verified]="req.user.verification_post.length > 0"></app-uuidtag>
+        <app-user-playerislandname [user]="req.user"></app-user-playerislandname>
         <app-userbuttons [user]="req.user"></app-userbuttons>
 
         <div *ngIf="is_host"
@@ -191,21 +192,21 @@
           <button *ngIf="req.status === RequesterStatus.Sent"
                   (click)="accept_requester(req.user.id)"
                   type="button"
-                  class="btn btn-success"
+                  class="btn btn-sm btn-success"
                   >
             accept
           </button>
           <button *ngIf="req.status === RequesterStatus.Sent"
                   (click)="reject_requester(req.user.id)"
                   type="button"
-                  class="btn btn-danger ml-2"
+                  class="btn btn-sm btn-danger ml-2"
                   >
             reject
           </button>
           <button *ngIf="req.status !== RequesterStatus.Sent"
                   (click)="reset_requester(req.user.id)"
                   type="button"
-                  class="btn btn-secondary"
+                  class="btn btn-sm btn-secondary"
                   >
                   {{ req.status === RequesterStatus.Accepted ? 'withdraw accept' :
                      req.status === RequesterStatus.Rejected ? 'widthdraw reject' :

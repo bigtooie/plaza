@@ -61,6 +61,7 @@ export const requesters =
         rid: 'session.rid',
     },
     status: 'status',
+    got_dodo: 'got_dodo',
     requested_at: 'requested_at'
 };
 

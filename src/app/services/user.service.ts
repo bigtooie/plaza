@@ -379,7 +379,7 @@ export class UserService
             return;
 
         this.watch_session_requesters_updated(id, callback);
-        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(id, this.user.id, Session.RequesterStatus.Sent));
+        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(id, this.user.id, { status: Session.RequesterStatus.Sent }));
     }
 
     withdraw_dodo_request(id: SessionID)
@@ -387,7 +387,7 @@ export class UserService
         if (id === undefined || this.sock === undefined || !this.logged_in)
             return;
 
-        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(id, this.user.id, Session.RequesterStatus.Withdrawn));
+        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(id, this.user.id, { status: Session.RequesterStatus.Withdrawn }));
     }
 
     accept_requester(sid: SessionID, uid: UserID)
@@ -395,7 +395,7 @@ export class UserService
         if (sid === undefined || uid === undefined || this.sock === undefined || !this.logged_in)
             return;
 
-        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(sid, uid, Session.RequesterStatus.Accepted));
+        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(sid, uid, { status: Session.RequesterStatus.Accepted }));
     }
 
     reject_requester(sid: SessionID, uid: UserID)
@@ -403,7 +403,7 @@ export class UserService
         if (sid === undefined || uid === undefined || this.sock === undefined || !this.logged_in)
             return;
 
-        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(sid, uid, Session.RequesterStatus.Rejected));
+        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(sid, uid, { status: Session.RequesterStatus.Rejected }));
     }
 
     reset_requester(sid: SessionID, uid: UserID)
@@ -411,6 +411,6 @@ export class UserService
         if (sid === undefined || uid === undefined || this.sock === undefined || !this.logged_in)
             return;
 
-        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(sid, uid, Session.RequesterStatus.Withdrawn));
+        this.sock.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(sid, uid, { status: Session.RequesterStatus.Withdrawn }));
     }
 }

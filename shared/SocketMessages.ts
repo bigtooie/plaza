@@ -227,7 +227,7 @@ export class RequesterUpdate
     constructor(
         public session: SessionID,
         public user: UserID,
-        public status: Session.RequesterStatus
+        public changes: any // {status: RequesterStatus, got_dodo: boolean}
     )
     {
     }
@@ -239,7 +239,7 @@ export class RequesterUpdate
 
         return new RequesterUpdate(SessionID.copy(other.session),
                                     UserID.copy(other.user),
-                                    other.status
+                                    other.changes
                                    );
     }
 
@@ -247,6 +247,6 @@ export class RequesterUpdate
     {
         return 'session' in x
             && 'user' in x
-            && 'status' in x;
+            && 'changes' in x;
     }
 }
