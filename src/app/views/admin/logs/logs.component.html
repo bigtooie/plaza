@@ -1,0 +1,173 @@
+<h3>Logs</h3>
+<p>current server log level is <b>{{g.server.logging.level}}</b>, meaning any log messages with a level lower than that won't be generated.</p>
+<hr/>
+
+<form [formGroup]="search_form" (ngSubmit)="search_submit()">
+  <div class="input-group mb-3">
+    <input type="text"
+           placeholder="enter search text here..."
+           class="form-control"
+           formControlName="search_text">
+    <div class="input-group-append">
+      <button class="btn btn-primary"
+              type="submit"
+              [disabled]="this.pending">
+        search
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="btn-group-toggle">
+        <label class="btn-outline-secondary btn-sm" ngbButtonLabel>
+          <input type="checkbox" formControlName="reversed" ngbButton> {{reversed ? 'descending' : 'ascending'}}
+        </label>
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary ml-3"
+                data-toggle="button"
+                aria-pressed="false"
+                (click)="collapse.toggle()"
+                [attr.aria-expanded]="!filters_collapsed">
+          <i class="fa fa-filter"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-3"
+       #collapse="ngbCollapse"
+       [(ngbCollapse)]="filters_collapsed">
+
+    <div class="row" style="gap: 2rem">
+      <div class="col-sm">
+        <div class="form-group">
+          <label for="start-date">start</label>
+          <input formControlName="start_date"
+                 type="date"
+                 id="start-date">
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="form-group">
+          <label for="end-date">end</label>
+          <input formControlName="end_date"
+                 type="date"
+                 id="end-date">
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="gap: 2rem">
+      <div *ngFor="let lvl of selected_levels"
+           class="col-sm">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox"
+                 class="custom-control-input"
+                 [checked]="lvl.checked"
+                 (change)="lvl.checked = !lvl.checked"
+                 id="log-{{lvl.name}}">
+          <label class="custom-control-label"
+                 for="log-{{lvl.name}}">
+            {{lvl.name}}
+          </label>
+        </div>
+      </div>
+        <!--div class="row form-group">
+          <label class="form-select-label flex-sm-column col-form-label mr-sm-3 pt-sm-1">
+            min. log level
+          </label>
+          <select formControlName="min_log_level"
+                  class="custom-select custom-select-sm col-sm">
+            <option *ngFor="let val of LogLevels"
+                    [ngValue]="val">
+              {{val}}
+            </option>
+          </select>
+        </div-->
+    </div>
+  </div>
+
+</form>
+<hr/>
+
+<div *ngIf="!pending && current_view.length <= 0"
+     class="alert alert-info" role="alert">
+  Nothing found.
+</div>
+
+<ul *ngIf="!pending && current_view.length > 0"
+    class="list-group">
+
+  <li *ngFor="let uv of this.current_view"
+      class="list-group-item">
+    <div class="row">
+      <div ngbTooltip="{{get_duration_text_since(uv.time)}}"
+           class="col">
+        {{uv.time.toDateString()}} {{uv.time.toLocaleTimeString([], { timeZone: 'UTC', timeZoneName: 'short' })}}
+      </div>
+      <div class="col-1">{{uv.level}}</div>
+      <div ngbTooltip="{{uv | json}}"
+           class="col-8">
+        {{uv.msg}}
+      </div>
+    </div>
+  </li>
+
+  <!-- placeholders -->
+  <ng-template [ngIf]="current_view.length < EntriesPerPage">
+    <li *ngFor="let _i of range(current_view.length, EntriesPerPage - 1)"
+        class="list-group-item">
+      <span class="badge badge-light w-25 mr-2">&nbsp;</span>
+    </li>
+  </ng-template>
+</ul>
+
+<!-- loading placeholders -->
+<ul *ngIf="pending"
+    class="list-group">
+  <li *ngFor="let _i of range(1, EntriesPerPage)"
+      class="list-group-item">
+    <i class="fa fa-spinner load"></i>
+  </li>
+</ul>
+
+<ul *ngIf="visible_pages.length > 0"
+    class="pagination mt-3 justify-content-center">
+  <li class="page-item {{page <= 0 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn mr-2"
+            aria-label="First page"
+            (click)="goto_page(0)">
+      <span aria-hidden="true">&laquo;</span>
+    </button>
+  </li>
+  <li class="page-item {{page <= 0 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn mr-3"
+            aria-label="Previous page"
+            (click)="prev_page()">
+      <span aria-hidden="true">&lsaquo;</span>
+    </button>
+  </li>
+  <li *ngFor="let i of visible_pages"
+      class="page-item flex-sm-grow-0 {{i === page ? 'active' : ''}} {{pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn"
+            [disabled]="i === page"
+            (click)="goto_page(i)">
+      {{i+1}}
+    </button>
+  </li>
+  <li class="page-item {{page >= pages-1 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn ml-3"
+            aria-label="Next page"
+            (click)="next_page()">
+      <span aria-hidden="true">&rsaquo;</span>
+    </button>
+  </li>
+  <li class="page-item {{page >= pages-1 || pending ? 'disabled' : ''}}">
+    <button class="page-link pagination-btn ml-2"
+            aria-label="Last page"
+            (click)="goto_page(this.pages-1)">
+      <span aria-hidden="true">&raquo;</span>
+    </button>
+  </li>
+</ul>

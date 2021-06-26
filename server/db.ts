@@ -9,6 +9,7 @@ import { g } from '../shared/globals';
 import { clamp, remove_if, abbreviate_name, empty_or_nothing } from '../shared/utils';
 import * as User from '../shared/User';
 import * as Session from '../shared/Session';
+import * as Logs from '../shared/Logs';
 import * as Req from '../shared/RequestResponse';
 import * as Settings from '../shared/RuntimeSettings';
 
@@ -1636,6 +1637,84 @@ export async function has_user_requested_dodo(uid: UserID, sid: SessionID): Prom
 
     const c = await dbcon.sessions().findOne(filterDoc);
     return (c !== null && c !== undefined);
+}
+
+export async function get_logs(rreq: Req.GetLogsRequest): Promise<Req.GetLogsResponse>
+{
+    const perpage = g.results_per_page;
+    const filterDoc: any = {};
+    const and_conditions: any[] = [];
+
+    if (rreq.search_text.length > 0)
+    {
+        const regexDoc = { $regex: rreq.search_text, $options: 'i' };
+        const orDoc: any[] = [{}, {}];
+        orDoc[0][schema.logs['0']] = regexDoc;
+        orDoc[1][schema.logs.msg] = regexDoc;
+        and_conditions.push({ '$or': orDoc });
+    }
+
+    if (rreq.start_date)
+    {
+        const startDoc: any = {};
+        startDoc[schema.logs.time] = { $gte: rreq.start_date };
+
+        and_conditions.push(startDoc);
+    }
+
+    if (rreq.end_date)
+    {
+        const endDoc: any = {};
+        endDoc[schema.logs.time] = { $lte: rreq.end_date };
+
+        and_conditions.push(endDoc);
+    }
+
+    const levels: any[] = [];
+
+    for (const i in rreq.log_levels)
+        if (rreq.log_levels[i])
+            levels.push(Logs.PinoLevelValues[i]);
+
+    if (levels.length > 0)
+    {
+        const levelDoc: any = {};
+        levelDoc[schema.logs.level] = { $in: levels };
+        and_conditions.push(levelDoc);
+    }
+
+    filterDoc['$and'] = and_conditions;
+
+    const count: number = await dbcon.logs().countDocuments(filterDoc, {});
+
+    const resp = new Req.GetLogsResponse();
+    resp.page = 0;
+    resp.pages = 0;
+    resp.logs = [];
+
+    if (count === 0)
+        return resp;
+
+    resp.pages = Math.max(Math.ceil(count / perpage), 1);
+    resp.page = clamp(rreq.page, 0, resp.pages - 1);
+
+    const sortDoc: any = {};
+    sortDoc[schema.logs.time] = rreq.reversed ? -1 : 1;
+
+    const cur: any = await dbcon.logs().find(filterDoc)
+                                       .sort(sortDoc)
+                                       .skip(resp.page * perpage)
+                                       .limit(perpage);
+
+    for await (const c of cur)
+    {
+        if (c === undefined || c === null)
+            continue;
+
+        resp.logs.push(c);
+    }
+
+    return resp;
 }
 
 async function create_default_users()

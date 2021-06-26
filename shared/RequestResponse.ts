@@ -21,4 +21,5 @@ export * from './Requests/GetDodo';
 export * from './Requests/UpdateUserSettings';
 export * from './Requests/UpdateSessionSettings';
 export * from './Requests/RuntimeSettings';
+export * from './Requests/GetLogs';
 

@@ -267,6 +267,30 @@ export class ApiService
                                       ));
     }
 
+    get_logs(page: number,
+             search_text: string,
+             start_date: number,
+             end_date: number,
+             log_levels: boolean[],
+             reversed: boolean
+            ): Observable<Req.GetLogsResponse>
+    {
+        if (this.token === undefined)
+            return throwError(new Error("not logged in"));
+
+        return this.send_request(
+            Req.GetLogsResponse,
+            endpoints.get_logs,
+            new Req.GetLogsRequest(this.token,
+                                   page,
+                                   search_text,
+                                   start_date,
+                                   end_date,
+                                   log_levels,
+                                   reversed
+                                  ));
+    }
+
     create_new_session(dodo: string,
                        title: string,
                        description: string,

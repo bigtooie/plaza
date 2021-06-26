@@ -2,7 +2,7 @@
 const g: any =
 {
     title: "/acg/ Plaza",
-    version: "0.9.5",
+    version: "0.9.6",
 
     // the number of bytes of characters to display of an ID.
     // 5 is about 6~7 characters

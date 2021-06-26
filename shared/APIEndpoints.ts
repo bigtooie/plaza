@@ -54,6 +54,7 @@ const endpoints: any =
     update_session_settings: post("update_session_settings"),
     get_runtime_setting: post("grt"),
     set_runtime_setting: post("srt"),
+    get_logs: post("logs"),
 };
 
 export { endpoints }

@@ -97,9 +97,11 @@ export const leaked_dodos =
 export const logs =
 {
     _id: 'logs',
-    time: 'time'
+    time: 'time',
+    level: 'level',
+    '0': '0',
+    msg: 'msg'
 };
-
 
 class Index
 {

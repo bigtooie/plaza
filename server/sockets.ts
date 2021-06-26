@@ -533,7 +533,7 @@ export function init(server: any)
     {
         const usr = await get_user_from_socket(socket);
 
-        logger.info(`user ${usr ? usr.id.readable : '<anonymous>'} connected to socket`);
+        logger.debug(`user ${usr ? usr.id.readable : '<anonymous>'} connected to socket`);
 
         if (usr !== undefined)
             socket.join(USER_ROOM(usr.id));

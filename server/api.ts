@@ -44,6 +44,21 @@ async function get_user_by_tokenstring(token: TokenString): Promise<User.User>
     return db.get_user_by_id(sess.user);
 }
 
+function request_failure(request: string, res: express.Response, msg: string, force_logout: boolean = false, log: boolean = true)
+{
+    res.status(403).json(new Req.FailedResponse(msg, force_logout));
+
+    if (log)
+    {
+        var uid = undefined;
+
+        if ('locals' in res && 'user' in res.locals)
+            uid = res.locals.user.id;
+
+        logger.warn(`${request} request of user ${uid !== undefined ? uid.readable : '<anonymous>'} failed: ${msg}`);
+    }
+}
+
 export async function optional_user(req: express.Request, res: express.Response, next: any)
 {
     try
@@ -80,7 +95,7 @@ export async function authenticate(req: express.Request, res: express.Response, 
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("authenticate", res, "invalid request");
             return;
         }
 
@@ -88,7 +103,7 @@ export async function authenticate(req: express.Request, res: express.Response, 
 
         if (!login_sessions.is_verified_token(token))
         {
-            res.status(403).json(new Req.FailedResponse("invalid or expired session token", true));
+            request_failure("authenticate", res, "invalid or expired session token", true);
             return;
         }
 
@@ -97,7 +112,7 @@ export async function authenticate(req: express.Request, res: express.Response, 
 
         if (sess === undefined)
         {
-            res.status(403).json(new Req.FailedResponse("expired session token", true));
+            request_failure("authenticate", res, "invalid or expired session token", true);
             return;
         }
 
@@ -105,7 +120,7 @@ export async function authenticate(req: express.Request, res: express.Response, 
         if (sess.is_expired || sess.token.jwt !== token.jwt)
         {
             login_sessions.delete_session_by_tokenstring(tv);
-            res.status(403).json(new Req.FailedResponse("expired session token", true));
+            request_failure("authenticate", res, "invalid or expired session token", true);
             return;
         }
 
@@ -114,14 +129,14 @@ export async function authenticate(req: express.Request, res: express.Response, 
         if (usr === undefined)
         {
             login_sessions.delete_session_by_tokenstring(tv);
-            res.status(403).json(new Req.FailedResponse("expired session token", true));
+            request_failure("authenticate", res, "invalid or expired session token", true);
             return;
         }
 
         if (usr.level < User.Level.Admin && usr.banned)
         {
             login_sessions.delete_session_by_tokenstring(tv);
-            res.status(403).json(new Req.FailedResponse("ur banned lmao", true));
+            request_failure("authenticate", res, "ur banned lmao", true);
             return;
         }
 
@@ -144,7 +159,7 @@ export async function is_admin(req: express.Request, res: express.Response, next
 
         if (usr === undefined || usr.level < User.Level.Admin)
         {
-            res.status(403).json(new Req.FailedResponse("unauthorized", true));
+            request_failure("is_admin", res, "unauthorized", true);
             return;
         }
     }
@@ -165,7 +180,7 @@ export async function is_mod_or_admin(req: express.Request, res: express.Respons
 
         if (usr === undefined || usr.level < User.Level.Moderator)
         {
-            res.status(403).json(new Req.FailedResponse("unauthorized", true));
+            request_failure("is_mod_or_admin", res, "unauthorized", true);
             return;
         }
     }
@@ -186,7 +201,7 @@ export async function Login(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("Login", res, "invalid request");
             return;
         }
 
@@ -197,7 +212,7 @@ export async function Login(req: express.Request, res: express.Response)
         }
         catch (err)
         {
-            res.status(400).json(new Req.FailedResponse(err.message));
+            request_failure("Login", res, err.message);
             return;
         }
 
@@ -205,21 +220,22 @@ export async function Login(req: express.Request, res: express.Response)
 
         if (usr === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("user doesnt exist or password is wrong"));
+            request_failure("Login", res, "user doesnt exist or password is wrong");
             return;
         }
 
         const pw = rreq.password;
         const password_ok = await db.check_user_password(usr, pw);
+
         if (!password_ok)
         {
-            res.status(400).json(new Req.FailedResponse("user doesnt exist or password is wrong"));
+            request_failure("Login", res, "user doesnt exist or password is wrong");
             return;
         }
 
         if (usr.banned && usr.level < User.Level.Admin)
         {
-            res.status(403).json(new Req.FailedResponse("this user is banned lmao"));
+            request_failure("Login", res, "this user is banned lmao");
             return;
         }
 
@@ -243,7 +259,7 @@ export async function Register(req: express.Request, res: express.Response)
     {
         if (!runtime_settings.get(Settings.registrations_enabled.key))
         {
-            res.status(403).json(new Req.FailedResponse("registrations are closed"));
+            request_failure("Register", res, "registrations are closed");
             return;
         }
 
@@ -251,7 +267,7 @@ export async function Register(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("Register", res, "invalid request");
             return;
         }
 
@@ -264,7 +280,7 @@ export async function Register(req: express.Request, res: express.Response)
         }
         catch (err)
         {
-            res.status(400).json(new Req.FailedResponse(err.message));
+            request_failure("Register", res, err.message);
             return;
         }
 
@@ -276,7 +292,7 @@ export async function Register(req: express.Request, res: express.Response)
                 ra.match(runtime_settings.get(Settings.register_security_question_answer.key)) === null)
             {
                 logger.warn(`incorrect security question answer: ${ra}`);
-                res.status(403).json(new Req.FailedResponse("incorrect security question answer"));
+                request_failure("Register", res, "incorrect security question answer");
                 return;
             }
         }
@@ -285,7 +301,7 @@ export async function Register(req: express.Request, res: express.Response)
 
         if (taken)
         {
-            res.status(400).json(new Req.FailedResponse("username already taken"));
+            request_failure("Register", res, "username already taken");
             return;
         }
 
@@ -317,7 +333,7 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("AdvancedRegister", res, "invalid request");
             return;
         }
 
@@ -333,7 +349,7 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
         }
         catch (err)
         {
-            res.status(400).json(new Req.FailedResponse(err.message));
+            request_failure("AdvancedRegister", res, err.message);
             return;
         }
 
@@ -341,14 +357,14 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
          && rreq.id_prefix.length > 0
          && rreq.id_prefix.match(BASE58pattern) === null)
         {
-            res.status(400).json(new Req.FailedResponse("illegal ID prefix"));
+            request_failure("AdvancedRegister", res, "illegal ID prefix");
             return;
         }
 
         if (creator.level < User.Level.Admin
          && creator.level <= rreq.level)
         {
-            res.status(400).json(new Req.FailedResponse("you are not authorized to create an account with this level"));
+            request_failure("AdvancedRegister", res, "you are not authorized to create an account of this level");
             return;
         }
 
@@ -356,7 +372,7 @@ export async function AdvancedRegister(req: express.Request, res: express.Respon
 
         if (taken)
         {
-            res.status(400).json(new Req.FailedResponse("username already taken"));
+            request_failure("AdvancedRegister", res, "username already taken");
             return;
         }
 
@@ -389,7 +405,7 @@ export function Logout(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("Logout", res, "invalid request");
             return;
         }
 
@@ -416,7 +432,7 @@ export async function UsernameTaken(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("UsernameTaken", res, "invalid request");
             return;
         }
 
@@ -426,7 +442,7 @@ export async function UsernameTaken(req: express.Request, res: express.Response)
         }
         catch (err)
         {
-            res.status(400).json(new Req.FailedResponse(err.message));
+            request_failure("UsernameTaken", res, err.message);
             return;
         }
 
@@ -456,7 +472,7 @@ export async function DodoInUse(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("DodoInUse", res, "invalid request");
             return;
         }
 
@@ -466,7 +482,7 @@ export async function DodoInUse(req: express.Request, res: express.Response)
         }
         catch (err)
         {
-            res.status(400).json(new Req.FailedResponse(err.message));
+            request_failure("DodoInUse", res, err.message);
             return;
         }
 
@@ -491,7 +507,7 @@ export async function GetUser(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetUser", res, "invalid request");
             return;
         }
 
@@ -499,7 +515,7 @@ export async function GetUser(req: express.Request, res: express.Response)
 
         if (!is_valid_readable_id(id))
         {
-            res.status(400).json(new Req.FailedResponse("invalid ID"));
+            request_failure("GetUser", res, "invalid ID");
             return;
         }
 
@@ -507,14 +523,14 @@ export async function GetUser(req: express.Request, res: express.Response)
 
         if (rusr === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("user not found"));
+            request_failure("GetUser", res, "user not found");
             return;
         }
 
         const usr = res.locals.user;
         const v = await db.get_userview(usr, rusr);
 
-        logger.info(`user ${usr.id.readable} successfully requested profile of user ${id}`);
+        logger.info(`user ${usr.id.readable} requested profile of user ${id}`);
         res.status(200).json(new Req.GetUserResponse(v));
     }
     catch (err)
@@ -532,14 +548,14 @@ export async function GetSelf(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetSelf", res, "invalid request");
             return;
         }
 
         const usr = res.locals.user;
         const v = await db.get_userview(usr, usr);
 
-        logger.info(`user ${usr.id.readable} successfully requested profile of self`);
+        logger.info(`user ${usr.id.readable} requested profile of self`);
         res.status(200).json(new Req.GetUserResponse(v));
     }
     catch (err)
@@ -557,19 +573,19 @@ export async function GetUsers(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetUsers", res, "invalid request");
             return;
         }
 
         if (!Number.isSafeInteger(rreq.page) || rreq.page < 0)
         {
-            res.status(403).json(new Req.FailedResponse("invalid page"));
+            request_failure("GetUsers", res, "invalid page");
             return;
         }
 
         if (rreq.search_text.length > Req.MAX_GET_USERS_SEARCH_TEXT_LENGTH)
         {
-            res.status(403).json(new Req.FailedResponse(`search text too long (max is ${Req.MAX_GET_USERS_SEARCH_TEXT_LENGTH} characters)`));
+            request_failure("GetUsers", res, `search text too long (max is ${Req.MAX_GET_USERS_SEARCH_TEXT_LENGTH} characters)`);
             return;
         }
         
@@ -582,12 +598,12 @@ export async function GetUsers(req: express.Request, res: express.Response)
         }
         catch (err)
         {
-            res.status(403).json(new Req.FailedResponse(err.message));
+            request_failure("GetUsers", res, err.message);
             return;
         }
 
         const uid = get_userid_by_tokenstring(rreq.token.value);
-        logger.info(`user ${uid.readable} successfully requested users`);
+        logger.info(`user ${uid.readable} requested users ('${rreq.search_text}')`);
         res.status(200).json(resp);
     }
     catch (err)
@@ -605,7 +621,7 @@ export async function GetSession(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetSession", res, "invalid request");
             return;
         }
 
@@ -613,7 +629,7 @@ export async function GetSession(req: express.Request, res: express.Response)
 
         if (!is_valid_readable_id(id))
         {
-            res.status(400).json(new Req.FailedResponse("invalid ID"));
+            request_failure("GetSession", res, "invalid ID");
             return;
         }
 
@@ -621,7 +637,7 @@ export async function GetSession(req: express.Request, res: express.Response)
 
         if (sess === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("session not found"));
+            request_failure("GetSession", res, "session not found");
             return;
         }
 
@@ -630,13 +646,13 @@ export async function GetSession(req: express.Request, res: express.Response)
             const usr = res.locals.user;
             const v = await db.get_sessionview(usr, sess);
 
-            logger.info(`user ${usr.id.readable} successfully requested session ${id}`);
+            logger.info(`user ${usr.id.readable} requested session ${id}`);
             res.status(200).json(new Req.GetSessionResponse(v));
         }
         else
         {
             const v = await db.get_public_sessionview(sess);
-            logger.info(`guest user successfully requested session ${id}`);
+            logger.info(`guest user requested session ${id}`);
             res.status(200).json(new Req.GetSessionResponse(v));
         }
     }
@@ -655,7 +671,7 @@ export async function GetSessionRequesters(req: express.Request, res: express.Re
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetSessionRequesters", res, "invalid request");
             return;
         }
 
@@ -663,7 +679,7 @@ export async function GetSessionRequesters(req: express.Request, res: express.Re
 
         if (!is_valid_id(id))
         {
-            res.status(400).json(new Req.FailedResponse("invalid ID"));
+            request_failure("GetSessionRequesters", res, "invalid ID");
             return;
         }
 
@@ -671,7 +687,7 @@ export async function GetSessionRequesters(req: express.Request, res: express.Re
 
         if (sess === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("session not found"));
+            request_failure("GetSessionRequesters", res, "session not found");
             return;
         }
 
@@ -680,13 +696,13 @@ export async function GetSessionRequesters(req: express.Request, res: express.Re
             const usr = res.locals.user;
             const rvs = await db.get_requesterviews_of_session(usr, sess);
 
-            logger.info(`user ${usr.id.readable} successfully requested requesters of session ${id.readable}`);
+            logger.info(`user ${usr.id.readable} requested requesters of session ${id.readable}`);
             res.status(200).json(new Req.GetSessionRequestersResponse(rvs));
         }
         else
         {
             const rvs = await db.get_requesterviews_of_session(undefined, sess);
-            logger.info(`guest user successfully requested requesters of session ${id.readable}`);
+            logger.info(`guest user requested requesters of session ${id.readable}`);
             res.status(200).json(new Req.GetSessionRequestersResponse(rvs));
         }
     }
@@ -705,7 +721,7 @@ export async function GetSessionOfUser(req: express.Request, res: express.Respon
 
         if (rreq === undefined || !is_valid_readable_id(rreq.id))
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetSessionOfUser", res, "invalid request");
             return;
         }
 
@@ -714,14 +730,14 @@ export async function GetSessionOfUser(req: express.Request, res: express.Respon
 
         if (sess === undefined)
         {
-            logger.info(`user ${requester.id.readable} successfully requested session of user ${rreq.id} and no session because user is not hosting`);
+            logger.info(`user ${requester.id.readable} requested session of user ${rreq.id} and got no session because user is not hosting`);
             res.status(200).json(new Req.GetSessionOfUserResponse(undefined));
             return;
         }
 
         const v = await db.get_sessionview(requester, sess);
 
-        logger.info(`user ${requester.id.readable} successfully requested session of user ${rreq.id} and got session ${sess.id.readable}`);
+        logger.info(`user ${requester.id.readable} requested session of user ${rreq.id} and got session ${sess.id.readable}`);
         res.status(200).json(new Req.GetSessionOfUserResponse(v));
     }
     catch (err)
@@ -739,32 +755,32 @@ export async function GetSessions(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetSessions", res, "invalid request");
             return;
         }
 
         if (!Number.isSafeInteger(rreq.page) || rreq.page < 0)
         {
-            res.status(403).json(new Req.FailedResponse("invalid page"));
+            request_failure("GetSessions", res, "invalid page");
             return;
         }
 
         if (!Number.isSafeInteger(rreq.min_turnip_price))
         {
-            res.status(403).json(new Req.FailedResponse("invalid turnip price"));
+            request_failure("GetSessions", res, "invalid turnip price");
             return;
         }
 
         if (rreq.search_text.length > Req.MAX_GET_SESSIONS_SEARCH_TEXT_LENGTH)
         {
-            res.status(403).json(new Req.FailedResponse(`search text too long (max is ${Req.MAX_GET_SESSIONS_SEARCH_TEXT_LENGTH} characters)`));
+            request_failure("GetSessions", res, `search text too long (max is ${Req.MAX_GET_SESSIONS_SEARCH_TEXT_LENGTH} characters)`);
             return;
         }
         
         const usr = res.locals.user;
         const resp = await db.get_sessions(usr, rreq);
 
-        logger.info(`user ${usr.id.readable} successfully requested sessions`);
+        logger.info(`user ${usr.id.readable} requested sessions ('${rreq.search_text}')`);
         res.status(200).json(resp);
     }
     catch (err)
@@ -782,7 +798,7 @@ export async function NewSession(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("NewSession", res, "invalid request");
             return;
         }
 
@@ -795,7 +811,7 @@ export async function NewSession(req: express.Request, res: express.Response)
         }
         catch (err)
         {
-            res.status(403).json(new Req.FailedResponse(err.message));
+            request_failure("NewSession", res, err.message);
             return;
         }
 
@@ -804,16 +820,16 @@ export async function NewSession(req: express.Request, res: express.Response)
 
         if (cursess !== undefined)
         {
-            logger.warn(`user ${uid.readable} attempted to create session while already hosting a session`);
-            res.status(400).json(new Req.FailedResponse("you're already hosting"));
+            // logger.warn(`user ${uid.readable} attempted to create session while already hosting a session`);
+            request_failure("NewSession", res, "you're already hosting");
             return;
         }
 
         const in_use = await db.dodo_in_use(rreq.dodo);
         if (in_use)
         {
-            logger.warn(`user ${uid.readable} attempted to create session with a dodo thats already in use`);
-            res.status(400).json(new Req.FailedResponse("Dodo code is in use."));
+            // logger.warn(`user ${uid.readable} attempted to create session with a dodo thats already in use`);
+            request_failure("NewSession", res, "Dodo code is in use.");
             return;
         }
 
@@ -839,7 +855,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
 
         if (rreq === undefined || !is_valid_id(rreq.target))
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("UpdateUserSettings", res, "invalid request");
             return;
         }
 
@@ -847,7 +863,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
 
         if (target === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("no user with that ID found"));
+            request_failure("UpdateUserSettings", res, "no user with that ID found");
             return;
         }
 
@@ -862,7 +878,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateUserSettings", res, err.message);
                 return;
             }
 
@@ -877,7 +893,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
              || (usr.level >= User.Level.Admin && set.level >= User.Level.Admin && !g.admin_can_make_users_admin)
                )
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -893,7 +909,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             if (usr.level < User.Level.Moderator
              || usr.level <= target.level)
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -905,7 +921,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
         {
             if (target.id.value === usr.id.value)
             {
-                res.status(403).json(new Req.FailedResponse("bruh"));
+                request_failure("UpdateUserSettings", res, "bruh");
                 return;
             }
 
@@ -917,7 +933,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
         {
             if (target.id.value === usr.id.value)
             {
-                res.status(403).json(new Req.FailedResponse("bruh"));
+                request_failure("UpdateUserSettings", res, "bruh");
                 return;
             }
 
@@ -928,11 +944,11 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
         if ('playername_hidden' in set && (typeof set.playername_hidden === 'boolean'))
         {
             // non-admins can only set playername_hidden of self
-            // admins can set playername hidden of lower levels
+            // admins and mods can set playername hidden of lower levels
             if ((target.id.value !== usr.id.value) &&
                 (usr.level < User.Level.Moderator || usr.level <= target.level))
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -947,7 +963,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             if ((target.id.value !== usr.id.value) &&
                 (usr.level < User.Level.Admin || usr.level <= target.level))
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -962,7 +978,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             if (usr.level < User.Level.Admin
              || usr.level <= target.level)
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -972,7 +988,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateUserSettings", res, err.message);
             }
 
             logger.info(`user ${usr.id.readable} set the playername of user ${target.id.readable} to ${set.playername}`);
@@ -986,7 +1002,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             if (usr.level < User.Level.Admin
              || usr.level <= target.level)
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -996,7 +1012,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateUserSettings", res, err.message);
             }
 
             logger.info(`user ${usr.id.readable} set the islandname of user ${target.id.readable} to ${set.islandname}`);
@@ -1015,7 +1031,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
                   (target.verifier !== undefined && target.verifier.value !== usr.id.value)
              )))
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -1025,7 +1041,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateUserSettings", res, err.message);
             }
 
             logger.info(`user ${usr.id.readable} verified user ${target.id.readable} (${set.verification_post})`);
@@ -1040,7 +1056,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
 
             if (usr.level < User.Level.Admin && target.id.value !== usr.id.value)
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -1048,7 +1064,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
              && target.level >= User.Level.Admin
              && target.id.value !== usr.id.value)
             {
-                res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+                request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
@@ -1058,7 +1074,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse("invalid new password"));
+                request_failure("UpdateUserSettings", res, err.message);
                 return;
             }
 
@@ -1068,7 +1084,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
                 if (!('current_password' in set)
                  || (typeof set.current_password !== 'string'))
                 {
-                    res.status(403).json(new Req.FailedResponse("missing or incorrect current password"));
+                    request_failure("UpdateUserSettings", res, "missing or incorrect current password");
                     return;
                 }
 
@@ -1078,14 +1094,14 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
                 }
                 catch (err)
                 {
-                    res.status(403).json(new Req.FailedResponse("missing or incorrect current password"));
+                    request_failure("UpdateUserSettings", res, "missing or incorrect current password");
                     return;
                 }
 
                 const current_ok = await db.check_user_password(target, set.current_password);
                 if (!current_ok)
                 {
-                    res.status(403).json(new Req.FailedResponse("missing or incorrect current password"));
+                    request_failure("UpdateUserSettings", res, "missing or incorrect current password");
                     return;
                 }
             }
@@ -1111,7 +1127,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
 
         if (rreq === undefined || !is_valid_id(rreq.target))
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("UpdateSessionSettings", res, "invalid request");
             return;
         }
 
@@ -1119,7 +1135,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
 
         if (target === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("no session with that ID found"));
+            request_failure("UpdateSessionSettings", res, "no session with that ID found");
             return;
         }
 
@@ -1130,7 +1146,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         // only host and mods or higher can change session properties
         if (usr.level < User.Level.Moderator && target.host.value !== usr.id.value)
         {
-            res.status(403).json(new Req.FailedResponse("i'm afraid i can't let you do that"));
+            request_failure("UpdateSessionSettings", res, "i'm afraid i can't let you do that");
             return;
         }
 
@@ -1159,15 +1175,17 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
+            /*
             if (set.dodo === target.dodo)
             {
                 res.status(400).json(new Req.FailedResponse("dodo is the same as before"));
                 return;
             }
+            */
 
             if ('dodo_leaked' in set
              && (typeof set.dodo_leaked === 'boolean')
@@ -1180,7 +1198,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
             }
             catch (err)
             {
-                res.status(400).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateSessionSettings", res, err.message);
                 return;
             }
 
@@ -1192,7 +1210,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
@@ -1202,7 +1220,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateSessionSettings", res, err.message);
                 return;
             }
 
@@ -1214,7 +1232,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
@@ -1224,7 +1242,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateSessionSettings", res, err.message);
                 return;
             }
 
@@ -1236,7 +1254,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
@@ -1246,7 +1264,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
             }
             catch (err)
             {
-                res.status(403).json(new Req.FailedResponse(err.message));
+                request_failure("UpdateSessionSettings", res, err.message);
                 return;
             }
 
@@ -1258,7 +1276,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
@@ -1270,7 +1288,7 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
@@ -1282,21 +1300,23 @@ export async function UpdateSessionSettings(req: express.Request, res: express.R
         {
             if (target.status === Session.SessionStatus.Closed)
             {
-                res.status(403).json(new Req.FailedResponse("session is already closed"));
+                request_failure("UpdateSessionSettings", res, "session is already closed");
                 return;
             }
 
             const status: Session.SessionStatus = set.status;
 
+            /*
             if (status === target.status)
             {
                 res.status(400).json(new Req.FailedResponse("status is the same as before"));
                 return;
             }
+            */
 
             if (Session.SessionStatusValues.indexOf(status) < 0)
             {
-                res.status(400).json(new Req.FailedResponse("invalid status"));
+                request_failure("UpdateSessionSettings", res, "invalid status");
                 return;
             }
 
@@ -1346,7 +1366,7 @@ export async function GetDodo(req: express.Request, res: express.Response)
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetDodo", res, "invalid request");
             return;
         }
 
@@ -1354,7 +1374,7 @@ export async function GetDodo(req: express.Request, res: express.Response)
 
         if (!is_valid_id(id))
         {
-            res.status(400).json(new Req.FailedResponse("invalid session ID"));
+            request_failure("GetDodo", res, "invalid session ID");
             return;
         }
 
@@ -1362,7 +1382,7 @@ export async function GetDodo(req: express.Request, res: express.Response)
 
         if (sess === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("session not found"));
+            request_failure("GetDodo", res, "session not found");
             return;
         }
 
@@ -1384,7 +1404,7 @@ export async function GetDodo(req: express.Request, res: express.Response)
 
         if (!isok)
         {
-            res.status(403).json(new Req.FailedResponse("you do not have access to the dodo of this session"));
+            request_failure("GetDodo", res, "you do not have access to the dodo of this session");
             return;
         }
 
@@ -1392,7 +1412,7 @@ export async function GetDodo(req: express.Request, res: express.Response)
 
         if (blocked)
         {
-            res.status(403).json(new Req.FailedResponse("could not get dodo because the host has blocked you"));
+            request_failure("GetDodo", res, "could not get dodo because the host has blocked you");
             return;
         }
 
@@ -1406,7 +1426,7 @@ export async function GetDodo(req: express.Request, res: express.Response)
             await sock.notify_requester_got_dodo_changed(req);
         }
 
-        logger.info(`user ${usr.id.readable} successfully requested dodo of session ${id.readable}`);
+        logger.info(`user ${usr.id.readable} obtained dodo of session ${id.readable}`);
         res.status(200).json(new Req.GetDodoResponse(sess.dodo));
     }
     catch (err)
@@ -1424,7 +1444,7 @@ export async function GetRuntimeSetting(req: express.Request, res: express.Respo
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("GetRuntimeSetting", res, "invalid request");
             return;
         }
 
@@ -1434,14 +1454,14 @@ export async function GetRuntimeSetting(req: express.Request, res: express.Respo
 
         if (set === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("setting does not exist"));
+            request_failure("GetRuntimeSetting", res, "setting does not exist");
             return;
         }
 
         if ((usr === undefined || usr.level < User.Level.Admin)
             && set.visibility === Settings.Visibility.AdminOnly)
         {
-            res.status(403).json(new Req.FailedResponse("you do not have access to this setting"));
+            request_failure("GetRuntimeSetting", res, "you do not have access to this setting");
             return;
         }
 
@@ -1465,7 +1485,7 @@ export async function SetRuntimeSetting(req: express.Request, res: express.Respo
 
         if (rreq === undefined)
         {
-            res.status(400).json(new Req.FailedResponse("invalid request"));
+            request_failure("SetRuntimeSetting", res, "invalid request");
             return;
         }
 
@@ -1474,7 +1494,7 @@ export async function SetRuntimeSetting(req: express.Request, res: express.Respo
 
         if (set === undefined)
         {
-            res.status(404).json(new Req.FailedResponse("setting does not exist"));
+            request_failure("SetRuntimeSetting", res, "setting does not exist");
             return;
         }
 
@@ -1482,7 +1502,7 @@ export async function SetRuntimeSetting(req: express.Request, res: express.Respo
 
         if (val === undefined)
         {
-            res.status(403).json(new Req.FailedResponse("value type error / value is undefined"));
+            request_failure("SetRuntimeSetting", res, "value type error / value is undefined");
             return;
         }
 
@@ -1498,6 +1518,48 @@ export async function SetRuntimeSetting(req: express.Request, res: express.Respo
         return;
     }
 }
+
+export async function GetLogs(req: express.Request, res: express.Response)
+{
+    try
+    {
+        const rreq = copy_from(Req.GetLogsRequest, req.body);
+
+        if (rreq === undefined)
+        {
+            request_failure("GetLogs", res, "invalid request");
+            return;
+        }
+
+        if (!Number.isSafeInteger(rreq.page) || rreq.page < 0)
+        {
+            request_failure("GetLogs", res, "invalid page");
+            return;
+        }
+
+        var resp: Req.GetLogsResponse = undefined;
+
+        try
+        {
+            resp = await db.get_logs(rreq);
+        }
+        catch (err)
+        {
+            request_failure("GetLogs", res, err.message);
+            return;
+        }
+
+        const uid = get_userid_by_tokenstring(rreq.token.value);
+        logger.info(`user ${uid.readable} requested logs ('${rreq.search_text}')`);
+        res.status(200).json(resp);
+    }
+    catch (err)
+    {
+        error_handler(err, res);
+        return;
+    }
+}
+
 
 class APIMethod
 {
@@ -1556,7 +1618,8 @@ const methods: APIMethod[] = [
     method(endpoints.set_runtime_setting, authenticate, is_admin, SetRuntimeSetting),
 
     // admin stuff
-    method(endpoints.advanced_register, authenticate, is_mod_or_admin, AdvancedRegister)
+    method(endpoints.advanced_register, authenticate, is_mod_or_admin, AdvancedRegister),
+    method(endpoints.get_logs, authenticate, is_mod_or_admin, GetLogs)
 ];
 
 export function register_all(app: express.Application)

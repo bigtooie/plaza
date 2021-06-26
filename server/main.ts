@@ -10,7 +10,7 @@ import * as api from './api';
 import * as sockets from './sockets';
 import * as db from './db';
 import * as runtime_settings from './runtime_settings';
-import { logger, logger_http, info } from './log';
+import * as logger from './log';
 
 function redirect_http_to_https()
 {
@@ -29,11 +29,11 @@ async function main()
     await runtime_settings.load_all();
     await db.init();
 
-    logger.info("Database successfully initiated");
+    logger.debug("Database successfully initiated");
     const app = express();
 
     if (g.server.logging.enabled)
-        app.use(logger_http);
+        app.use(logger.logger_http);
 
     app.use(express.json());
     app.use(express.static(path.join(__dirname, '../dist/plaza/')));
@@ -43,7 +43,7 @@ async function main()
 
     if (fs.existsSync(g.server.privkey))
     {
-        logger.info("Key exists, hosting HTTPS");
+        logger.debug("Key exists, hosting HTTPS");
         server = https.createServer({
                 key: fs.readFileSync(g.server.privkey),
                 cert: fs.readFileSync(g.server.cert),
@@ -55,7 +55,7 @@ async function main()
     }
     else
     {
-        logger.info("Key does not exist, hosting HTTP");
+        logger.debug("Key does not exist, hosting HTTP");
         server = http.createServer(app);
     }
 
@@ -63,7 +63,7 @@ async function main()
 
     sockets.init(server);
 
-    info(`${g.title} version ${g.version} server started`);
+    logger.info(`${g.title} version ${g.version} server started`);
 }
 
 main();

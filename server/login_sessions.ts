@@ -44,13 +44,13 @@ const active_sessions = new Map<string, LoginSession>();
 const gc = setInterval(
     () =>
     {
-        logger.info("Login session garbage collection started");
+        logger.debug("Login session garbage collection started");
 
         for (const [token, sess] of active_sessions)
             if (!is_verified_token(sess.token))
                 active_sessions.delete(token);
 
-        logger.info("Login session garbage collection ended");
+        logger.debug("Login session garbage collection ended");
     },
     g.server.login_session_gc_interval*60*60*1000
 );
@@ -63,7 +63,7 @@ export function create_new_session(user: UserID): Token
     const tok = new Token(jt);
     const ls = new LoginSession(tok, user);
 
-    logger.info(`creating new login session for user ${user.readable} with value ${tokstr}`);
+    logger.debug(`creating new login session for user ${user.readable} with value ${tokstr}`);
     active_sessions.set(tokstr, ls);
 
     return tok;
@@ -72,7 +72,7 @@ export function create_new_session(user: UserID): Token
 export function delete_session_by_tokenstring(token: TokenString)
 {
     const usr = active_sessions.get(token).user;
-    logger.info(`deleting login session of user ${usr.readable} by token ${token}`);
+    logger.debug(`deleting login session of user ${usr.readable} by token ${token}`);
 
     active_sessions.delete(token);
 }

@@ -1,48 +1,50 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormBuilder } from '@angular/forms';
+import { FormsModule, FormControl, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { UserService } from '@services/user.service';
 import { ApiService } from '@services/api.service';
-import { PagingComponent } from '../../classes/PagingComponent';
+import { PagingComponent } from '../../../classes/PagingComponent';
 
-import { UserView, Level } from '@shared/User';
 import * as Req from '@shared/RequestResponse';
-import { range, remove_if, any_differ } from '@shared/utils';
+import * as Logs from '@shared/Logs';
+import { g } from '@shared/globals';
+import { range, any_differ, empty_or_nothing, get_duration_text_since } from '@shared/utils';
 
-class PlayerlistParams
+class LogsParams
 {
-    static StorageKey = "playerlist_params";
+    static StorageKey = "logs_params";
 
     page?: string = undefined;
     search_text?: string = undefined;
-    category?: string = undefined;
-    starred?: string = undefined;
-    blocked?: string = undefined;
     order?: string = undefined;
 }
 
 @Component({
-  selector: 'app-playerlist',
-  templateUrl: './playerlist.component.html',
-  styleUrls: ['./playerlist.component.scss']
+  selector: 'app-logs',
+  templateUrl: './logs.component.html',
+  styleUrls: ['./logs.component.scss']
 })
-export class PlayerlistComponent extends PagingComponent<UserView> implements OnInit
+export class LogsComponent extends PagingComponent<any> implements OnInit
 {
-    GetUsersSearchTextCategoryValues: string[] = [];
-    SearchFilterValues = Req.SearchFilterValues;
+    g = g;
+    Level = Logs.Level;
+    LevelNames = Logs.LevelNames;
+    get_duration_text_since = get_duration_text_since;
+
     range = range;
 
     pending = false;
 
     search_form = this.fb.group({
         search_text: [''],
-        search_text_category: ['0'],
-        starred_filter: ['-'],
-        blocked_filter: ['hide'],
-        reversed: true // "reversed" = descending
+        start_date: [new Date(0)],
+        end_date: [new Date()],
+        reversed: true
     });
+
+    selected_levels = Logs.LevelValues.map((l: Logs.Level) => { return {level: l, name: Logs.LevelNames[l], checked: true}; });
 
     filters_collapsed: boolean = true;
 
@@ -51,14 +53,10 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
 
     get search_text(): string { return this._form_get("search_text"); }
     set search_text(val: string) { this._form_set("search_text", val); }
-    get search_text_category(): Req.GetUsersSearchTextCategory
-    { return this._form_get("search_text_category"); }
-    set search_text_category(val: Req.GetUsersSearchTextCategory)
-    { this._form_set("search_text_category", val); }
-    get starred_filter(): Req.SearchFilter { return this._form_get("starred_filter"); }
-    set starred_filter(val: Req.SearchFilter) { this._form_set("starred_filter", val); }
-    get blocked_filter(): Req.SearchFilter { return this._form_get("blocked_filter"); }
-    set blocked_filter(val: Req.SearchFilter) { this._form_set("blocked_filter", val); }
+    get start_date(): Date { return new Date(this._form_get("start_date")); }
+    set start_date(val: Date) { this._form_set("start_date", val); }
+    get end_date(): Date { return new Date(this._form_get("end_date")); }
+    set end_date(val: Date) { this._form_set("end_date", val); }
     get reversed(): boolean { return this._form_get("reversed"); }
     set reversed(val: boolean) { this._form_set("reversed", val); }
 
@@ -83,23 +81,10 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
                                  this.set_form_to_params(params);
                                  this.search_submit(false);
                              });
-
-        this.set_GetUsersSearchTextCategoryValues();
-    }
-
-    private set_GetUsersSearchTextCategoryValues()
-    {
-        this.GetUsersSearchTextCategoryValues = Req.GetUsersSearchTextCategoryValues.map(x=>x);
-
-        if (this.userService.user.settings.level < Level.Admin)
-            remove_if(this.GetUsersSearchTextCategoryValues,
-                      (x: string) => x === Req.GetUsersSearchTextCategory.Username);
     }
 
     private set_form_defaults()
     {
-        this.search_text_category = Req.GetUsersSearchTextCategory.Name;
-        this.blocked_filter = Req.SearchFilter.Hide;
         this.reversed = true;
     }
 
@@ -119,18 +104,6 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
         if ('search_text' in params)
             this.search_text = params.search_text;
 
-        if ('category' in params)
-            if (this.GetUsersSearchTextCategoryValues.indexOf(params.category) > -1)
-                this.search_text_category = params.category;
-
-        if ('starred' in params)
-            if (this.SearchFilterValues.indexOf(params.starred) > -1)
-                this.starred_filter = params.starred;
-
-        if ('blocked' in params)
-            if (this.SearchFilterValues.indexOf(params.blocked) > -1)
-                this.blocked_filter = params.blocked;
-
         if ('order' in params)
             if (params.order == "ascending" || params.order == "descending")
                 this.reversed = (params.order == "descending");
@@ -143,7 +116,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
 
     private set_form_to_storage_params()
     {
-        const params: string = localStorage.getItem(PlayerlistParams.StorageKey);
+        const params: string = localStorage.getItem(LogsParams.StorageKey);
 
         if (params === null || params === undefined || params.length <= 0)
             return;
@@ -156,7 +129,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
         }
         catch (err)
         {
-            localStorage.deleteItem(PlayerlistParams.StorageKey);
+            localStorage.deleteItem(LogsParams.StorageKey);
             return;
         }
 
@@ -165,7 +138,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
 
     private get_params_from_form()
     {
-        var params = new PlayerlistParams();
+        var params: any = {};
 
         if (this.page > 0)
             params.page = `${this.page+1}`;
@@ -173,27 +146,58 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
         if (this.search_text.length > 0)
             params.search_text = this.search_text;
 
-        if (this.search_text_category !== Req.GetUsersSearchTextCategory.Name)
-            params.category = this.search_text_category;
-
-        if (this.starred_filter !== Req.SearchFilter.None)
-            params.starred = this.starred_filter;
-
-        if (this.blocked_filter !== Req.SearchFilter.Hide)
-            params.blocked = this.blocked_filter;
-
         if (this.reversed === false)
             params.order = "ascending";
 
         return params;
     }
 
-    private save_params_to_storage(params: PlayerlistParams)
+    private save_params_to_storage(params: any)
     {
         if (params === undefined)
             return;
 
-        localStorage.setItem(PlayerlistParams.StorageKey, JSON.stringify(params));
+        localStorage.setItem(LogsParams.StorageKey, JSON.stringify(params));
+    }
+
+    private set_logs(data: any)
+    {
+        if (empty_or_nothing(data))
+        {
+            this.current_view = [];
+            return;
+        }
+
+        const set_time = (log: any) =>
+        {
+            if ('time' in log)
+                log.time = new Date(log.time);
+            else
+                log.time = new Date(0);
+        };
+
+        const set_message = (log: any) =>
+        {
+            if ('0' in log && !('msg' in log))
+                log.msg = log['0'];
+
+            if (typeof log.msg !== "string")
+                log.msg = JSON.stringify(log.msg);
+        };
+
+        const set_level = (log: any) =>
+        {
+            if ('level' in log)
+                log.level = Logs.get_name_by_pino_level(log.level);
+            else
+                log.level = "-";
+        };
+
+        data.forEach(set_time);
+        data.forEach(set_message);
+        data.forEach(set_level);
+
+        this.current_view = data;
     }
 
     search_submit(reset_page: boolean = true) : void
@@ -216,13 +220,13 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
 
         this.pending = true;
 
-        this.api.get_users(this.page,
-                           this.search_text,
-                           this.search_text_category,
-                           this.starred_filter,
-                           this.blocked_filter,
-                           this.reversed
-                          )
+        this.api.get_logs(this.page,
+                          this.search_text,
+                          this.start_date.getTime(),
+                          this.end_date.getTime(),
+                          this.selected_levels.map((x: any) => x.checked),
+                          this.reversed
+                         )
                 .subscribe(
             resp =>
             {
@@ -234,7 +238,7 @@ export class PlayerlistComponent extends PagingComponent<UserView> implements On
                 }
                 else
                 {
-                    this.current_view = resp.users;
+                    this.set_logs(resp.logs);
                     this.pages = resp.pages;
                     this.pending = false;
                 }

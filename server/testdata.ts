@@ -9,7 +9,7 @@ import * as logger from './log';
 
 export async function generate_test_data()
 {
-    logger.info("DB: Generating Test data");
+    logger.debug("DB: Generating Test data");
 
     const test_user_count = g.debug.test_users;
     const test_session_count = g.debug.test_sessions;
@@ -22,7 +22,7 @@ export async function generate_test_data()
 
     if (remaining_users < 0)
     {
-        logger.info("DB: no need to generate testdata");
+        logger.debug("DB: no need to generate testdata");
         return;
     }
 
@@ -84,8 +84,8 @@ export async function generate_test_data()
             });
         }
 
-        logger.info(`DB: generated test user 'user${i}'`);
+        logger.debug(`DB: generated test user 'user${i}'`);
     }
 
-    logger.info("DB: Done generating test data");
+    logger.debug("DB: Done generating test data");
 }

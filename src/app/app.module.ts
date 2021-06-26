@@ -33,6 +33,7 @@ import { AdvancedAccountCreatorComponent } from './views/admin/advanced-account-
 import { PrivacyComponent } from './views/privacy/privacy.component';
 import { TermsComponent } from './views/terms/terms.component';
 import { HelpComponent } from './views/help/help.component';
+import { LogsComponent } from './views/admin/logs/logs.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { HelpComponent } from './views/help/help.component';
     AdvancedAccountCreatorComponent,
     PrivacyComponent,
     TermsComponent,
-    HelpComponent
+    HelpComponent,
+    LogsComponent
   ],
   imports: [
     BrowserModule,
