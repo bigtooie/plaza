@@ -121,3 +121,38 @@ a:hover
     color: $teal-bright !important;
     animation: load-anim 1.3s steps(8, end) infinite;
 }
+
+hr
+{
+    border-top: 0.2rem dashed $brown-bright;
+}
+
+.nav-tabs
+{
+    justify-content: center;
+    border: none;
+    gap: 2.5rem;
+    border-bottom: 1rem;
+}
+
+.nav-tabs .nav-link
+{
+    background-color: $brown;
+    color: $brown-brighter;
+    border-radius: 2rem;
+    font-family: "Zilla Slab";
+    border: 0.5rem solid $brown;
+    box-shadow: 0px 5px 5px rgba(107, 92, 67, 0.3);
+}
+
+.nav-tabs .nav-link:hover
+{
+    border: 0.5rem solid $yellow;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-link:active
+{
+    background-color: $yellow;
+    color: $brown;
+    border: 0.5rem solid $yellow;
+}

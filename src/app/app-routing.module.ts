@@ -16,14 +16,57 @@ import { NewsessionComponent } from './views/newsession/newsession.component';
 import { NotfoundComponent } from './views/notfound/notfound.component';
 import { ControlPanelComponent } from './views/control-panel/control-panel.component';
 
+import { GuideOverviewComponent } from './views/guides/guide-overview/guide-overview.component';
+import { HostGuideComponent } from './views/guides/host-guide/host-guide.component';
+import { JoinGuideComponent } from './views/guides/join-guide/join-guide.component';
+import { ProfileGuideComponent } from './views/guides/profile-guide/profile-guide.component';
+import { VerifierGuideComponent } from './views/guides/verifier-guide/verifier-guide.component';
+import { ModeratorGuideComponent } from './views/guides/moderator-guide/moderator-guide.component';
+import { AdminGuideComponent } from './views/guides/admin-guide/admin-guide.component';
+
 import { LoggedInGuard } from './guards/logged-in.guard';
 import { LoggedOutGuard } from './guards/logged-out.guard';
 import { IsAdminGuard } from './guards/is-admin.guard';
 import { IsModGuard } from './guards/is-mod.guard';
+import { IsVerifierGuard } from './guards/is-verifier.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'help', component: HelpComponent },
+  { path: 'help', component: HelpComponent,
+    children: [
+        {
+            path: '',
+            component: GuideOverviewComponent
+        },
+        {
+            path: 'join',
+            component: JoinGuideComponent
+        },
+        {
+            path: 'host',
+            component: HostGuideComponent
+        },
+        {
+            path: 'profile',
+            component: ProfileGuideComponent
+        },
+        {
+            path: 'verifier',
+            component: VerifierGuideComponent,
+            canActivate: [IsVerifierGuard]
+        },
+        {
+            path: 'moderator',
+            component: ModeratorGuideComponent,
+            canActivate: [IsModGuard]
+        },
+        {
+            path: 'admin',
+            component: AdminGuideComponent,
+            canActivate: [IsAdminGuard]
+        }
+    ]
+  },
   { path: 'about', component: AboutComponent },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'terms', component: TermsComponent },

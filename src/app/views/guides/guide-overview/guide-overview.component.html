@@ -1,0 +1,50 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">
+      <!-- <a routerLink="/help">Overview</a> -->
+      Overview
+    </li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-lg-3 col-md-4 col-sm-6 text-center">
+    <a routerLink="join"
+       class="btn guide-btn">
+      Joining Guide
+    </a>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6 text-center">
+    <a routerLink="host"
+       class="btn guide-btn">
+      Hosting Guide
+    </a>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6 text-center">
+    <a routerLink="profile"
+       class="btn guide-btn">
+      My Profile
+    </a>
+  </div>
+  <div *ngIf="userService.logged_in && userService.user.settings.level >= Level.Verifier"
+       class="col-lg-3 col-md-4 col-sm-6 text-center">
+    <a routerLink="verifier"
+       class="btn guide-btn">
+      Verifier Guide
+    </a>
+  </div>
+  <div *ngIf="userService.logged_in && userService.user.settings.level >= Level.Moderator"
+       class="col-lg-3 col-md-4 col-sm-6 text-center">
+    <a routerLink="moderator"
+       class="btn guide-btn">
+      Moderator Guide
+    </a>
+  </div>
+  <div *ngIf="userService.logged_in && userService.user.settings.level >= Level.Admin"
+       class="col-lg-3 col-md-4 col-sm-6 text-center">
+    <a routerLink="admin"
+       class="btn guide-btn">
+      Admin Guide
+    </a>
+  </div>
+</div>

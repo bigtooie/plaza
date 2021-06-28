@@ -1,48 +1,95 @@
 <div class="text-center">
-  <!--img class="w-50" src="assets/images/logo_big.png"/-->
+  <img src="assets/images/plaza.svg">
   <h1>{{g.title}}</h1>
   <hr/>
-  <p>
-  welcome to {{g.title}} beta, theres nothing on this page here so just log in or register for now.
-  </p>
 </div>
 
-<h5 class="mt-4">Changelog v0.9.6</h5>
-<ul>
-  <li>Add browsable logs for moderators and admins.</li>
-  <li>Slight design update</li>
-  <li>Some fixes</li>
-</ul>
+<div class="row mt-4">
+  <div class="col-md-8 main">
+    <h4>
+      News &amp; Overview
+    </h4>
 
-<h5 class="mt-4">Changelog v0.9.5</h5>
-<ul>
-  <li>If you're the host of a session, the session now displays when someone obtains the dodo after getting accepted.</li>
-  <li>Update design</li>
-  <li>Some fixes</li>
-</ul>
+    <div class="main-body">
+      <p>
+        Welcome to {{g.title}}! This is the first release of {{g.title}}, but expect bug fixes and the likes as people use the site.
+      </p>
+      <p>
+        Want to learn about {{g.title}}? Check out the <a routerLink="/help">Help Section</a> which contains the Guides and answers to common questions in the Q&amp;A.
+      </p>
+      <p>
+        In {{g.title}}, you can:
+      </p>
+      <ul>
+        <li>Join islands of /acg/ anons</li>
+        <li>Host sessions for /acg/ anons</li>
+        <li>...and that's about it!</li>
+      </ul>
+    </div>
+  </div>
 
-<h5 class="mt-4">Changelog v0.9.4</h5>
-<ul>
-  <li>Add option to filter sessions by verified hosts.</li>
-  <li>Update session token behavior.</li>
-  <li>Update design</li>
-  <li>Some fixes</li>
-</ul>
+  <div class="col-md-4 changelogs">
+    <h4>
+      Changelogs
+    </h4> 
+    <div class="changelogs-body">
+      <h5>v1.0.0</h5>
+      <ul>
+        <li>Update design, mainly home page. Also added the logo, thanks to tokko.</li>
+        <li>Add <a routerLink="/help">Guides</a>.</li>
+        <li><small>finally added a not-found page</small></li>
+        <li>Some fixes</li>
+      </ul>
 
-<h5 class="mt-4">Changelog v0.9.3</h5>
-<ul>
-  <li>Deprecate "public requesters" session setting. Is now replaced by "public requester count", which, when enabled, publically displays the number of players who got accepted and the number of players still trying to get the Dodo Code of a session.</li>
-  <li>Update design</li>
-  <li>Some fixes</li>
-</ul>
+      <hr/>
 
-<h5 class="mt-4">Changelog v0.9.2</h5>
-<ul>
-  <li>Add button to close sessions, changing session status now only includes Open and Full</li>
-  <li>Better search, allows for searching for players by writing "X from Y".
-      Use "* from Y" or "X from *" to match for any player name / island</li>
-  <li>Add setting to allow verified users to be accepted automatically to a session, useful for AFK hosting</li>
-  <li>Add HTTPS</li>
-  <li>Update design</li>
-  <li>Numerous fixes</li>
-</ul>
+      <h5 class="mt-4">v0.9.6</h5>
+      <ul>
+        <li>Add browsable logs for moderators and admins.</li>
+        <li>Slight design update</li>
+        <li>Some fixes</li>
+      </ul>
+
+      <hr/>
+
+      <h5 class="mt-4">v0.9.5</h5>
+      <ul>
+        <li>If you're the host of a session, the session now displays when someone obtains the dodo after getting accepted.</li>
+        <li>Update design</li>
+        <li>Some fixes</li>
+      </ul>
+
+      <hr/>
+
+      <h5 class="mt-4">v0.9.4</h5>
+      <ul>
+        <li>Add option to filter sessions by verified hosts.</li>
+        <li>Update session token behavior.</li>
+        <li>Update design</li>
+        <li>Some fixes</li>
+      </ul>
+
+      <hr/>
+
+      <h5 class="mt-4">v0.9.3</h5>
+      <ul>
+        <li>Deprecate "public requesters" session setting. Is now replaced by "public requester count", which, when enabled, publically displays the number of players who got accepted and the number of players still trying to get the Dodo Code of a session.</li>
+        <li>Update design</li>
+        <li>Some fixes</li>
+      </ul>
+
+      <hr/>
+
+      <h5 class="mt-4">v0.9.2</h5>
+      <ul>
+        <li>Add button to close sessions, changing session status now only includes Open and Full</li>
+        <li>Better search, allows for searching for players by writing "X from Y".
+            Use "* from Y" or "X from *" to match for any player name / island</li>
+        <li>Add setting to allow verified users to be accepted automatically to a session, useful for AFK hosting</li>
+        <li>Add HTTPS</li>
+        <li>Update design</li>
+        <li>Numerous fixes</li>
+      </ul>
+    </div>
+  </div>
+</div>

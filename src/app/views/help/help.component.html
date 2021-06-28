@@ -1,11 +1,15 @@
 <ul ngbNav #nav="ngbNav" [(activeId)]="active_tab" class="nav-tabs">
+
+<!-- Guides -->
 <li [ngbNavItem]="1">
-<a ngbNavLink>Guide</a>
+<a ngbNavLink>Guides</a>
 <ng-template ngbNavContent>
+<router-outlet></router-outlet>
 </ng-template>
 </li>
-<li [ngbNavItem]="2">
+
 <!-- Q&A -->
+<li [ngbNavItem]="2">
 <a ngbNavLink>Q&amp;A</a>
 <ng-template ngbNavContent>
 
@@ -23,6 +27,9 @@
       <p>Animal Crossing: New Horizons was not designed to work well with larger groups or communities of players.</p>
       <p>While other services have been created to create a better multiplayer experience, we find that these services are either lacking in important features (such as accountability) or are heavily mismanaged.</p>
       <p>{{g.title}} has been created with the sole purpose of giving /acg/ a better multiplayer experience.</p>
+      <p>
+        The purpose of {{g.title}} is <b>not</b> to draw attention away from the threads and the service has been designed such a way as to not draw attention away from the threads, e.g. it is not easy to communicate with other players in {{g.title}}, as communication should occur in the threads or in-game.
+      </p>
     </ng-template>
   </ngb-panel>
 
@@ -33,6 +40,21 @@
         <p>We do provide a feature to "verify" people based on evidence or trust, and give you the option to block out all non-verified players, effectively forcing players to identify themselves before they may interact with you.</p>
         <p>In addition, we provide a feature for you to <i class="fa fa-star"></i> players to help you remember players you have positive experiences with.</p>
         <p>You may also block players, preventing them from accessing your sessions.</p>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel title="And how is this better than Friend Codes?">
+    <ng-template ngbPanelContent>
+      <p>
+        {{g.title}} provides full control over who gets on your island, so you don't have to close the gate when you just want certain people over.
+        It also allows you to attach information about your hosted session, like turnip prices or description, whereas islands opened to friends contain no information whatsoever.
+      </p>
+      <p>It also helps to promote your island, as {{g.title}} shows a list of open islands, so people don't need to scan threads or friends for open islands.</p>
+      <p>
+        It's also more accessible than friend codes to newcomers, as new anons don't necessarily know anyone, so building a network of friends takes time.
+        With {{g.title}}, new anons can immediately host for or join other anons.
+      </p>
+      <p>That being said, {{g.title}} isn't a replacement for Friend Codes and private hosts should still happen outside of {{g.title}}, just be careful who you add as friends.</p>
     </ng-template>
   </ngb-panel>
 
@@ -86,8 +108,7 @@
 
   <ngb-panel title="Waah! Registrations are closed?">
     <ng-template ngbPanelContent>
-      <p>Calm down pussy. Contact an administrator or a moderator, they can help you with that.</p>
-      <p>Maybe.</p>
+      <p>Calm down. Contact a moderator or admin, they can help you with that.</p>
     </ng-template>
   </ngb-panel>
 

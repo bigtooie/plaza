@@ -34,6 +34,13 @@ import { PrivacyComponent } from './views/privacy/privacy.component';
 import { TermsComponent } from './views/terms/terms.component';
 import { HelpComponent } from './views/help/help.component';
 import { LogsComponent } from './views/admin/logs/logs.component';
+import { JoinGuideComponent } from './views/guides/join-guide/join-guide.component';
+import { HostGuideComponent } from './views/guides/host-guide/host-guide.component';
+import { ProfileGuideComponent } from './views/guides/profile-guide/profile-guide.component';
+import { GuideOverviewComponent } from './views/guides/guide-overview/guide-overview.component';
+import { VerifierGuideComponent } from './views/guides/verifier-guide/verifier-guide.component';
+import { ModeratorGuideComponent } from './views/guides/moderator-guide/moderator-guide.component';
+import { AdminGuideComponent } from './views/guides/admin-guide/admin-guide.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +67,14 @@ import { LogsComponent } from './views/admin/logs/logs.component';
     PrivacyComponent,
     TermsComponent,
     HelpComponent,
-    LogsComponent
+    LogsComponent,
+    JoinGuideComponent,
+    HostGuideComponent,
+    ProfileGuideComponent,
+    GuideOverviewComponent,
+    VerifierGuideComponent,
+    ModeratorGuideComponent,
+    AdminGuideComponent
   ],
   imports: [
     BrowserModule,
