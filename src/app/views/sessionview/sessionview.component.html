@@ -163,7 +163,8 @@
   <a *ngIf="session.settings.status === SessionStatus.Open && !userService.logged_in"
           type="button"
           class="btn btn-success"
-          routerLink="/login"
+          [routerLink]="['/login']"
+          [queryParams]="{ redirect: 's/' + session.id.readable }"
           >
     log in or register to join!
   </a>

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { PlatformLocation } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 
@@ -41,7 +42,8 @@ export class ApiService
 
     constructor(
         private http: HttpClient,
-        private router: Router
+        private router: Router,
+        private location: PlatformLocation
     )
     {
         this.load_from_storage();
@@ -74,6 +76,23 @@ export class ApiService
             localStorage.removeItem(storageKey);
     }
 
+    get_current_route(): string
+    {
+        var ret: string = this.location.hash;
+
+        if (ret === null || ret === undefined || ret.length <= 2)
+            return "";
+
+        ret = ret.substr(2);
+
+        const i = ret.indexOf("?");
+
+        if (i > -1)
+            ret = ret.substr(0, i);
+
+        return ret;
+    }
+
     private send_request<T>(type: Copyable<T>, ep: APIEndpoint, request: any): Observable<T | undefined>
     {
         var method: string = "GET";
@@ -93,7 +112,15 @@ export class ApiService
                                 {
                                     this.token = undefined;
                                     this.save_to_storage();
-                                    this.router.navigate(['/login'], {queryParams: {force_logout: 1}});
+
+                                    const redirect = this.get_current_route();
+                                    var queryParams: any = {};
+                                    queryParams.force_logout = 1;
+
+                                    if (redirect.length > 0)
+                                        queryParams.redirect = redirect;
+
+                                    this.router.navigate(['/login'], {queryParams: queryParams});
                                 }
 
                                 throw new Error(err.error.reason);

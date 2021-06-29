@@ -106,11 +106,8 @@ export class LoginComponent implements OnInit
     {
         if (this.route.snapshot.queryParams.force_logout === '1')
         {
-            if (this.userService.logged_in)
-            {
-                this.userService.force_logout();
-                this.alert.show_error("Wuh-oh!", "Looks like you were logged out. Try logging back in!");
-            }
+            this.userService.force_logout();
+            this.alert.show_error("Wuh-oh!", "Looks like you were logged out.");
         }
 
         if (this.userService.logged_in)
@@ -151,7 +148,13 @@ export class LoginComponent implements OnInit
             .subscribe((_) =>
                 {
                     this.pending = false;
-                    this.router.navigate(['/']);
+
+                    const params = this.route.snapshot.queryParams;
+
+                    if ('redirect' in params)
+                        this.router.navigate([params.redirect]);
+                    else
+                        this.router.navigate(['/']);
                 },
                 (err: any) =>
                 {
@@ -180,7 +183,13 @@ export class LoginComponent implements OnInit
             .subscribe((_) =>
                 {
                     this.pending = false;
-                    this.router.navigate(['/']);
+
+                    const params = this.route.snapshot.queryParams;
+
+                    if ('redirect' in params)
+                        this.router.navigate([params.redirect]);
+                    else
+                        this.router.navigate(['/']);
                 },
                 (err: any) =>
                 {
