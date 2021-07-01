@@ -27,7 +27,7 @@
       <div style="text-align: center">
         <h3>
           <a *ngIf="session.settings.title.length > 0">
-            {{sanitize(session.settings.title)}}
+            {{session.settings.title}}
           </a>
           
           <i *ngIf="session.settings.title.length === 0"
@@ -104,7 +104,7 @@
           </button>
           <div *ngIf="session.settings.description.length > 0"
                 class="ml-3 mr-3">
-            {{sanitize(session.settings.description)}}
+            <pre>{{session.settings.description}}</pre>
           </div>
           <div *ngIf="session.settings.description.length <= 0"
                 class="ml-3 mr-3 text-muted small font-italic">

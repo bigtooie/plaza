@@ -1,0 +1,102 @@
+
+@use "sass:color";
+@import "../../../styles/variables.scss";
+
+.guide
+{
+    border-radius: 3rem;
+    background-color: $green-brighter;
+    background-image: url('/assets/images/confetti.png');
+    padding: 1.5rem;
+    padding-top: 2rem;
+}
+
+.guide > h1
+{
+    color: $green-darker;
+    border-bottom: 0.2rem dotted $green-dark;
+    margin-bottom: 2rem;
+}
+
+.guide-block
+{
+    border-radius: 2rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    background-color: $white;
+    border: 0.5rem solid color.scale($green-dark, $alpha: -10%);
+}
+
+.guide-block > h3
+{
+    border-bottom: 0.2rem dotted $font-col;
+}
+
+.guide-step
+{
+    margin-top: 2rem;
+    font-family: 'Zilla Slab';
+    vertical-align: middle;
+}
+
+.guide-step > span
+{
+    display: inline-block;
+    background-color: $orange;
+    color: $yellow-bright;
+    margin-right: 1rem;
+    font-size: 120%;
+    border-radius: 4rem;
+    text-align: center;
+    vertical-align: middle;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.figure
+{
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 5rem 5rem;
+    background-color: $yellow;
+    color: $font-col;
+    border-radius: 2rem;
+    padding: 1rem;
+    width: 100%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.figure > hr
+{
+    border-top: 0.2rem dotted $orange;
+}
+
+.figure > img
+{
+    width: 100%;
+    border-radius: 2rem;
+    border: 0.2rem dotted $orange;
+}
+
+.alert-danger > .float-left.fa
+{
+    font-size: 36pt;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px)
+{
+    .figure
+    {
+        width: 80%;
+    }
+}
+
+@media (min-width: 992px)
+{
+    .figure
+    {
+        width: 60%;
+    }
+}

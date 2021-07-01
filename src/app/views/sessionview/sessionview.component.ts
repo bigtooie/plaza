@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, SecurityContext, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { of, Observable, forkJoin } from 'rxjs';
@@ -117,7 +116,6 @@ export class SessionviewComponent implements OnInit, OnDestroy
     set dodo_leaked(val: boolean) { this.dodo_leaked_form.setValue(val, {onlySelf: true}); }
 
     constructor(public userService: UserService,
-                private sanitizer: DomSanitizer,
                 private route: ActivatedRoute,
                 private dodoInUseValidator: DodoInUseValidator,
                 private modalService: NgbModal,
@@ -125,8 +123,6 @@ export class SessionviewComponent implements OnInit, OnDestroy
                 private api: ApiService)
     {
     }
-
-    sanitize = (s: string) => this.sanitizer.sanitize(SecurityContext.HTML, s);
 
     ngOnInit(): void
     {
