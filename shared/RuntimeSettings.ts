@@ -152,7 +152,7 @@ export class BoolSetting extends Setting<Boolean>
 
 export const max_login_session_duration = new NumberSetting(
     "max_login_session_duration",
-    16,
+    168,
     Visibility.AdminOnly,
     "Max. Login Session Duration",
     "For how long a session token is valid (in hours).",

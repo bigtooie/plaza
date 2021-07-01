@@ -8,3 +8,71 @@
     </li>
   </ol>
 </nav>
+
+<div class="guide">
+  <h1>Admin Guide</h1>
+
+  <div class="guide-block">
+    <p>As an admin, you have full control over the service.
+    You also get a special icon on your ID, like this: <app-uuidtag [id]="adminId" [level]="Level.Admin" [link]="false"></app-uuidtag></p>
+    <p>
+
+    <p>
+      Also review the <a routerLink="/help/verifier">Verifier Guide</a> and the <a routerLink="/help/moderator">Moderator Guide</a>, as they apply to you as well, except with much more freedom.
+    </p>
+  </div>
+
+  <div class="guide-block">
+    <h3>Runtime Settings</h3>
+
+    <p>As an admin, you have access to the Runtime Settings in the <a routerLink="/settings">Control Panel.</a>
+    Here are important settings about the service. Review their descriptions carefully before changing these settings.
+    Settings here also include the option do disable registrations, however admins and moderators can still create accounts.
+    </p>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/admin_runtime_settings.png">
+        <hr/>
+        <label>
+          The runtime settings in the Control Panel.
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!--
+    <h4 class="guide-step">
+      <span>3</span>
+      Set the Verification
+    </h4>
+
+  <div class="guide-block">
+    <p>As a verifier, your job is to verify people. You also get a special icon on your ID, like this: <app-uuidtag [id]="verifierId" [level]="Level.Verifier" [link]="false"></app-uuidtag></p>
+    <p>
+    You can only set verifications of users which have not been verified yet,
+    or users which you verified, so if another Verifier, Moderator or Admin verifies a user, you cannot remove or change that verification.
+    </p>
+  </div>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/verification_post.png">
+        <hr/>
+        <label>
+          The verification after setting it to a post number.
+          Clicking the link leads to the archived post.
+        </label>
+      </div>
+    </div>
+
+
+    <div class="alert alert-danger progress-bar-striped">
+      <i class="float-left fa fa-exclamation-circle"></i>
+      When setting verification to a post number, make sure the post contains enough information to prove that the player does own the ID, e.g. they attached a picture of their character saying their ID.
+      Make sure attached images aren't edited, e.g. the names of a player or the ID are tampered with.
+      When in doubt, request to meet them in-game, ask them about it and verify them by trust (0).
+    </div>
+-->

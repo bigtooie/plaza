@@ -1054,14 +1054,14 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
             // non-admins must provide their current password
             // admins cant reset passwords of other admins
 
-            if (usr.level < User.Level.Admin && target.id.value !== usr.id.value)
+            if (usr.level < User.Level.Moderator && target.id.value !== usr.id.value)
             {
                 request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
                 return;
             }
 
-            if (usr.level === User.Level.Admin
-             && target.level >= User.Level.Admin
+            if (usr.level >= User.Level.Moderator
+             && target.level >= User.Level.Moderator
              && target.id.value !== usr.id.value)
             {
                 request_failure("UpdateUserSettings", res, "i'm afraid i can't let you do that");
@@ -1078,7 +1078,7 @@ export async function UpdateUserSettings(req: express.Request, res: express.Resp
                 return;
             }
 
-            if (usr.level < User.Level.Admin
+            if (usr.level < User.Level.Moderator
              && target.id.value === usr.id.value)
             {
                 if (!('current_password' in set)

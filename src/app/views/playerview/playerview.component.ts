@@ -102,11 +102,17 @@ export class PlayerviewComponent implements OnInit
         this.route.params.subscribe(params => this.get_user(params["id"]));
     }
 
+    get is_self()
+    {
+        return this.userService.logged_in
+            && (this.userService.user.id.value === this.user.id.value);
+    }
+
     get can_reset_password()
     {
         return this.userService.logged_in
             && ((this.userService.user.id.value === this.user.id.value)
-             || (this.userService.user.settings.level >= User.Level.Admin
+             || (this.userService.user.settings.level >= User.Level.Moderator
               && this.user.settings.level < this.userService.user.settings.level));
     }
 
@@ -282,7 +288,7 @@ export class PlayerviewComponent implements OnInit
 
     reset_password()
     {
-        if (this.userService.user.settings.level < User.Level.Admin)
+        if (this.userService.user.settings.level < User.Level.Moderator)
         if (this.current_password.value === undefined || this.current_password.value.length <= 0)
         {
             this.alert.show_error("Wuh-oh! Cannot reset password...", "current password is empty");

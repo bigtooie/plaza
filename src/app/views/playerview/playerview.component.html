@@ -349,7 +349,7 @@
     <h4 class="modal-title">Reset Password</h4>
   </div>
   <div class="modal-body">
-    <div *ngIf="userService.user.settings.level < Level.Admin"
+    <div *ngIf="is_self"
          class="form-group">
       <label for="current-password">Current password</label>
       <input [formControl]="current_password"

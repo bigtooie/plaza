@@ -8,3 +8,145 @@
     </li>
   </ol>
 </nav>
+
+<div class="guide">
+  <h1>Moderator Guide</h1>
+
+  <div class="guide-block">
+    <p>As a moderator, your job is to ban/unban people, reset player passwords when needed and create accounts for players when registrations are closed.
+    This means that your role is to support people in need.
+    You also get a special icon on your ID, like this: <app-uuidtag [id]="modId" [level]="Level.Moderator" [link]="false"></app-uuidtag>
+    </p>
+    <p>
+      Also make sure to review the <a routerLink="/help/verifier">Verifier Guide</a>, as it also applies to you, except that moderators can change most verifications.
+    </p>
+    <p>
+      And don't forget that all of your actions are logged and viewable in the logs, as well as the actions of other users.
+    </p>
+  </div>
+
+  <div class="guide-block">
+    <h3>How to Ban / Unban</h3>
+
+    <p>
+    Next to the star and block buttons next to a players ID is the button to ban a player.
+    You can only ban normal players or verifiers, not other moderators or admins.
+    </p>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/moderator_ban1.png">
+        <hr/>
+        <label>
+          The ban hammer.
+        </label>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/moderator_ban2.png">
+        <hr/>
+        <label>
+          The players profile after getting banned.
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-block">
+    <h3>How to Reset Passwords</h3>
+
+    <p>
+    The same way normal players reset their passwords (see <a routerLink="/help/profile">Profile Guide</a>), except you can reset passwords on other player profiles as well.
+    </p>
+  </div>
+
+  <div class="guide-block">
+    <h3>Account Creation</h3>
+
+    <p>In case the site is under attack (e.g. account creation bot, etc.) and registrations are closed, you can still create accounts for players by using the Advanced Account Creator in the <a routerLink="/settings">Control Panel</a>.</p>
+    <p>To create an account for a player, follow these steps:</p>
+
+    <h4 class="guide-step">
+      <span>1</span>
+      Go to the Advanced Account Creator
+    </h4>
+
+    <p>
+      Click the <i class="fa fa-cog"></i> in the navigation bar on top to go to the Control Panel which contains the Advanced Account Creator.
+    </p>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/moderator_advanced_account_creator.png">
+        <hr/>
+        <label>
+          The Advanced Account Creator in the Control Panel.
+        </label>
+      </div>
+    </div>
+
+    <h4 class="guide-step">
+      <span>2</span>
+      Create an Account
+    </h4>
+
+    <p>Fill in the form to create an account and use a "one-time-use" password for the player to log into the account.
+       Once the player logged in they can reset their own password on their own profile.
+       If they forget the password or can't log in, you can always reset their password.
+    </p>
+
+    <div class="alert alert-danger progress-bar-striped">
+      <i class="float-left fa fa-exclamation-circle"></i>
+      Only create accounts for actual players, e.g. people you meet in-game.
+      Never create accounts based on posts in threads.
+    </div>
+  </div>
+
+  <div class="guide-block">
+    <h3>Special Permissions</h3>
+
+    <p>As a moderator you also have permission to modify some player profile or session properties, such as player name or island name visibility.</p>
+    <p><b>You also have access to all Dodo Codes of sessions. Use this privilege carefully and only for moderation, e.g. checking if a Dodo Code is working.</b></p>
+  </div>
+
+  <div class="guide-block">
+    <h3>Logs</h3>
+
+    <p>As a moderator you also have permission to view the logs in the <a routerLink="/settings">Control Panel</a>.</p>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/moderator_logs.png">
+        <hr/>
+        <label>
+          The Logs.
+        </label>
+      </div>
+    </div>
+
+    <p>You can filter by log level or search for specific logs, e.g. player or session IDs.
+    <b>Use these logs wisely.</b>
+    </p>
+  </div>
+</div>
+
+<!--
+
+    <div class="alert alert-danger progress-bar-striped">
+      <i class="float-left fa fa-exclamation-circle"></i>
+      When setting verification to a post number, make sure the post contains enough information to prove that the player does own the ID, e.g. they attached a picture of their character saying their ID.
+      Make sure attached images aren't edited, e.g. the names of a player or the ID are tampered with.
+      When in doubt, request to meet them in-game, ask them about it and verify them by trust (0).
+    </div>
+
+
+    <h4 class="guide-step">
+      <span>3</span>
+      Set the Verification
+    </h4>
+    <p>
+      To set the verification, you can either set it to <b>0</b> (the number zero) to set a verification by <i>trust</i>, i.e. there is no (public) proof to show others that this player is indeed an actual ACNH player, or set it to a post number of a post containing enough proof that the player owns the ID.
+    </p>
+-->
