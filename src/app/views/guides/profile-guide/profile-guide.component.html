@@ -8,3 +8,145 @@
     </li>
   </ol>
 </nav>
+
+<div class="guide">
+  <h1>My Profile</h1>
+
+  <div class="guide-block">
+    <p *ngIf="!userService.logged_in"
+       >When you register on {{g.title}}, you get a profile where you can manage your information and reset your password.
+    </p>
+
+    <p *ngIf="userService.logged_in"
+       >
+       On your <a routerLink="/p/{{userService.user.id.readable}}">profile</a>, you can manage your information and reset your password.
+    </p>
+
+    <p>To access your profile, click your name in the navigation bar at the top of the site and click on "Profile".</p>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/profile_nav.png">
+      </div>
+    </div>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/profile.png">
+        <hr/>
+        <label>
+          An example profile. It displays the player name, ID, user name (only for visible to you and admins), island name and register date.
+        </label>
+      </div>
+    </div>
+
+    <p>If you are verified, your profile also displays verification details. Contact a verifier or moderator if you want to learn more.</p>
+  </div>
+
+  <div class="guide-block">
+    <h3>Setting Player / Island Name Visibility</h3>
+
+    <p>By default, your player and island names are abbreviated, so e.g. "Tooie" from "Willowby" will be abbreviated to "T" from "W" for other players.
+      (moderators and admins can always see your full names)
+    </p>
+
+    <p>To change this and publically display your player or island name, go to your profile and click on the <i class="fa fa-eye-slash"></i>.
+    When the <i class="fa fa-eye-slash"></i> becomes a green <i class="fa fa-eye"></i>, your name will be visible to other players.
+    </p>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/profile_visibility.png">
+        <hr/>
+        <label>
+          The visible <i class="fa fa-eye"></i> icons, indicating that the player and island names are now visible.
+        </label>
+      </div>
+    </div>
+
+    <p>Clicking on the <i class="fa fa-eye"></i> again hides the player or island name from other players again and the name will instead be abbreviated like before.
+    </p>
+  </div>
+
+  <div class="guide-block">
+    <h3>Reset Password</h3>
+
+    <h4 class="guide-step">
+      <span>1</span>
+      Click on the "reset password" button on your profile
+    </h4>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/profile_reset_password1.png">
+        <hr/>
+        <label>
+          The "reset password" button.
+        </label>
+      </div>
+    </div>
+
+    <h4 class="guide-step">
+      <span>2</span>
+      Enter the current and new passwords
+    </h4>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/profile_reset_password2.png">
+        <hr/>
+        <label>
+          The password reset dialog. Enter the current and new passwords and click "submit" to reset the password.
+        </label>
+      </div>
+    </div>
+
+    <div class="alert alert-info progress-bar-striped">
+      <i class="float-left fa fa-exclamation"></i>
+      If you forgot your current password, contact a moderator or admin, they can reset the password for you.
+    </div>
+
+    <h4 class="guide-step">
+      <span>3</span>
+      Submit and you're done
+    </h4>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/profile_reset_password3.png">
+        <hr/>
+        <label>
+          After submitting, your password will be reset and you should see this message.
+        </label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!--
+    <h4 class="guide-step">
+      <span>3</span>
+      Text
+    </h4>
+
+  <div class="guide-block">
+    <p></p>
+  </div>
+
+    <div class="text-center">
+      <div class="figure">
+        <img src="/assets/images/guides/verification_post.png">
+        <hr/>
+        <label>
+          Description
+        </label>
+      </div>
+    </div>
+
+
+    <div class="alert alert-danger progress-bar-striped">
+      <i class="float-left fa fa-exclamation-circle"></i>
+      Warning
+    </div>
+-->
