@@ -399,7 +399,7 @@ function register_dodo_request_callbacks(socket: sio.Socket, usr: User.User)
         // notify people
         const req = await db.get_requester_by_id(sess.id, usr.id);
         notify_new_requester(req);
-        socket.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(req.session, req.user, req.status));
+        socket.emit(Msg.RequesterUpdate.ID, new Msg.RequesterUpdate(req.session, req.user, { status: req.status }));
     });
 
     socket_callback(socket, Msg.RequesterUpdate, async (msg: Msg.RequesterUpdate) =>
