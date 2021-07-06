@@ -1,5 +1,43 @@
 
+@use "sass:color";
+@import "../../../../styles/variables.scss";
+
+$btnbg: color.scale($blue-bright, $lightness: +20%);
+
 .guide-btn
+{
+    background-color: $btnbg;
+    background: linear-gradient(170deg, $btnbg 0%, $blue-bright 62%);
+    color: $blue-dark;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 1.5rem !important;
+    border: none !important;
+    margin-bottom: 3rem;
+    font-family: 'Zilla Slab';
+    font-size: 120%;
+    line-height: 4rem;
+    padding-top: 1.5rem !important;
+}
+
+/*
+.guide-btn:hover
+{
+    
+}
+*/
+
+.guide-btn > img, .guide-btn > svg
+{
+    height: 60%;
+}
+
+.guide-btn > svg > g > path
+{
+    fill: $blue-dark !important;
+}
+
+.guide-text-only-btn
 {
     width: 12rem;
     height: 12rem;
@@ -7,4 +45,6 @@
     border: 0.3rem solid black;
     margin-bottom: 3rem;
     line-height: 12rem !important;
+    font-family: 'Zilla Slab';
+    font-size: 120%;
 }
